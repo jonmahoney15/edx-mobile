@@ -37,7 +37,7 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
  */
 export type AppStackParamList = {
   Welcome: undefined
-  Login: {signIn: "Login"}
+  Login: undefined
   // 🔥 Your screens go here
 }
 
@@ -60,7 +60,6 @@ const AppStack = observer(function AppStack() {
     authenticationStore: { isAuthenticated },
   } = useStores()
 
-  // @demo remove-block-end
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false }}
