@@ -1,1 +1,1 @@
-# Welcome to your EdxMobile!
+# Welcome to EdxMobile!
