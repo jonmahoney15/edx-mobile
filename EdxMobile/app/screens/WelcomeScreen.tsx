@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { Image, ImageStyle, TextStyle, View, ViewStyle, ScrollView, SafeAreaView } from "react-native"
 import { Text } from "../components"
 import { isRTL } from "../i18n"
 import { useStores } from "../models"
@@ -8,8 +8,24 @@ import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
+import {Card} from "react-native-elements" 
 
 const welcomeLogo = require("../../assets/images/logo.png")
+
+const courses = [
+  {
+     title: 'Sample course 1',
+     image: require("../../assets/images/word-cloud.jpeg")
+  },
+  {
+    title: 'Sample course 2',
+    image: require("../../assets/images/word-cloud.jpeg")
+ },
+ {
+   title: 'Sample course 3',
+   image: require("../../assets/images/word-cloud.jpeg")
+}
+ ]
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
@@ -40,9 +56,22 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         />
       </View>
       
-      <View style={[$bottomContainer, $bottomContainerInsets]}>
-        <Text tx="welcomeScreen.postscript" size="md" />
-      </View>
+      <SafeAreaView style={$bottomContainer}>
+        <ScrollView >
+          {
+            courses.map((c,i) =>(
+              <Card >
+                <View >
+                <Image style={$courseImage} source={c.image} resizeMode="contain" />
+                </View>
+                <View >
+                  <Text style={{ fontSize: 16 }}>{c.title}</Text>
+                </View>
+              </Card>
+          ))
+          }
+        </ScrollView>
+      </SafeAreaView>
     </View>
   )
 })
@@ -57,7 +86,7 @@ const $topContainer: ViewStyle = {
   flexGrow: 1,
   flexBasis: "57%",
   justifyContent: "center",
-  paddingHorizontal: spacing.large,
+  paddingHorizontal: spacing.small,
 }
 
 const $bottomContainer: ViewStyle = {
@@ -75,7 +104,10 @@ const $welcomeLogo: ImageStyle = {
   width: "100%",
   marginBottom: spacing.huge,
 }
-
+const $courseImage: ImageStyle = {
+  height: 169,
+  width: "100%"
+}
 const $welcomeFace: ImageStyle = {
   height: 169,
   width: 269,
