@@ -60,7 +60,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         <ScrollView >
           {
             courses.map((c,i) =>(
-              <Card >
+              <Card key={c.title}>
                 <View >
                 <Image style={$courseImage} source={c.image} resizeMode="contain" />
                 </View>
