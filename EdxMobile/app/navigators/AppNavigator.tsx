@@ -18,9 +18,10 @@ import Config from "../config"
 import { useStores } from "../models"
 import {
   LoginScreen,
-  WelcomeScreen
+  WelcomeScreen,
+  CourseDetailScreen
 } from "../screens"
-import CourseDetailScreen from "../screens/CourseDetailScreen"
+import {TabNavigator} from "./TabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 
 type CourseDetailScreenParams = {
@@ -45,6 +46,7 @@ type CourseDetailScreenParams = {
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
+  Profile: undefined
   CourseDetail: CourseDetailScreenParams
   // 🔥 Your screens go here
 }
@@ -77,7 +79,7 @@ const AppStack = observer(function AppStack() {
         <>
           <Stack.Screen 
             name="Welcome" 
-            component={WelcomeScreen}
+            component={TabNavigator}
           />
           <Stack.Screen 
             name="CourseDetail" 

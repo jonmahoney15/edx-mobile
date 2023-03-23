@@ -8,7 +8,7 @@ import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import {Card} from "react-native-elements" 
+import {Card, Button} from "react-native-elements" 
 
 const welcomeLogo = require("../../assets/images/logo.png")
 
@@ -43,7 +43,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 
   useHeader({
     rightTx: "common.logOut",
-    onRightPress: logout,
+    onRightPress: logout
   })
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
@@ -58,29 +58,19 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 
   return (
     <View style={$container}>
-      <View style={$topContainer}>
-        <Image style={$welcomeLogo} source={welcomeLogo} resizeMode="contain" />
-        <Text
-          testID="welcome-heading"
-          style={$welcomeHeading}
-          tx="welcomeScreen.readyForLaunch"
-          preset="heading"
-        />
-      </View>
-      
       <SafeAreaView style={$bottomContainer}>
         <ScrollView >
           {
             courses.map((c,i) =>(
-              <Card key={c.title}>
-                <View >
+              <Card key={c.title} containerStyle={$cardStyle}>
                   <TouchableOpacity onPress={() => handleCoursePress(c)}>
                     <Image style={$courseImage} source={c.image} resizeMode="contain" />
                   </TouchableOpacity>
-                </View>
-                <View >
-                  <Text style={{ fontSize: 16 }}>{c.title}</Text>
-                </View>
+                <Text style={{ fontSize: 16 }}>{c.title}</Text>
+                <Button
+              title="View Course"
+              buttonStyle={$buttonStyle}
+            />
               </Card>
           ))
           }
@@ -94,7 +84,9 @@ const $container: ViewStyle = {
   flex: 1,
   backgroundColor: colors.background,
 }
-
+const $cardStyle: ViewStyle = {
+  borderRadius: 10
+}
 const $topContainer: ViewStyle = {
   flexShrink: 1,
   flexGrow: 1,
@@ -106,11 +98,10 @@ const $topContainer: ViewStyle = {
 const $bottomContainer: ViewStyle = {
   flexShrink: 1,
   flexGrow: 0,
-  flexBasis: "43%",
+  flexBasis: "100%",
   backgroundColor: colors.palette.neutral100,
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
-  paddingHorizontal: spacing.large,
   justifyContent: "space-around",
 }
 const $welcomeLogo: ImageStyle = {
@@ -133,4 +124,9 @@ const $welcomeFace: ImageStyle = {
 
 const $welcomeHeading: TextStyle = {
   marginBottom: spacing.medium,
+}
+
+const $buttonStyle: ViewStyle = {
+    backgroundColor: 'rgba(78, 116, 289, 1)',
+    borderRadius: 3,
 }
