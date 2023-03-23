@@ -19,9 +19,16 @@ import { useStores } from "../models"
 import {
   LoginScreen,
   WelcomeScreen,
+  CourseDetailScreen
 } from "../screens"
 import {TabNavigator} from "./TabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
+
+type CourseDetailScreenParams = {
+  title: string;
+  description: string;
+  image: string;
+};
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -40,6 +47,7 @@ export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
   Profile: undefined
+  CourseDetail: CourseDetailScreenParams
   // 🔥 Your screens go here
 }
 
@@ -73,13 +81,17 @@ const AppStack = observer(function AppStack() {
             name="Welcome" 
             component={TabNavigator}
           />
+          <Stack.Screen 
+            name="CourseDetail" 
+            component={CourseDetailScreen} 
+          />
         </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
         </>
       )}
-      {/** 🔥 Your screens go here */}
+      {}
     </Stack.Navigator>
   )
 })

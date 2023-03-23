@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle, ScrollView, SafeAreaView } from "react-native"
+import { Image, ImageStyle, TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity } from "react-native"
 import { Text } from "../components"
 import { isRTL } from "../i18n"
 import { useStores } from "../models"
@@ -14,16 +14,20 @@ const welcomeLogo = require("../../assets/images/logo.png")
 
 const courses = [
   {
-     title: 'Sample course 1',
-     image: require("../../assets/images/word-cloud.jpeg")
+     title: 'Introduction to React Native',
+     image: require("../../assets/images/word-cloud.jpeg"),
+     description: 'Learn the basics of building mobile apps with React Native.'
   },
   {
-    title: 'Sample course 2',
-    image: require("../../assets/images/word-cloud.jpeg")
+    title: 'Advanced React Native',
+    image: require("../../assets/images/word-cloud.jpeg"),
+    description: 'React Native skills with advanced topics.',
+
  },
  {
-   title: 'Sample course 3',
-   image: require("../../assets/images/word-cloud.jpeg")
+   title: 'HTML, JavaScript, CSS',
+   image: require("../../assets/images/word-cloud.jpeg"),
+   description: 'Get started with the basics',
 }
  ]
 
@@ -44,6 +48,14 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
+  const handleCoursePress = (course) => {
+    navigation.navigate('CourseDetail', {
+      title: course.title,
+      description: course.description,
+      image: course.image
+    });
+  };
+
   return (
     <View style={$container}>
       <SafeAreaView style={$bottomContainer}>
@@ -51,7 +63,9 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
           {
             courses.map((c,i) =>(
               <Card key={c.title} containerStyle={$cardStyle}>
-                <Image style={$courseImage} source={c.image} resizeMode="contain" />
+                  <TouchableOpacity onPress={() => handleCoursePress(c)}>
+                    <Image style={$courseImage} source={c.image} resizeMode="contain" />
+                  </TouchableOpacity>
                 <Text style={{ fontSize: 16 }}>{c.title}</Text>
                 <Button
               title="View Course"
