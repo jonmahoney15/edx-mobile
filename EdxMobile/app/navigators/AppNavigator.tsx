@@ -20,6 +20,7 @@ import {
   LoginScreen,
   WelcomeScreen,
 } from "../screens"
+import {TabNavigator} from "./TabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 
 /**
@@ -38,6 +39,7 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
+  Profile: undefined
   // 🔥 Your screens go here
 }
 
@@ -69,7 +71,7 @@ const AppStack = observer(function AppStack() {
         <>
           <Stack.Screen 
             name="Welcome" 
-            component={WelcomeScreen}
+            component={TabNavigator}
           />
         </>
       ) : (
