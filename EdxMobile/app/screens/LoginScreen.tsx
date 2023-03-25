@@ -5,11 +5,12 @@ import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
-import { LinearGradient } from "expo-linear-gradient";
-
+import { api } from "../services/api"
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+  
+  const { navigation } = _props
   const authPasswordInput = useRef<TextInput>()
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -28,26 +29,60 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("student@vt.edu")
-    setAuthPassword("password")
+    setAuthEmail("jpmahoney@vt.edu")
+    setAuthPassword("Password1")
   }, [])
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
 
-  function login() {
+  const login = async() => {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
-
+    
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    // Make a request to your server to get an authentication token.
-    // If successful, reset the fields and set the token.
+    const authenticated = true; //= await submitLogin() 
+
+    if (authenticated) {
+      console.log(authenticated)
+      setAuthToken(String(Date.now()))
+    } else {
+      console.log(authenticated)
+      setAuthToken('')
+    }
+
     setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
+  }
 
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+  const submitLogin = async () => {
+    
+    const success = await api.post(
+        '/api/user/v1/account/login_session/',
+        {
+          "email": authEmail,
+          "password": authPassword
+        }, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          validateStatus: function (status) {
+            return status < 500; // Resolve only if the status code is less than 500
+          }
+        }
+      ).then(response => {
+        console.log(response.data)
+        return response.data.success ? response.data.success : false;
+      })
+      .catch((e) => {
+        console.log('In Login Error:');
+        console.log(e.toJSON());
+        return false;
+      }
+    );
+
+    return success;
   }
 
   const PasswordRightAccessory = useMemo(
@@ -64,6 +99,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       },
     [isAuthPasswordHidden],
   )
+  
+  const handleSignUpPress = () => {
+    navigation.navigate('SignUp');
+  };
 
   useEffect(() => {
     return () => {
@@ -73,11 +112,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   }, [])
 
   return (
-    // <Screen
-    //   preset="auto"
-    //   contentContainerStyle={$screenContentContainer}
-    //   safeAreaEdges={["top", "bottom"]}
-    // >
       <View style={$contentandbackgroundImage}> 
         <View style={$contentContainer}>
           <Text testID="login-heading" tx="loginScreen.loginScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
@@ -95,7 +129,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             autoComplete="email"
             autoCorrect={false}
             keyboardType="email-address"
-            // labelTx="loginScreen.emailFieldLabel"
             placeholderTx="loginScreen.emailFieldPlaceholder"
             helper={errors?.authEmail}
             status={errors?.authEmail ? "error" : undefined}
@@ -111,7 +144,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             autoComplete="password"
             autoCorrect={false}
             secureTextEntry={isAuthPasswordHidden}
-            // labelTx="loginScreen.passwordFieldLabel"
             placeholderTx="loginScreen.passwordFieldPlaceholder"
             helper={errors?.authPassword}
             status={errors?.authPassword ? "error" : undefined}
@@ -126,11 +158,17 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             preset="reversed"
             onPress={login}
           />
+
+          <Button
+            tx="loginScreen.signUp"
+            style={$signUpButton}
+            preset="reversed"
+            onPress={handleSignUpPress}
+          />
         </View>
         <ImageBackground source={require('../../assets/images/loginPageImage.png')} style={$backgroundImage}>
         </ImageBackground>
       </View>
-    // </Screen>
   )
 })
 
@@ -139,7 +177,6 @@ const $openEdxLogoImage: ImageStyle = {
   height: 100,
   alignSelf: 'center',
   resizeMode: 'contain',
-  // overflow: 'hidden',
 };
 
 const $contentandbackgroundImage: ViewStyle = {
@@ -158,9 +195,6 @@ const $contentContainer: ViewStyle = {
   justifyContent: 'center',
   padding: 50
 };
-
-// const $screenContentContainer: ViewStyle = {
-// }
 
 const $loginScreenTitleStyle: TextStyle = {
   marginTop: spacing.extraLarge,
@@ -184,7 +218,9 @@ const $textField: ViewStyle = {
 }
 
 const $tapButton: ViewStyle = {
-  // marginTop: spacing.extraSmall,
+  marginTop: spacing.extraSmall,
 }
 
-// @demo remove-file
+const $signUpButton: ViewStyle = {
+  marginTop: spacing.extraSmall,
+}

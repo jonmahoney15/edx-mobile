@@ -249,10 +249,10 @@ const $inputStyle: TextStyle = {
   fontFamily: typography.primary.normal,
   color: colors.textFieldTextColor,
   fontSize: 16,
-  height: 24,
+  height: 40,
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
   paddingHorizontal: spacing.small, // add horizontal padding
-  paddingVertical: spacing.medium, // add vertical padding
+  paddingVertical: spacing.small, // add vertical padding
   marginVertical: spacing.extraSmall,
   marginHorizontal: spacing.small,
 }
