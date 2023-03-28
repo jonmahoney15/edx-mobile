@@ -19,7 +19,8 @@ import { useStores } from "../models"
 import {
   LoginScreen,
   WelcomeScreen,
-  CourseDetailScreen
+  CourseDetailScreen,
+  ProfileScreen
 } from "../screens"
 import {TabNavigator} from "./TabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
@@ -84,6 +85,10 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen 
             name="CourseDetail" 
             component={CourseDetailScreen} 
+          />
+          <Stack.Screen 
+            name="Profile" 
+            component={ProfileScreen} 
           />
         </>
       ) : (

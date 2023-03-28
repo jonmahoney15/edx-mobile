@@ -8,7 +8,7 @@ import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import {Card, Button} from "react-native-elements" 
+import {Card, Button, Header, Icon} from "react-native-elements" 
 
 const welcomeLogo = require("../../assets/images/logo.png")
 
@@ -41,11 +41,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     authenticationStore: { logout },
   } = useStores()
 
-  useHeader({
-    rightTx: "common.logOut",
-    onRightPress: logout
-  })
-
   const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
 
   const handleCoursePress = (course) => {
@@ -56,20 +51,34 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     });
   };
 
+  const handleProfilePress = () => {
+    navigation.navigate('Profile');
+  };
+
   return (
     <View style={$container}>
+      <Header
+        placement="left"
+        leftComponent={{ icon: 'menu', color: '#fff' }}
+        centerComponent={{ text: 'Courses', style: { color: '#fff', fontSize: 20 } }}
+        rightComponent={{ icon: 'menu', color: '#fff',onPress: handleProfilePress}}
+        containerStyle={{
+          justifyContent: 'space-around',
+        }}
+      />
       <SafeAreaView style={$bottomContainer}>
         <ScrollView >
           {
             courses.map((c,i) =>(
               <Card key={c.title} containerStyle={$cardStyle}>
-                  <TouchableOpacity onPress={() => handleCoursePress(c)}>
+                  <TouchableOpacity >
                     <Image style={$courseImage} source={c.image} resizeMode="contain" />
                   </TouchableOpacity>
                 <Text style={{ fontSize: 16 }}>{c.title}</Text>
                 <Button
               title="View Course"
               buttonStyle={$buttonStyle}
+              onPress={() => handleCoursePress(c)}
             />
               </Card>
           ))

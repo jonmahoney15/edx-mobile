@@ -8,7 +8,7 @@ import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { useHeader } from "../utils/useHeader"
 import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import {Card, Button, Avatar} from "react-native-elements" 
+import {Header, Avatar} from "react-native-elements" 
 
 // const welcomeLogo = require("../../assets/images/logo.png")
 
@@ -26,6 +26,14 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
   const { navigation } = _props
   return (
     <View style={$container}>
+        <Header
+          placement="left"
+          leftComponent={{ icon: 'menu', color: '#fff' }}
+          centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
+          containerStyle={{
+            justifyContent: 'space-around',
+          }}
+        />
         <Avatar
           size={180}
           rounded
