@@ -20,7 +20,7 @@ import {
   LoginScreen,
   WelcomeScreen,
   CourseDetailScreen,
-  ProfileScree,
+  ProfileScreen,
   ModuleScreen
 } from "../screens"
 import {TabNavigator} from "./TabNavigator"
