@@ -20,6 +20,7 @@ import {
   LoginScreen,
   WelcomeScreen,
   CourseDetailScreen,
+  ProfileScree,
   ModuleScreen
 } from "../screens"
 import {TabNavigator} from "./TabNavigator"
@@ -96,6 +97,9 @@ const AppStack = observer(function AppStack() {
             name="CourseDetail" 
             component={CourseDetailScreen} 
           />
+          <Stack.Screen 
+            name="Profile" 
+            component={ProfileScreen} 
           <Stack.Screen
             name="Module"
             component={ModuleScreen}
