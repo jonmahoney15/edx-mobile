@@ -20,7 +20,8 @@ import {
   LoginScreen,
   WelcomeScreen,
   CourseDetailScreen,
-  ProfileScreen
+  ProfileScree,
+  ModuleScreen
 } from "../screens"
 import {TabNavigator} from "./TabNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
@@ -29,7 +30,16 @@ type CourseDetailScreenParams = {
   title: string;
   description: string;
   image: string;
+  modules: ModuleScreenParams[];
 };
+
+type ModuleScreenParams = {
+  id: string,
+  title: string;
+  duration: string;
+  videoId: string;
+  bodyText: string;
+}
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -49,6 +59,7 @@ export type AppStackParamList = {
   Login: undefined
   Profile: undefined
   CourseDetail: CourseDetailScreenParams
+  Module: ModuleScreenParams
   // 🔥 Your screens go here
 }
 
@@ -89,6 +100,9 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen 
             name="Profile" 
             component={ProfileScreen} 
+          <Stack.Screen
+            name="Module"
+            component={ModuleScreen}
           />
         </>
       ) : (

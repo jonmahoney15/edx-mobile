@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native'
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
 import { AppStackScreenProps } from "../navigators"
 import { observer } from "mobx-react-lite"
 
@@ -7,35 +7,15 @@ interface Module {
   id: string;
   title: string;
   duration: string;
+  videoId: string;
+  bodyText: string;
 }
-
-const modules: Module[] = [
-  {
-    id: '1',
-    title: 'Getting Started',
-    duration: '1h 30m',
-  },
-  {
-    id: '2',
-    title: 'Building UI with Components',
-    duration: '2h 15m',
-  },
-  {
-    id: '3',
-    title: 'Navigating Between Screens',
-    duration: '1h 45m',
-  },
-  {
-    id: '4',
-    title: 'Managing State with Redux',
-    duration: '2h 30m',
-  },
-];
 
 interface CourseDetailParams {
   title: string;
   description: string;
   image: string;
+  modules: Module[];
 }
 
 interface CourseDetailScreenProps extends AppStackScreenProps<"Welcome"> { }
@@ -43,9 +23,20 @@ interface CourseDetailScreenProps extends AppStackScreenProps<"Welcome"> { }
 export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function CourseDetailScreen(
   _props
 ) {
+  const { navigation } = _props
   const { route } = _props
-  const { title, description, image } = _props.route.params as CourseDetailParams;
+  const { title, description, image, modules } = _props.route.params as CourseDetailParams;
   const imagePath = require('../../assets/images/word-cloud.jpeg');
+
+  const handleModulePress = (module) => {
+    navigation.navigate('Module', {
+      id: module.id,
+      title: module.title,
+      duration: module.duration,
+      videoId: module.videoId,
+      bodyText: module.bodyText,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -59,10 +50,13 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
           data={modules}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.moduleContainer}>
+            <TouchableOpacity
+              style={styles.moduleContainer}
+              onPress={() => handleModulePress(item)}
+            >
               <Text style={styles.moduleTitle}>{item.title}</Text>
               <Text style={styles.moduleDuration}>{item.duration}</Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
       </View>

@@ -14,24 +14,54 @@ const welcomeLogo = require("../../assets/images/logo.png")
 
 const courses = [
   {
-     title: 'Introduction to React Native',
-     image: require("../../assets/images/word-cloud.jpeg"),
-     description: 'Learn the basics of building mobile apps with React Native.'
+    title: 'Introduction to React Native',
+    image: require("../../assets/images/word-cloud.jpeg"),
+    description: 'Learn the basics of building mobile apps with React Native.',
+    modules: [
+      {
+        id: '1',
+        title: 'Getting Started',
+        duration: '1h 30m',
+        videoId: '6oFuwhIibo4',
+        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      },
+      {
+        id: '2',
+        title: 'Building UI with Components',
+        duration: '2h 15m',
+        videoId: '6oFuwhIibo4',
+        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      },
+      {
+        id: '3',
+        title: 'Navigating Between Screens',
+        duration: '1h 45m',
+        videoId: '6oFuwhIibo4',
+        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      },
+      {
+        id: '4',
+        title: 'Managing State with Redux',
+        duration: '2h 30m',
+        videoId: '6oFuwhIibo4',
+        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+      },
+    ]
   },
   {
     title: 'Advanced React Native',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'React Native skills with advanced topics.',
 
- },
- {
-   title: 'HTML, JavaScript, CSS',
-   image: require("../../assets/images/word-cloud.jpeg"),
-   description: 'Get started with the basics',
-}
- ]
+  },
+  {
+    title: 'HTML, JavaScript, CSS',
+    image: require("../../assets/images/word-cloud.jpeg"),
+    description: 'Get started with the basics',
+  }
+]
 
-interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
+interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> { }
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen(
   _props,
@@ -47,7 +77,8 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     navigation.navigate('CourseDetail', {
       title: course.title,
       description: course.description,
-      image: course.image
+      image: course.image,
+      modules: course.modules,
     });
   };
 
@@ -69,7 +100,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
       <SafeAreaView style={$bottomContainer}>
         <ScrollView >
           {
-            courses.map((c,i) =>(
+            courses.map((c, i) => (
               <Card key={c.title} containerStyle={$cardStyle}>
                   <TouchableOpacity >
                     <Image style={$courseImage} source={c.image} resizeMode="contain" />
@@ -81,7 +112,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
               onPress={() => handleCoursePress(c)}
             />
               </Card>
-          ))
+            ))
           }
         </ScrollView>
       </SafeAreaView>
