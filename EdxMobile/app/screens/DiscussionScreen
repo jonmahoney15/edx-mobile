@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite"
-import React, { FC } from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { FC } from "react"
+import {  View, ViewStyle } from "react-native"
 import { Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
-import { Header, Avatar } from "react-native-elements" 
-import { FontAwesome } from '@expo/vector-icons'
+import {Header, Avatar} from "react-native-elements" 
+
+// const welcomeLogo = require("../../assets/images/logo.png")
 
 const user = {
   name : "First User",
@@ -22,18 +23,11 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
     <View style={$container}>
         <Header
           placement="left"
-          leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} />}
-                      centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
+          leftComponent={{ icon: 'menu', color: '#fff' }}
+          centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
           containerStyle={{
             justifyContent: 'space-around',
           }}
-        />
-        <Avatar
-          size={180}
-          rounded
-          source={{ uri: user.avatar }}
-          title="Avatar"
-          containerStyle={$avatar}
         />
         <View style={$row}>
           <Text style={$rowTextKey}>Name</Text>
@@ -52,18 +46,11 @@ const $container: ViewStyle = {
   justifyContent: 'space-around',
   alignItems: 'center',
 }
-
 const $avatar: ViewStyle ={ 
   backgroundColor: 'grey' ,
   margin: 20
 }
 
-const $headerColumn: ViewStyle = {
-  backgroundColor: 'transparent',
-  alignItems: 'center',
-  elevation: 1,
-  marginTop: -1,
-}
 const $row:ViewStyle =  {
   width: '100%',
   flexDirection: 'row',
@@ -75,11 +62,10 @@ const $row:ViewStyle =  {
   marginBottom: 2,
 }
 
-const $rowTextKey: TextStyle =  {
+const $rowTextKey:ViewStyle =  {
   fontSize: 16,
   fontWeight: 'bold'
 }
-
-const $rowTextValue: TextStyle =  {
-  fontSize: 16
+const $rowTextValue:ViewStyle =  {
+    fontSize: 16
 }

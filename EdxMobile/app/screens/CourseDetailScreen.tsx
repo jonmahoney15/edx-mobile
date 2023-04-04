@@ -2,6 +2,8 @@ import React, { FC } from "react"
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
 import { AppStackScreenProps } from "../navigators"
 import { observer } from "mobx-react-lite"
+import {Card, Button, Header} from "react-native-elements"
+import { FontAwesome } from '@expo/vector-icons'
 
 interface Module {
   id: string;
@@ -18,6 +20,45 @@ interface CourseDetailParams {
   modules: Module[];
 }
 
+function FetchCourseDetailFromApi(course_id){   //sample function should be replaced with code to interact with API
+    course = {              //sample course detail
+        title: 'Introduction to React Native',
+        image: require("../../assets/images/word-cloud.jpeg"),
+        description: 'Learn the basics of building mobile apps with React Native.',
+        modules: [
+              {
+                id: '1',
+                title: 'Getting Started',
+                duration: '1h 30m',
+                videoId: '6oFuwhIibo4',
+                bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+              },
+              {
+                id: '2',
+                title: 'Building UI with Components',
+                duration: '2h 15m',
+                videoId: '6oFuwhIibo4',
+                bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+              },
+              {
+                id: '3',
+                title: 'Navigating Between Screens',
+                duration: '1h 45m',
+                videoId: '6oFuwhIibo4',
+                bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+              },
+              {
+                id: '4',
+                title: 'Managing State with Redux',
+                duration: '2h 30m',
+                videoId: '6oFuwhIibo4',
+                bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+              },
+            ]
+    }
+    return course
+}
+
 interface CourseDetailScreenProps extends AppStackScreenProps<"Welcome"> { }
 
 export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function CourseDetailScreen(
@@ -25,7 +66,8 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
 ) {
   const { navigation } = _props
   const { route } = _props
-  const { title, description, image, modules } = _props.route.params as CourseDetailParams;
+  const course_id = _props.route.params.course_id;
+  const { title, description, image, modules } = FetchCourseDetailFromApi(course_id);
   const imagePath = require('../../assets/images/word-cloud.jpeg');
 
   const handleModulePress = (module) => {
@@ -40,6 +82,15 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
 
   return (
     <View style={styles.container}>
+    <Header
+            placement="left"
+            leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
+            centerComponent={{ text: 'Courses', style: { color: '#fff', fontSize: 20 } }}
+            rightComponent={<FontAwesome name="user" size={32} color="#fff" onPress={() => handleProfilePress()}/>}
+            containerStyle={{
+              justifyContent: 'space-around',
+            }}
+          />
       <Image source={imagePath} style={styles.image} />
       <View style={styles.textContainer}>
         <Text style={styles.title}>{title}</Text>

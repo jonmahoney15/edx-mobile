@@ -14,7 +14,8 @@ import {
     WelcomeScreen
   } from "../screens"
   import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-  
+  import { TabNavigator } from "./TabNavigator"
+
   type CourseDetailScreenParams = {
     title: string;
     description: string;
@@ -58,7 +59,7 @@ import {
             />
             <Stack.Screen 
               name="CourseDetail" 
-              component={CourseDetailScreen} 
+              component={TabNavigator}
             />
             <Stack.Screen
               name="Module"
