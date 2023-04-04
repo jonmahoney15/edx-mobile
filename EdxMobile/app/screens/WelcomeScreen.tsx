@@ -6,11 +6,8 @@ import { isRTL } from "../i18n"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
-import { useHeader } from "../utils/useHeader"
-import { useSafeAreaInsetsStyle } from "../utils/useSafeAreaInsetsStyle"
-import {Card, Button, Header, Icon} from "react-native-elements" 
-
-const welcomeLogo = require("../../assets/images/logo.png")
+import {Card, Button, Header} from "react-native-elements"
+import { FontAwesome } from '@expo/vector-icons' 
 
 const courses = [
   {
@@ -71,8 +68,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     authenticationStore: { logout },
   } = useStores()
 
-  const $bottomContainerInsets = useSafeAreaInsetsStyle(["bottom"])
-
   const handleCoursePress = (course) => {
     navigation.navigate('CourseDetail', {
       title: course.title,
@@ -90,9 +85,9 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     <View style={$container}>
       <Header
         placement="left"
-        leftComponent={{ icon: 'menu', color: '#fff' }}
+        leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => logout()}/>}
         centerComponent={{ text: 'Courses', style: { color: '#fff', fontSize: 20 } }}
-        rightComponent={{ icon: 'menu', color: '#fff',onPress: handleProfilePress}}
+        rightComponent={<FontAwesome name="user" size={32} color="#fff" onPress={() => handleProfilePress()}/>}
         containerStyle={{
           justifyContent: 'space-around',
         }}
@@ -100,17 +95,18 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
       <SafeAreaView style={$bottomContainer}>
         <ScrollView >
           {
-            courses.map((c, i) => (
+            courses.map((c, i) => ( 
+              //@ts-ignore
               <Card key={c.title} containerStyle={$cardStyle}>
-                  <TouchableOpacity >
-                    <Image style={$courseImage} source={c.image} resizeMode="contain" />
-                  </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleCoursePress(c)}>
+                  <Image style={$courseImage} source={c.image} resizeMode="contain" />
+                </TouchableOpacity>
                 <Text style={{ fontSize: 16 }}>{c.title}</Text>
                 <Button
-              title="View Course"
-              buttonStyle={$buttonStyle}
-              onPress={() => handleCoursePress(c)}
-            />
+                  title="View Course"
+                  buttonStyle={$buttonStyle}
+                  onPress={() => handleCoursePress(c)}
+                />
               </Card>
             ))
           }
@@ -124,9 +120,11 @@ const $container: ViewStyle = {
   flex: 1,
   backgroundColor: colors.background,
 }
+
 const $cardStyle: ViewStyle = {
   borderRadius: 10
 }
+
 const $topContainer: ViewStyle = {
   flexShrink: 1,
   flexGrow: 1,
@@ -144,15 +142,18 @@ const $bottomContainer: ViewStyle = {
   borderTopRightRadius: 16,
   justifyContent: "space-around",
 }
+
 const $welcomeLogo: ImageStyle = {
   height: 88,
   width: "100%",
   marginBottom: spacing.huge,
 }
+
 const $courseImage: ImageStyle = {
   height: 169,
   width: "100%"
 }
+
 const $welcomeFace: ImageStyle = {
   height: 169,
   width: 269,
@@ -162,11 +163,7 @@ const $welcomeFace: ImageStyle = {
   transform: [{ scaleX: isRTL ? -1 : 1 }],
 }
 
-const $welcomeHeading: TextStyle = {
-  marginBottom: spacing.medium,
-}
-
 const $buttonStyle: ViewStyle = {
-    backgroundColor: 'rgba(78, 116, 289, 1)',
-    borderRadius: 3,
+  backgroundColor: 'rgba(78, 116, 289, 1)',
+  borderRadius: 3,
 }
