@@ -67,8 +67,16 @@ const AppStack = observer(function AppStack() {
       {isAuthenticated ? (
         <>
           <Stack.Screen 
-            name="Welcome" 
-            component={CourseNavigator}
+            name="Welcome"
+            component={WelcomeScreen}
+          />
+          <Stack.Screen
+            name="CourseDetail"
+            component={TabNavigator}
+          />
+          <Stack.Screen
+            name="Module"
+            component={ModuleScreen}
           />
           <Stack.Screen 
             name="Profile"

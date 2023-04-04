@@ -53,18 +53,7 @@ import {
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
       >
-            <Stack.Screen 
-              name="Welcome" 
-              component={WelcomeScreen}
-            />
-            <Stack.Screen 
-              name="CourseDetail" 
-              component={TabNavigator}
-            />
-            <Stack.Screen
-              name="Module"
-              component={ModuleScreen}
-            />
+
       </Stack.Navigator>
     )
   })

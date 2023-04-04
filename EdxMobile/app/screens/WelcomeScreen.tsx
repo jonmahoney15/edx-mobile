@@ -52,9 +52,8 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     <View style={$container}>
       <Header
         placement="left"
-        leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
-        centerComponent={{ text: title, style: { color: '#fff', fontSize: 20 } }}
-        rightComponent={<FontAwesome name="user" size={32} color="#fff" onPress={() => handleProfilePress()}/>}
+        centerComponent={{ text: 'Courses', style: { color: '#fff', fontSize: 20 } }}
+        rightComponent={<FontAwesome name="user" size={28} color="#fff" onPress={() => handleProfilePress()}/>}
         containerStyle={{
           justifyContent: 'space-around',
         }}

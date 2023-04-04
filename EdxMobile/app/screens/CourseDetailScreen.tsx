@@ -80,12 +80,16 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
     });
   };
 
+  const handleProfilePress = () => {
+    navigation.navigate('Profile');
+  };
+
   return (
     <View style={styles.container}>
     <Header
             placement="left"
             leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
-            centerComponent={{ text: 'Courses', style: { color: '#fff', fontSize: 20 } }}
+            centerComponent={{ text: title, style: { color: '#fff', fontSize: 20 } }}
             rightComponent={<FontAwesome name="user" size={32} color="#fff" onPress={() => handleProfilePress()}/>}
             containerStyle={{
               justifyContent: 'space-around',

@@ -1,71 +1,123 @@
-import { observer } from "mobx-react-lite"
-import { FC } from "react"
-import {  View, ViewStyle } from "react-native"
-import { Text } from "../components"
-import { AppStackScreenProps } from "../navigators"
-import {Header, Avatar} from "react-native-elements" 
+import React, { FC, useState, useCallback } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { AppStackScreenProps } from "../navigators";
+import { observer } from "mobx-react-lite";
+import YoutubePlayer from 'react-native-youtube-iframe';
 
-// const welcomeLogo = require("../../assets/images/logo.png")
+interface ModuleScreenProps extends AppStackScreenProps<"Module"> { }
 
-const user = {
-  name : "First User",
-  avatar : 'https://randomuser.me/api/portraits/women/50.jpg',
-  email: "random@google.com"
+interface ModuleParams {
+    id: string,
+    title: string;
+    duration: string;
+    videoId: string;
+    bodyText: string;
 }
 
-interface ProfileScreenProps extends AppStackScreenProps<"Profile"> {}
-
-export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileScreen(
-  _props,
+export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScreen(
+    _props
 ) {
-  const { navigation } = _props
-  return (
-    <View style={$container}>
-        <Header
-          placement="left"
-          leftComponent={{ icon: 'menu', color: '#fff' }}
-          centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
-          containerStyle={{
-            justifyContent: 'space-around',
-          }}
-        />
-        <View style={$row}>
-          <Text style={$rowTextKey}>Name</Text>
-          <Text style={$rowTextValue}>{user.name}</Text>
+    const { id, title, duration, videoId, bodyText } = _props.route.params as ModuleParams;
+
+    const handleCompleteModule = () => {
+        _props.navigation.goBack();
+    };
+
+    const [playing, setPlaying] = useState(false);
+
+    const onStateChange = useCallback((state) => {
+        if (state === "ended") {
+            setPlaying(false);
+        }
+    }, []);
+
+    const togglePlaying = useCallback(() => {
+        setPlaying((prev) => !prev);
+    }, []);
+
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.title}>{title}</Text>
+            </View>
+            <View style={styles.content}>
+                <Text style={styles.duration}>{duration}</Text>
+                <Text style={styles.duration}>{"\n"}{bodyText}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+                <YoutubePlayer
+                    height={300}
+                    videoId={videoId}
+                    play={playing}
+                    onChangeState={onStateChange}
+                />
+            </View>
+            <TouchableOpacity style={styles.completeButton} onPress={handleCompleteModule}>
+                <Text style={styles.completeButtonText}>✓</Text>
+            </TouchableOpacity>
         </View>
-        <View style={$row}>
-          <Text style={$rowTextKey}>Email</Text>
-          <Text style={$rowTextValue}>{user.email}</Text>
-        </View>
-    </View>
-    
-  )
-})
+    );
+});
 
-const $container: ViewStyle = {
-  justifyContent: 'space-around',
-  alignItems: 'center',
-}
-const $avatar: ViewStyle ={ 
-  backgroundColor: 'grey' ,
-  margin: 20
-}
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 24,
+        backgroundColor: '#F9F9F9',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 24,
+        marginTop: 20
+    },
+    title: {
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginRight: 8,
+        color: '#333',
+    },
+    duration: {
+        fontSize: 16,
+        color: '#888',
+    },
+    content: {
+        flex: 1,
+        backgroundColor: '#FFF',
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        padding: 16,
+    },
+    completeButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 20,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: '#4CAF50',
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    completeButtonText: {
+        fontSize: 24,
+        color: '#FFF',
+    },
+    video: {
+        alignSelf: 'stretch',
+        height: 300,
+    },
+});
 
-const $row:ViewStyle =  {
-  width: '100%',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  backgroundColor: 'white',
-  padding: 16,
-  borderRadius: 8,
-  marginBottom: 2,
-}
-
-const $rowTextKey:ViewStyle =  {
-  fontSize: 16,
-  fontWeight: 'bold'
-}
-const $rowTextValue:ViewStyle =  {
-    fontSize: 16
-}
+export default ModuleScreen;
