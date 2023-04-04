@@ -4,6 +4,7 @@ import { TextStyle, View, ViewStyle } from "react-native"
 import { Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import { Header, Avatar } from "react-native-elements" 
+import { FontAwesome } from '@expo/vector-icons'
 
 const user = {
   name : "First User",
@@ -21,7 +22,8 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
     <View style={$container}>
         <Header
           placement="left"
-          centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
+          leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} />}
+                      centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
           containerStyle={{
             justifyContent: 'space-around',
           }}
