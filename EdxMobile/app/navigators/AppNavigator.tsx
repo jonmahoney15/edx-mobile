@@ -20,6 +20,7 @@ import {
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { Tab } from "react-native-elements"
 import { TabNavigator } from "./TabNavigator"
+import { CourseNavigator } from './CourseNavigator';
 
 type CourseDetailScreenParams = {
   title: string;
@@ -66,8 +67,16 @@ const AppStack = observer(function AppStack() {
       {isAuthenticated ? (
         <>
           <Stack.Screen 
-            name="Welcome" 
+            name="Welcome"
+            component={WelcomeScreen}
+          />
+          <Stack.Screen
+            name="CourseDetail"
             component={TabNavigator}
+          />
+          <Stack.Screen
+            name="Module"
+            component={ModuleScreen}
           />
           <Stack.Screen 
             name="Profile"

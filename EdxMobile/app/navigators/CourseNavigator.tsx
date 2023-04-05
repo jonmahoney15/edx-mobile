@@ -14,7 +14,8 @@ import {
     WelcomeScreen
   } from "../screens"
   import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-  
+  import { TabNavigator } from "./TabNavigator"
+
   type CourseDetailScreenParams = {
     title: string;
     description: string;
@@ -52,18 +53,7 @@ import {
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
       >
-            <Stack.Screen 
-              name="Welcome" 
-              component={WelcomeScreen}
-            />
-            <Stack.Screen 
-              name="CourseDetail" 
-              component={CourseDetailScreen} 
-            />
-            <Stack.Screen
-              name="Module"
-              component={ModuleScreen}
-            />
+
       </Stack.Navigator>
     )
   })

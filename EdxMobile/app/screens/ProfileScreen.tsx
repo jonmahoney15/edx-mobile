@@ -1,9 +1,11 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { TextStyle, View, ViewStyle, Button } from "react-native"
 import { Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import { Header, Avatar } from "react-native-elements" 
+import { useStores } from "../models"
+import { FontAwesome } from '@expo/vector-icons'
 
 const user = {
   name : "First User",
@@ -17,12 +19,15 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
   _props,
 ) {
   const { navigation } = _props
+  const {
+    authenticationStore: { logout },
+  } = useStores()
   return (
     <View style={$container}>
         <Header
-          placement="left"
-          centerComponent={{ text: 'Profile', style: { color: '#fff', fontSize: 20 } }}
-          containerStyle={{
+            placement="left"
+            leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
+            containerStyle={{
             justifyContent: 'space-around',
           }}
         />
@@ -41,6 +46,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
           <Text style={$rowTextKey}>Email</Text>
           <Text style={$rowTextValue}>{user.email}</Text>
         </View>
+        <Button title="Logout" color="red" onPress={logout} />
     </View>
     
   )
