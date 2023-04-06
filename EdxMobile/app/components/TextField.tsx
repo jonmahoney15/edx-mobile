@@ -199,7 +199,7 @@ export const TextField = forwardRef(function TextField(props: TextFieldProps, re
           underlineColorAndroid={colors.transparent}
           textAlignVertical="top"
           placeholder={placeholderContent}
-          placeholderTextColor={colors.textDim}
+          placeholderTextColor={colors.textFieldTextColor}          
           {...TextInputProps}
           editable={!disabled}
           style={$inputStyles}
@@ -237,9 +237,9 @@ const $inputWrapperStyle: ViewStyle = {
   flexDirection: "row",
   alignItems: "flex-start",
   borderWidth: 1,
-  borderRadius: 4,
-  backgroundColor: colors.palette.neutral200,
-  borderColor: colors.palette.neutral400,
+  borderRadius: 40,
+  backgroundColor: colors.textFieldBackgroundColor,
+  borderColor: colors.textFieldBorderColor,
   overflow: "hidden",
 }
 
@@ -247,12 +247,12 @@ const $inputStyle: TextStyle = {
   flex: 1,
   alignSelf: "stretch",
   fontFamily: typography.primary.normal,
-  color: colors.text,
+  color: colors.textFieldTextColor,
   fontSize: 16,
   height: 24,
   // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
-  paddingVertical: 0,
-  paddingHorizontal: 0,
+  paddingHorizontal: spacing.small, // add horizontal padding
+  paddingVertical: spacing.medium, // add vertical padding
   marginVertical: spacing.extraSmall,
   marginHorizontal: spacing.small,
 }
@@ -262,8 +262,8 @@ const $helperStyle: TextStyle = {
 }
 
 const $rightAccessoryStyle: ViewStyle = {
-  marginEnd: spacing.extraSmall,
-  height: 40,
+  marginEnd: spacing.large,
+  height: 50,
   justifyContent: "center",
   alignItems: "center",
 }

@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle } from "react-native"
+import { TextInput, TextStyle, ViewStyle, ImageBackground, View, Image, ImageStyle } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
+import { LinearGradient } from "expo-linear-gradient";
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -55,7 +56,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         return (
           <Icon
             icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
+            color={"white"}
             containerStyle={props.style}
             onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
           />
@@ -72,64 +73,101 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   }, [])
 
   return (
-    <Screen
-      preset="auto"
-      contentContainerStyle={$screenContentContainer}
-      safeAreaEdges={["top", "bottom"]}
-    >
-      <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-      {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+    // <Screen
+    //   preset="auto"
+    //   contentContainerStyle={$screenContentContainer}
+    //   safeAreaEdges={["top", "bottom"]}
+    // >
+      <View style={$contentandbackgroundImage}> 
+        <View style={$contentContainer}>
+          <Text testID="login-heading" tx="loginScreen.loginScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
+          {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+          
+          <Image
+            source={require('../../assets/images/app-icon-all.png')}
+            style={$openEdxLogoImage}
+          />
+          <TextField
+            value={authEmail}
+            onChangeText={setAuthEmail}
+            containerStyle={$textField}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
+            keyboardType="email-address"
+            // labelTx="loginScreen.emailFieldLabel"
+            placeholderTx="loginScreen.emailFieldPlaceholder"
+            helper={errors?.authEmail}
+            status={errors?.authEmail ? "error" : undefined}
+            onSubmitEditing={() => authPasswordInput.current?.focus()}
+          />
 
-      <TextField
-        value={authEmail}
-        onChangeText={setAuthEmail}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen.emailFieldLabel"
-        placeholderTx="loginScreen.emailFieldPlaceholder"
-        helper={errors?.authEmail}
-        status={errors?.authEmail ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
-      />
+          <TextField
+            ref={authPasswordInput}
+            value={authPassword}
+            onChangeText={setAuthPassword}
+            containerStyle={$textField}
+            autoCapitalize="none"
+            autoComplete="password"
+            autoCorrect={false}
+            secureTextEntry={isAuthPasswordHidden}
+            // labelTx="loginScreen.passwordFieldLabel"
+            placeholderTx="loginScreen.passwordFieldPlaceholder"
+            helper={errors?.authPassword}
+            status={errors?.authPassword ? "error" : undefined}
+            onSubmitEditing={login}
+            RightAccessory={PasswordRightAccessory}
+          />
 
-      <TextField
-        ref={authPasswordInput}
-        value={authPassword}
-        onChangeText={setAuthPassword}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen.passwordFieldLabel"
-        placeholderTx="loginScreen.passwordFieldPlaceholder"
-        helper={errors?.authPassword}
-        status={errors?.authPassword ? "error" : undefined}
-        onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory}
-      />
-
-      <Button
-        testID="login-button"
-        tx="loginScreen.tapToSignIn"
-        style={$tapButton}
-        preset="reversed"
-        onPress={login}
-      />
-    </Screen>
+          <Button
+            testID="login-button"
+            tx="loginScreen.tapToSignIn"
+            style={$tapButton}
+            preset="reversed"
+            onPress={login}
+          />
+        </View>
+        <ImageBackground source={require('../../assets/images/loginPageImage.png')} style={$backgroundImage}>
+        </ImageBackground>
+      </View>
+    // </Screen>
   )
 })
 
-const $screenContentContainer: ViewStyle = {
-  paddingVertical: spacing.huge,
-  paddingHorizontal: spacing.large,
-}
+const $openEdxLogoImage: ImageStyle = {
+  width: 100, 
+  height: 100,
+  alignSelf: 'center',
+  resizeMode: 'contain',
+  // overflow: 'hidden',
+};
 
-const $signIn: TextStyle = {
+const $contentandbackgroundImage: ViewStyle = {
+  flex: 1,
+  backgroundColor: 'black',
+};
+
+const $backgroundImage: ViewStyle = {
+  flex: 1,
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+};
+
+const $contentContainer: ViewStyle = {
+  flex: 1,
+  justifyContent: 'center',
+  padding: 50
+};
+
+// const $screenContentContainer: ViewStyle = {
+// }
+
+const $loginScreenTitleStyle: TextStyle = {
+  marginTop: spacing.extraLarge,
   marginBottom: spacing.small,
+  color: "white", // add this line to set the text color of the heading to white
+  textAlign: 'center',
+  fontSize: 34, // set the font size to 28
 }
 
 const $enterDetails: TextStyle = {
@@ -142,11 +180,11 @@ const $hint: TextStyle = {
 }
 
 const $textField: ViewStyle = {
-  marginBottom: spacing.large,
+  marginBottom: spacing.medium,
 }
 
 const $tapButton: ViewStyle = {
-  marginTop: spacing.extraSmall,
+  // marginTop: spacing.extraSmall,
 }
 
 // @demo remove-file

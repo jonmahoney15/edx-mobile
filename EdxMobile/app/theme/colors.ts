@@ -81,4 +81,10 @@ export const colors = {
    *
    */
   errorBackground: palette.angry100,
+
+  textFieldBackgroundColor: "#282424",
+  textFieldBorderColor: "#C85B38",
+  textFieldTextColor: "white",
+  orangeButtonBackgroundColor: "#C85B38"
+
 }
