@@ -15,7 +15,8 @@ import {
   ProfileScreen,
   ModuleScreen,
   WelcomeScreen,
-  SignUpScreen
+  SignUpScreen,
+  ProgressScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
@@ -43,6 +44,7 @@ export type AppStackParamList = {
   Module: ModuleScreenParams
   Discussion: undefined
   SignUp: undefined
+  Progress: undefined
 }
 
 const exitRoutes = Config.exitRoutes
@@ -81,6 +83,10 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen
             name="Module"
             component={ModuleScreen}
+          />
+          <Stack.Screen
+            name="Progress"
+            component={ProgressScreen}
           />
         </>
       ) : (

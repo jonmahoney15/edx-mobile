@@ -2,7 +2,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome,MaterialCommunityIcons } from '@expo/vector-icons'
 import {
     CourseDetailScreen,
-    DiscussionScreen
+    DiscussionScreen,
+    ProgressScreen
   } from "../screens"
 import { CourseNavigator } from './CourseNavigator';
 
@@ -32,6 +33,12 @@ export function TabNavigator({route, navigation}) {
             name="Discussion"
             component={DiscussionScreen}
             options={{ tabBarIcon: () => (<MaterialCommunityIcons name="comment-multiple" size={24} color="#fff" />)}}
+            initialParams={{id: route.params.id}}
+        />
+        <Tab.Screen
+            name="Progress"
+            component={ProgressScreen}
+            options={{ tabBarIcon: () => (<FontAwesome name="line-chart" size={24} color="#fff" />)}}
             initialParams={{id: route.params.id}}
             />
       </Tab.Navigator>
