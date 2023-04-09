@@ -2,78 +2,99 @@ import React, { FC } from "react"
 import { StatusBar, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
 import { AppStackScreenProps } from "../navigators"
 import { observer } from "mobx-react-lite"
-import {Card, Button, Header} from "react-native-elements"
+import {Header} from "react-native-elements"
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
 
-
 function FetchDiscussionFromApi(course_id){   //sample function should be replaced with code to interact with API
-    discussions = [     //dummy discussions
-    {'id':4255135,
-    'title' : 'Got feedback or questions about this Demo course?',
-    'author' : 'BenPiscopo',
-    'likes_count' : 104,
-    'comments_count' : 419
+    const discussions = [     //dummy discussions
+    {
+      'id': 0,
+      'course_id':4255135,
+      'title' : 'Got feedback or questions about this Demo course?',
+      'author' : 'BenPiscopo',
+      'likes_count' : 104,
+      'comments_count' : 419
     },
-    {'id':4255135,
-    'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
-    'author' : 'cpacheco0109',
-    'likes_count' : 20,
-    'comments_count' : 2
+    {
+      'id': 1,
+      'course_id':4255135,
+      'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
+      'author' : 'cpacheco0109',
+      'likes_count' : 20,
+      'comments_count' : 2
     },
-    {'id':4255135,
-    'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
-    'author' : 'Cavinaru',
-    'likes_count' : 0,
-    'comments_count' : 1
+    {
+      'id': 2,
+      'course_id':4255135,
+      'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
+      'author' : 'Cavinaru',
+      'likes_count' : 0,
+      'comments_count' : 1
     },
-    {'id':4255135,
-    'title' : 'Got feedback or questions about this Demo course?',
-    'author' : 'BenPiscopo',
-    'likes_count' : 104,
-    'comments_count' : 419
+    {
+      'id': 3,
+      'course_id':4255135,
+      'title' : 'Got feedback or questions about this Demo course?',
+      'author' : 'BenPiscopo',
+      'likes_count' : 104,
+      'comments_count' : 419
     },
-    {'id':4255135,
-    'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
-    'author' : 'cpacheco0109',
-    'likes_count' : 20,
-    'comments_count' : 2
+    {
+      'id': 4,
+      'course_id':4255135,
+      'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
+      'author' : 'cpacheco0109',
+      'likes_count' : 20,
+      'comments_count' : 2
     },
-    {'id':4255135,
-    'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
-    'author' : 'Cavinaru',
-    'likes_count' : 0,
-    'comments_count' : 1
+    {
+      'id': 5,
+      'course_id':4255135,
+      'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
+      'author' : 'Cavinaru',
+      'likes_count' : 0,
+      'comments_count' : 1
     },
-    {'id':4255135,
-    'title' : 'Got feedback or questions about this Demo course?',
-    'author' : 'BenPiscopo',
-    'likes_count' : 104,
-    'comments_count' : 419
+    {
+      'id': 6,
+      'course_id': 4255135,
+      'title' : 'Got feedback or questions about this Demo course?',
+      'author' : 'BenPiscopo',
+      'likes_count' : 104,
+      'comments_count' : 419
     },
-    {'id':4255135,
-    'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
-    'author' : 'cpacheco0109',
-    'likes_count' : 20,
-    'comments_count' : 2
+    {
+      'id': 7,
+      'course_id': 4255135,
+      'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
+      'author' : 'cpacheco0109',
+      'likes_count' : 20,
+      'comments_count' : 2
     },
-    {'id':4255135,
-    'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
-    'author' : 'Cavinaru',
-    'likes_count' : 0,
-    'comments_count' : 1
+    {
+      'id': 8,
+      'course_id':4255135,
+      'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
+      'author' : 'Cavinaru',
+      'likes_count' : 0,
+      'comments_count' : 1
     }]
+
+    //const discussion = discussions.filter(discuss => discuss.id == course_id);
     return discussions;
 }
 
-interface DiscussionScreenProps extends AppStackScreenProps<"Welcome"> { }
+interface DiscussionScreenProps extends AppStackScreenProps<"Discussion"> {}
 
 export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function DiscussionScreen(
   _props
 ) {
   const { navigation } = _props
   const { route } = _props
-  const course_id = _props.route.params.course_id;
-  const { title, description, image, modules } = FetchDiscussionFromApi(course_id);
+  // @ts-ignore
+  const course_id = route.params.course_id;
+  //@ts-ignore
+  //const { title, description, image, modules } = FetchDiscussionFromApi(course_id);
   const imagePath = require('../../assets/images/word-cloud.jpeg');
 
   const handlePostPress = (module) => {
@@ -100,7 +121,7 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
         <View style={styles.backgroundTransparency}>
             <FlatList
               data={FetchDiscussionFromApi("course-13434x")}        //dummy course id
-              keyExtractor={(item) => item.id}
+              //keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.postContainer}
@@ -165,8 +186,6 @@ const styles = StyleSheet.create({
   postTitle: {
     width: '100%',
     height: 18,
-
-    fontFamily: 'Manrope',
     fontStyle: 'normal',
     fontWeight: '700',
     fontSize: 14,
@@ -177,8 +196,6 @@ const styles = StyleSheet.create({
   postAuthor: {
     width: '100%',
     height: 18,
-
-    fontFamily: 'Manrope',
     fontStyle: 'normal',
     fontWeight: '400',
     fontSize: 12,
@@ -188,7 +205,7 @@ const styles = StyleSheet.create({
   },
   counterRow: {
         height: 18,
-flexDirection: 'row',
+  flexDirection: 'row',
     width: '100%',
   },
   postLikes:{

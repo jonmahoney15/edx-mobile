@@ -53,9 +53,6 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
                     onChangeState={onStateChange}
                 />
             </View>
-            <TouchableOpacity style={styles.completeButton} onPress={handleCompleteModule}>
-                <Text style={styles.completeButtonText}>✓</Text>
-            </TouchableOpacity>
         </View>
     );
 });
@@ -93,26 +90,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
         padding: 16,
-    },
-    completeButton: {
-        position: 'absolute',
-        bottom: 30,
-        right: 20,
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#4CAF50',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    completeButtonText: {
-        fontSize: 24,
-        color: '#FFF',
     },
     video: {
         alignSelf: 'stretch',

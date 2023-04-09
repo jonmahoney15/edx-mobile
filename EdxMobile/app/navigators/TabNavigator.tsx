@@ -15,7 +15,6 @@ export function TabNavigator({route, navigation}) {
       <Tab.Navigator screenOptions={({ route }) => ({
          headerShown: false,
          tabBarStyle: {
-           height: 42,
            paddingHorizontal: 5,
            paddingTop: 0,
            backgroundColor: 'rgba(34,36,40,1)',
@@ -27,15 +26,13 @@ export function TabNavigator({route, navigation}) {
             name="Modules"
             component={CourseDetailScreen}
             options={{ tabBarIcon: () => (<FontAwesome name='home' size={30} color="#fff"/>)}}
-            initialParams={{
-                id: route.params.id}}
+            initialParams={{id: route.params.id}}
         />
         <Tab.Screen
             name="Discussion"
             component={DiscussionScreen}
             options={{ tabBarIcon: () => (<MaterialCommunityIcons name="comment-multiple" size={24} color="#fff" />)}}
-            initialParams={{
-                id: route.params.id}}
+            initialParams={{id: route.params.id}}
             />
       </Tab.Navigator>
     );
