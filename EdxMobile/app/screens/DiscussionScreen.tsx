@@ -5,7 +5,6 @@ import { observer } from "mobx-react-lite"
 import {Card, Button, Header} from "react-native-elements"
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
 
-const backgroundImage = require('../../assets/images/futuristic-background.png');
 
 function FetchDiscussionFromApi(course_id){   //sample function should be replaced with code to interact with API
     discussions = [     //dummy discussions
@@ -87,7 +86,6 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
 
   return (
     <View style={styles.container}>
-    <StatusBar backgroundColor="black" />
     <Header
         placement="left"
         leftComponent={<Feather name="chevron-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
@@ -127,6 +125,8 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
     </View>
   );
 });
+
+const backgroundImage = require('../../assets/images/futuristic-background.png');
 
 const styles = StyleSheet.create({
   container: {
