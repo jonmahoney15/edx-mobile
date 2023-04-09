@@ -6,4 +6,5 @@ export * from "./CourseDetailScreen"
 export * from "./ModuleScreen"
 export * from "./DiscussionScreen"
 export * from "./SignUpScreen"
+export * from "./ProgressScreen"
 // export other screens here
