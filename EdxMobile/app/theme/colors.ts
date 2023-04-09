@@ -49,14 +49,6 @@ export const colors = {
    */
   transparent: "rgba(0, 0, 0, 0)",
   /**
-   * The default text color in many components.
-   */
-  text: palette.neutral800,
-  /**
-   * Secondary text information.
-   */
-  textDim: palette.neutral600,
-  /**
    * The default color of the screen background.
    */
   background: palette.neutral200,
@@ -90,6 +82,18 @@ export const colors = {
 
 
   // enrollment screen colors:
-  enrollmentScreenBackgroundColor: "black"
+  enrollmentScreenBackgroundColor: "black",
+
+  //color theme from UI template
+  black: "#000000",
+  text: "#FFFFFF",
+  textDim: "rgba(255, 255, 255, 0.75)",
+  translucentBackground: "rgba(40, 36, 36, 0.88)",
+  solidBackground: "#282424",
+  primaryButton: "#FFB267",
+  inputBorder: "rgba(255, 178, 103, 0.6)",
+  secondaryButton: "rgba(133, 213, 190, 0.71)",
+  primaryButtonDark: "#C8815D",
+  headerDark: "rgba(0,0,0,0.5)"
 
 }

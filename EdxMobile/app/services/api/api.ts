@@ -1,49 +1,31 @@
-/**
- * This Api class lets you define an API endpoint and methods to request
- * data and process it.
- *
- * See the [Backend API Integration](https://github.com/infinitered/ignite/blob/master/docs/Backend-API-Integration.md)
- * documentation for more details.
- */
-import {
-  ApisauceInstance,
-  create,
-} from "apisauce"
-import Config from "../../config"
-import type {
-  ApiConfig,
-} from "./api.types"
+import axios from 'axios';
+import { BASE_URL, CSRF_TOKEN_API_PATH } from '@env'
 
-/**
- * Configuring the apisauce instance.
- */
-export const DEFAULT_API_CONFIG: ApiConfig = {
-  url: Config.API_URL,
-  timeout: 10000,
-}
+const api = axios.create({
+    baseURL: BASE_URL
+});
 
-/**
- * Manages all requests to the API. You can use this class to build out
- * various requests that you need to call from your backend API.
- */
-export class Api {
-  apisauce: ApisauceInstance
-  config: ApiConfig
+api.defaults.withCredentials = true;
+api.defaults.headers.common['USE-JWT-COOKIE'] = true;
 
-  /**
-   * Set up our API instance. Keep this lightweight!
-   */
-  constructor(config: ApiConfig = DEFAULT_API_CONFIG) {
-    this.config = config
-    this.apisauce = create({
-      baseURL: this.config.url,
-      timeout: this.config.timeout,
-      headers: {
-        Accept: "application/json",
-      },
+const retrieveToken = async() => {
+    return api.get(CSRF_TOKEN_API_PATH).then(response => response.data.csrfToken).catch(error => {
+        console.log("An Error occured loading the csrf token");
+        console.log(error)
+        return null;
     })
-  }
 }
 
-// Singleton instance of the API for convenience
-export const api = new Api()
+api.interceptors.request.use(async config => {
+    const token = await retrieveToken();
+    
+    if (token) {
+        config.headers['X-CSRFToken'] = token;
+    }
+
+    return config;
+}, error => {
+    Promise.reject(error);
+});
+
+export { api };

@@ -107,6 +107,15 @@ export const iconRegistry = {
   slack: require("../../assets/icons/slack.png"),
   view: require("../../assets/icons/view.png"),
   x: require("../../assets/icons/x.png"),
+  pfp: require("../../assets/icons/pfp-placeholder.png"),
+  video: require("../../assets/icons/video-solid.svg"),
+  quiz: require("../../assets/icons/square-pen-solid.svg"),
+  text: require("../../assets/icons/book-solid.svg"),
+  home: require("../../assets/icons/house-solid.svg"),
+  discussion: require("../../assets/icons/stack-exchange.svg"),
+  progress: require("../../assets/icons/chart-line-solid.svg"),
+  dates: require("../../assets/icons/calendar-days-regular.svg"),
+
 }
 
 const $imageStyle: ImageStyle = {
