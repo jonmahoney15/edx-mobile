@@ -89,6 +89,7 @@ export function Button(props: ButtonProps) {
   } = props
 
   const preset: Presets = $viewPresets[props.preset] ? props.preset : "default"
+
   function $viewStyle({ pressed }) {
     return [
       $viewPresets[preset],
@@ -96,6 +97,7 @@ export function Button(props: ButtonProps) {
       !!pressed && [$pressedViewPresets[preset], $pressedViewStyleOverride],
     ]
   }
+
   function $textStyle({ pressed }) {
     return [
       $textPresets[preset],
@@ -124,7 +126,6 @@ export function Button(props: ButtonProps) {
 }
 
 const $baseViewStyle: ViewStyle = {
-  // minHeight: 56,
   borderRadius: 50,
   justifyContent: "center",
   alignItems: "center",
@@ -189,9 +190,8 @@ const $pressedViewPresets: Record<Presets, StyleProp<ViewStyle>> = {
   default: { backgroundColor: colors.palette.neutral200 },
   filled: { backgroundColor: colors.palette.neutral400 },
   reversed: { backgroundColor: colors.palette.neutral700 },
-  orangeButton: [$baseTextStyle, { color: colors.palette.neutral100 }],
-  secondOrangeButton: [$baseTextStyle, { color: colors.palette.neutral100 }],
-
+  orangeButton:  { backgroundColor: colors.palette.neutral700 },
+  secondOrangeButton: { backgroundColor: colors.palette.neutral700 },
 }
 
 const $pressedTextPresets: Record<Presets, StyleProp<TextStyle>> = {

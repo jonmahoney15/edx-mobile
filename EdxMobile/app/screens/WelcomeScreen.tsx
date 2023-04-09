@@ -7,7 +7,7 @@ import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import {Card, Header} from "react-native-elements"
-import { FontAwesome } from '@expo/vector-icons' 
+import { FontAwesome, Feather } from '@expo/vector-icons' 
 import { NONE } from "apisauce"
 import { LoginScreen } from "./LoginScreen"
 import { log } from "console"
@@ -66,10 +66,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     });
   };
 
-  const handleBackArrowPress = () => {
-    navigation.navigate('Login');
-  };
-
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
@@ -80,8 +76,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   const handleScroll = (event) => {
     setScrollPosition(event.nativeEvent.contentOffset.y);
   };
-
-
 
   const paddingTop = initialPaddingTop - scrollPosition;
 
@@ -94,11 +88,11 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     />
     <SafeAreaView>
       <View style={styles.header}>
-        <FontAwesome name="arrow-left" color='#fff' size={24} onPress={logout}/>
+        <Text style={{color: "#FF0000"}} onPress={() => logout()}>Logout</Text>
         <View style={styles.titleArea}>
           <Text numberOfLines={1} style={styles.title}>Course Progress</Text>
           </View>
-        <FontAwesome name="user" size={25} color="#fff" onPress={() => handleProfilePress()}/>
+        <Feather name="user" size={25} color="#fff" onPress={() => handleProfilePress()}/>
       </View>
       <View style={$bottomContainer}>
         <ScrollView>
@@ -186,9 +180,7 @@ const $viewCourseFontStyle: TextStyle = {
 const $bottomContainer: ViewStyle = {
   flexShrink: 1,
   flexGrow:  0,
-  flexBasis: "50%",
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
   justifyContent: "space-around",
-  marginTop: 400
 }

@@ -37,6 +37,14 @@ const en = {
     hint: "Hint: you can use any email address and your favorite password :)",
     signUp: "Sign Up"
   },
+  signUpScreen: {
+    signUpScreenTitle: "Register and Learn with",
+    emailFieldLabel: "Email:",
+    passwordFieldLabel: "Password:",
+    usernameFieldLabel: "Username:",
+    nameFieldLabel: "Name:",
+    signUp: "Sign Up"
+  },
   enrollmentScreen: {
     viewCourseButtonText: "View Course"
   }
