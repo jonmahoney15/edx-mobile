@@ -10,6 +10,7 @@ import {Card, Header} from "react-native-elements"
 import { FontAwesome } from '@expo/vector-icons' 
 import { NONE } from "apisauce"
 import { LoginScreen } from "./LoginScreen"
+import { log } from "console"
 
 const courses = [
   {
@@ -90,7 +91,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     />
     <SafeAreaView>
       <View style={styles.header}>
-        <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
+        <FontAwesome name="arrow-left" color='#fff' size={24} onPress={logout}/>
         <View style={styles.titleArea}>
           <Text numberOfLines={1} style={styles.title}>Course Progress</Text>
           </View>
