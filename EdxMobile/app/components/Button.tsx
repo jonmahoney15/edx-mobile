@@ -124,7 +124,7 @@ export function Button(props: ButtonProps) {
 }
 
 const $baseViewStyle: ViewStyle = {
-  minHeight: 56,
+  // minHeight: 56,
   borderRadius: 50,
   justifyContent: "center",
   alignItems: "center",
@@ -163,22 +163,41 @@ const $viewPresets = {
     $baseViewStyle,
     { backgroundColor: colors.orangeButtonBackgroundColor },
   ] as StyleProp<ViewStyle>,
+
+  orangeButton: [
+    $baseViewStyle,
+    { backgroundColor: colors.orangeButtonBackgroundColor },
+  ] as StyleProp<ViewStyle>,
+
+  secondOrangeButton: [
+    $baseViewStyle,
+    { backgroundColor: colors.secondOrangeButtonBackgroundColor },
+    { height: 40},
+  ] as StyleProp<ViewStyle>,
 }
 
 const $textPresets: Record<Presets, StyleProp<TextStyle>> = {
   default: $baseTextStyle,
   filled: $baseTextStyle,
   reversed: [$baseTextStyle, { color: colors.palette.neutral100 }],
+  orangeButton: [$baseTextStyle, { color: colors.palette.neutral100 }],
+  secondOrangeButton: [$baseTextStyle, { color: 'black' }],
+
 }
 
 const $pressedViewPresets: Record<Presets, StyleProp<ViewStyle>> = {
   default: { backgroundColor: colors.palette.neutral200 },
   filled: { backgroundColor: colors.palette.neutral400 },
   reversed: { backgroundColor: colors.palette.neutral700 },
+  orangeButton: [$baseTextStyle, { color: colors.palette.neutral100 }],
+  secondOrangeButton: [$baseTextStyle, { color: colors.palette.neutral100 }],
+
 }
 
 const $pressedTextPresets: Record<Presets, StyleProp<TextStyle>> = {
   default: { opacity: 0.9 },
   filled: { opacity: 0.9 },
   reversed: { opacity: 0.9 },
+  orangeButton: { opacity: 0.9 },
+  secondOrangeButton: { opacity: 0.9 },
 }

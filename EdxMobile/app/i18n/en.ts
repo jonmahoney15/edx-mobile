@@ -36,6 +36,9 @@ const en = {
     tapToSignIn: "Login",
     hint: "Hint: you can use any email address and your favorite password :)",
   },
+  enrollmentScreen: {
+    viewCourseButtonText: "View Course"
+  }
 }
 
 export default en

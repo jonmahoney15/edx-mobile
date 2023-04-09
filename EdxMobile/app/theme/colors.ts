@@ -85,6 +85,11 @@ export const colors = {
   textFieldBackgroundColor: "#282424",
   textFieldBorderColor: "#C85B38",
   textFieldTextColor: "white",
-  orangeButtonBackgroundColor: "#C85B38"
+  orangeButtonBackgroundColor: "#C85B38",
+  secondOrangeButtonBackgroundColor: "#FFB267",
+
+
+  // enrollment screen colors:
+  enrollmentScreenBackgroundColor: "black"
 
 }

@@ -5,7 +5,6 @@ import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
-import { LinearGradient } from "expo-linear-gradient";
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -123,7 +122,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             testID="login-button"
             tx="loginScreen.tapToSignIn"
             style={$tapButton}
-            preset="reversed"
+            preset="orangeButton"
             onPress={login}
           />
         </View>

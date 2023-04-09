@@ -82,10 +82,10 @@ const AppStack = observer(function AppStack() {
             name="Module"
             component={ModuleScreen}
           />
-          <Stack.Screen 
+          {/* <Stack.Screen 
             name="Profile"
             component={ProfileScreen}  
-          />
+          /> */}
         </>
       ) : (
         <>
