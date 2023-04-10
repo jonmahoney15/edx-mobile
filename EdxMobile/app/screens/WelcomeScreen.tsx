@@ -11,17 +11,20 @@ import { FontAwesome } from '@expo/vector-icons'
 
 const courses = [
   {
+    id: '3123123',
     title: 'Introduction to React Native',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'Learn the basics of building mobile apps with React Native.',
   },
   {
+    id: '3123124',
     title: 'Advanced React Native',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'React Native skills with advanced topics.',
 
   },
   {
+    id: '3123125',
     title: 'HTML, JavaScript, CSS',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'Get started with the basics',

@@ -1,8 +1,9 @@
 import React, { FC, useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
-import { AppStackScreenProps } from "../navigators";
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { AppStackScreenProps, goBack } from "../navigators";
 import { observer } from "mobx-react-lite";
 import YoutubePlayer, { getYoutubeMeta } from 'react-native-youtube-iframe';
+import { PrettyHeader } from "../components/PrettyHeader";
 
 interface ModuleScreenProps extends AppStackScreenProps<"Module"> { }
 
@@ -17,6 +18,8 @@ interface ModuleParams {
 export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScreen(
     _props
 ) {
+    const { navigation } = _props
+
     const { id, title, duration, videoId, bodyText } = _props.route.params as ModuleParams;
 
     const [playing, setPlaying] = useState(false);
@@ -37,17 +40,22 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
         fetchVideoMetadata();
     }, [videoId]);
 
+    const handleProfilePress = () => {
+        navigation.navigate('Profile');
+    };
 
     return (
-        <ImageBackground source={require('../../assets/images/background_module_image.png')} style={styles.container}>
+        <ImageBackground source={require('../../assets/images/futuristic_realistic_classroom.png')} style={styles.container}>
             <ImageBackground source={require('../../assets/images/module_overlay_background.png')} style={styles.overlay}>
+                <PrettyHeader
+                    title={title}
+                    theme='grey'
+                    onLeftPress={goBack}
+                    onRightPress={handleProfilePress}
+                />
                 <View>
-                    {/* <View style={styles.header}>
-                        <Text style={styles.title}>{title}</Text>
-                    </View> */}
                     <View style={styles.content}>
-                        {/* <Text style={styles.duration}>{duration}</Text> */}
-                        <Text style={styles.duration}>{"\n"}{bodyText}</Text>
+                        <Text style={styles.text}>{"\n"}{bodyText}</Text>
                     </View>
                     <View style={styles.video}>
                         <Text style={styles.videoTitle}>{videoTitle}</Text>
@@ -59,8 +67,8 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
                         />
                     </View>
                 </View>
-            </ImageBackground >
-        </ImageBackground >
+            </ImageBackground>
+        </ImageBackground>
     );
 });
 
@@ -69,19 +77,7 @@ const styles = StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
     },
-    // header: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     marginBottom: 24,
-    //     marginTop: 20
-    // },
-    title: {
-        fontSize: 25,
-        fontWeight: 'bold',
-        marginRight: 8,
-        color: '#333',
-    },
-    duration: {
+    text: {
         fontSize: 14,
         color: '#FFFFFF',
     },
@@ -109,11 +105,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 0,
         backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-    overlayImage: {
-        flex: 1,
-        resizeMode: 'cover',
-    },
+    }
 });
 
 export default ModuleScreen;
