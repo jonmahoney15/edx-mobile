@@ -9,6 +9,7 @@ import { api } from "../../services/api"
 import { useStores } from "../../models"
 import { DateItem } from "./DateItem"
 import { formatDate } from "../../utils/formatDate"
+import LoadingComponent from "../../components/LoadingComponent"
 
 const backgroundImage = require("../../../assets/images/futuristic_realistic_classroom.png")
 
@@ -27,7 +28,7 @@ interface IDate {
 }
 
 
-interface DatesScreenProps extends AppStackScreenProps<"Dates"> {}
+interface DatesScreenProps extends AppStackScreenProps<"Dates"> { }
 export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
   _props,
 ) {
@@ -40,6 +41,7 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
     }
   } = useStores();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [courseDates, setCourseDates] = useState([]);
 
   const handleProfilePress = () => {
@@ -48,22 +50,22 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
 
   const fetchCourseDates = async () => {
     await api.get(`/api/course_home/dates/${id}/`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`
-        },
-        validateStatus: function (status) {
-          return status < 500;
-        }
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      },
+      validateStatus: function (status) {
+        return status < 500;
       }
+    }
     ).then(response => {
       let newCourseDates = [];
-      
+
       if (response.status === 200) {
         const { data } = response;
         data.course_date_blocks.forEach((date: IDate) => {
           let newItem = {
             title: formatDate(date.date),
-            description: <DateItem title={date.title}/>
+            description: <DateItem title={date.title} />
           }
           newCourseDates.push(newItem)
         });
@@ -74,54 +76,61 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
       newCourseDates.forEach(item => {
         if ((new Date(item.date)).getTime() === today.getTime()) {
           found = true;
-          item.circleColor = colors.primaryButton; 
+          item.circleColor = colors.primaryButton;
         }
       });
 
       if (!found) {
         const dateString = today.toISOString();
-        
+
         let todayItem = {
           circleColor: colors.primaryButton,
           title: formatDate(dateString),
-          description: <DateItem title="Today"/>
+          description: <DateItem title="Today" />
         }
         newCourseDates.push(todayItem)
       }
 
       setCourseDates(newCourseDates)
+      setIsLoading(false);
+
     }).catch((e) => {
       console.log('Error In Course Dates Load:');
       const error = Object.assign(e);
       console.log(error)
+      setIsLoading(false);
+
     });
   }
 
   useEffect(() => {
+    setIsLoading(true);
     fetchCourseDates();
   }, [])
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
-        <View style={styles.blackBackground}>
-        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+      <View style={styles.blackBackground}>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-           <PrettyHeader title="Course Dates" theme="grey" onLeftPress={navigation.goBack} onRightPress={handleProfilePress}/>
+          <LoadingComponent isLoading={isLoading}>
+            <PrettyHeader title="Course Dates" theme="grey" onLeftPress={navigation.goBack} onRightPress={handleProfilePress} />
             <View style={styles.screenBody}>
-            <Timeline
+              <Timeline
                 data={courseDates}
                 showTime={false}
-                titleStyle={{fontWeight: "400", fontSize: 16, color:colors.text, marginBottom:0,}}
+                titleStyle={{ fontWeight: "400", fontSize: 16, color: colors.text, marginBottom: 0, }}
                 lineColor={colors.text}
                 circleColor={colors.text}
                 circleSize={12}
-                rowContainerStyle={{minHeight: 90,}}
-                eventContainerStyle={{marginTop:-14,}}   
-            />
+                rowContainerStyle={{ minHeight: 90, }}
+                eventContainerStyle={{ marginTop: -14, }}
+              />
             </View>
-        </SafeAreaView> 
-        </View>
-    </ImageBackground> 
+          </LoadingComponent>
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   )
 })
 
@@ -150,7 +159,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: colors.translucentBackground,
     marginTop: 12,
-    
+
   },
   titleArea: {
     flex: 1,
@@ -172,7 +181,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 30,
   },
-  completionCard: { 
+  completionCard: {
     display: 'flex',
     width: '100%',
     height: '100%',

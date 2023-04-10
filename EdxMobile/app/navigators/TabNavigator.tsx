@@ -4,7 +4,7 @@ import {
     CourseDetailScreen,
     DiscussionScreen,
     ProgressScreen,
-    DatesScreen
+    DatesScreen,
   } from "../screens"
 import { colors } from '../theme';
 

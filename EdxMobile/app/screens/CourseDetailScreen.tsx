@@ -8,42 +8,43 @@ import { Animated } from 'react-native';
 import { api } from '../services/api'
 import { useStores } from "../models"
 import { normalizeOutlineBlocks } from '../utils/formatData';
+import LoadingComponent from '../components/LoadingComponent';
 
 const hardCodedCourse =
-    [
-      {
-        id: '1',
-        display_name: 'Getting Started',
-        duration: '1h 30m',
-        videoId: '6oFuwhIibo4',
-        bodyText: 'In this module, you will learn the fundamentals of React Native, including how to set up your development environment and create your first mobile app. You will explore the basic syntax and structure of React Native components and learn how to use them to build simple user interfaces. By the end of this module, you will have a solid foundation in React Native and be ready to move on to more advanced topics.',
-        submodules: []
-      },
-      {
-        id: '2',
-        display_name: 'Building UI with Components',
-        duration: '2h 15m',
-        videoId: 'eAXow8r3lYY',
-        bodyText: 'In this module, you will dive deeper into React Native components and learn how to use them to create complex and beautiful user interfaces. you will explore various built-in components like text, images, buttons, and inputs, and learn how to style them using CSS-like syntax. you will also learn how to create custom components by composing multiple existing components. By the end of this module, you will have the skills to build a variety of user interfaces for your mobile app.',
-        submodules: []
-      },
-      {
-        id: '3',
-        display_name: 'Navigating Between Screens',
-        duration: '1h 45m',
-        videoId: 'OmQCU-3KPms',
-        bodyText: 'In this module, you will learn how to create multi-screen mobile apps using React Navigation, a popular library for navigation in React Native. you will explore various navigation patterns like stack navigation, tab navigation, and drawer navigation, and learn how to implement them using React Navigation. you will also learn how to pass data between screens and handle navigation events like back button presses. By the end of this module, you will be able to create sophisticated navigation flows for your mobile app.',
-        submodules: []
-      },
-      {
-        id: '4',
-        display_name: 'Managing State with Redux',
-        duration: '2h 30m',
-        videoId: 'BtJoy4G3N8U',
-        bodyText: 'In this module, you will learn how to manage the state of your React Native app using Redux, a popular library for state management in React. you will explore the basic concepts of Redux like store, actions, and reducers, and learn how to use them to manage complex state in your app. you will also learn how to integrate Redux with React Native components using the React-Redux library. By the end of this module, you will have the skills to manage the state of your mobile app in a scalable and maintainable way.',
-        submodules: []
-      },
-    ];
+  [
+    {
+      id: '1',
+      display_name: 'Getting Started',
+      duration: '1h 30m',
+      videoId: '6oFuwhIibo4',
+      bodyText: 'In this module, you will learn the fundamentals of React Native, including how to set up your development environment and create your first mobile app. You will explore the basic syntax and structure of React Native components and learn how to use them to build simple user interfaces. By the end of this module, you will have a solid foundation in React Native and be ready to move on to more advanced topics.',
+      submodules: []
+    },
+    {
+      id: '2',
+      display_name: 'Building UI with Components',
+      duration: '2h 15m',
+      videoId: 'eAXow8r3lYY',
+      bodyText: 'In this module, you will dive deeper into React Native components and learn how to use them to create complex and beautiful user interfaces. you will explore various built-in components like text, images, buttons, and inputs, and learn how to style them using CSS-like syntax. you will also learn how to create custom components by composing multiple existing components. By the end of this module, you will have the skills to build a variety of user interfaces for your mobile app.',
+      submodules: []
+    },
+    {
+      id: '3',
+      display_name: 'Navigating Between Screens',
+      duration: '1h 45m',
+      videoId: 'OmQCU-3KPms',
+      bodyText: 'In this module, you will learn how to create multi-screen mobile apps using React Navigation, a popular library for navigation in React Native. you will explore various navigation patterns like stack navigation, tab navigation, and drawer navigation, and learn how to implement them using React Navigation. you will also learn how to pass data between screens and handle navigation events like back button presses. By the end of this module, you will be able to create sophisticated navigation flows for your mobile app.',
+      submodules: []
+    },
+    {
+      id: '4',
+      display_name: 'Managing State with Redux',
+      duration: '2h 30m',
+      videoId: 'BtJoy4G3N8U',
+      bodyText: 'In this module, you will learn how to manage the state of your React Native app using Redux, a popular library for state management in React. you will explore the basic concepts of Redux like store, actions, and reducers, and learn how to use them to manage complex state in your app. you will also learn how to integrate Redux with React Native components using the React-Redux library. By the end of this module, you will have the skills to manage the state of your mobile app in a scalable and maintainable way.',
+      submodules: []
+    },
+  ];
 
 interface ICourseDetailsParams {
   id: string;
@@ -58,7 +59,8 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   _props
 ) {
   const { navigation } = _props
-  const { id, title }  = _props.route.params as ICourseDetailsParams;
+  const { id, title } = _props.route.params as ICourseDetailsParams;
+  const [isLoading, setIsLoading] = useState(true);
   const [course, setCourse] = useState([]);
   const [checkedModules, setCheckedModules] = useState<string[]>([]);
 
@@ -71,39 +73,43 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
 
   const FetchCourseDetailFromApi = async () => {
     await api.get(`/api/course_home/outline/${id}`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`
-          },
-          validateStatus: function (status) {
-            return status < 500;
-          }
-        }
-      ).then(response => {
-        let modules = hardCodedCourse;
-        if (response.status === 200) {
-          const { data } = response;
-          
-          if (data.course_blocks) {
-            //@ts-ignore
-            modules = Object.values(data.course_blocks.blocks).filter(item => item.type === "chapter");
-            const courseBlocks = normalizeOutlineBlocks(id, data.course_blocks.blocks);
-            
-            modules.forEach(module => {
-              //@ts-ignore
-              module.submodules = Object.values(courseBlocks.sequences).filter(sequence => sequence.sectionId === module.id);
-            }) 
-          }
-        }
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      },
+      validateStatus: function (status) {
+        return status < 500;
+      }
+    }
+    ).then(response => {
+      let modules = hardCodedCourse;
+      if (response.status === 200) {
+        const { data } = response;
 
-        setCourse(modules)
-      })
+        if (data.course_blocks) {
+          //@ts-ignore
+          modules = Object.values(data.course_blocks.blocks).filter(item => item.type === "chapter");
+          const courseBlocks = normalizeOutlineBlocks(id, data.course_blocks.blocks);
+
+          modules.forEach(module => {
+            //@ts-ignore
+            module.submodules = Object.values(courseBlocks.sequences).filter(sequence => sequence.sectionId === module.id);
+          })
+        }
+      }
+
+      setCourse(modules)
+      setIsLoading(false);
+
+    })
       .catch((e) => {
         console.log('Error In Course Blocks Load:');
         const error = Object.assign(e);
         console.log(error);
         setCourse(hardCodedCourse);
+        setIsLoading(false);
+
       }
-    );
+      );
   }
 
   const handleModulePress = (module) => {
@@ -145,6 +151,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   };
 
   useEffect(() => {
+    setIsLoading(true);
     FetchCourseDetailFromApi()
   }, [])
 
@@ -157,7 +164,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
 
   return (
     <ImageBackground source={backgroundImage} style={styles.container}>
-      <View style={{marginTop: 50}}>
+      <View style={{ marginTop: 50 }}>
         <PrettyHeader
           title={title}
           theme='black'
@@ -165,61 +172,63 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
           onRightPress={handleProfilePress}
         />
       </View>
-      <View style={styles.beginContainer}>
-        <Text style={styles.beginCourse}>Begin Your course today</Text>
-        <TouchableOpacity onPress={() => handleModulePress(course[0])}>
-          <View style={styles.startContainer}>
-            <Text style={styles.viewCourse}>Start Course</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-      <View style={{ flex: 2 }}>
-        <View style={styles.textContainer}>
-          <FlatList
-            data={course}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[styles.moduleContainer, { flexDirection: 'column' }]}
-                onPress={() => handleModulePress(item)}
-              >
-                <View style={styles.component1}>
-                  <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
-                    <MaterialCommunityIcons name={checkedModules.includes(item.id) ? "check-circle" : "circle"} size={20} color="#000" />
-                  </TouchableOpacity>
-                  <Text style={styles.title}>{item.display_name}</Text>
-                  <TouchableOpacity onPress={() => toggleSubmoduleList(item.id)}>
-                    <MaterialCommunityIcons name="plus" size={22} color="#000" />
-                  </TouchableOpacity>
-                </View>
-                {expandedModules.includes(item.id) && (
-                  <Animated.View style={[styles.submoduleListContainer, {
-                    overflow: 'hidden',
-                  }]}>
-                    <FlatList
-                      data={item.submodules}
-                      keyExtractor={(submodule) => submodule.id}
-                      renderItem={({ item: submodule }) => (
-                        <TouchableOpacity
-                          style={styles.submoduleContainer}
-                          onPress={() => handleSubModulePress(submodule)}
-                        >
-                          <View style={styles.component2}>
-                            <TouchableOpacity onPress={() => toggleSubModuleChecked(submodule.id)}>
-                              <MaterialCommunityIcons name={checkedSubModules.includes(submodule.id) ? "check-circle" : "circle"} size={20} color="#fff" />
-                            </TouchableOpacity>
-                            <Text style={styles.submoduleTitle}>{submodule.title}</Text>
-                          </View>
-                        </TouchableOpacity>
-                      )}
-                    />
-                  </Animated.View>
-                )}
-              </TouchableOpacity>
-            )}
-          />
+      <LoadingComponent isLoading={isLoading}>
+        <View style={styles.beginContainer}>
+          <Text style={styles.beginCourse}>Begin Your course today</Text>
+          <TouchableOpacity onPress={() => handleModulePress(course[0])}>
+            <View style={styles.startContainer}>
+              <Text style={styles.viewCourse}>Start Course</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </View >
+        <View style={{ flex: 2 }}>
+          <View style={styles.textContainer}>
+            <FlatList
+              data={course}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[styles.moduleContainer, { flexDirection: 'column' }]}
+                  onPress={() => handleModulePress(item)}
+                >
+                  <View style={styles.component1}>
+                    <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
+                      <MaterialCommunityIcons name={checkedModules.includes(item.id) ? "check-circle" : "circle"} size={20} color="#000" />
+                    </TouchableOpacity>
+                    <Text style={styles.title}>{item.display_name}</Text>
+                    <TouchableOpacity onPress={() => toggleSubmoduleList(item.id)}>
+                      <MaterialCommunityIcons name="plus" size={22} color="#000" />
+                    </TouchableOpacity>
+                  </View>
+                  {expandedModules.includes(item.id) && (
+                    <Animated.View style={[styles.submoduleListContainer, {
+                      overflow: 'hidden',
+                    }]}>
+                      <FlatList
+                        data={item.submodules}
+                        keyExtractor={(submodule) => submodule.id}
+                        renderItem={({ item: submodule }) => (
+                          <TouchableOpacity
+                            style={styles.submoduleContainer}
+                            onPress={() => handleSubModulePress(submodule)}
+                          >
+                            <View style={styles.component2}>
+                              <TouchableOpacity onPress={() => toggleSubModuleChecked(submodule.id)}>
+                                <MaterialCommunityIcons name={checkedSubModules.includes(submodule.id) ? "check-circle" : "circle"} size={20} color="#fff" />
+                              </TouchableOpacity>
+                              <Text style={styles.submoduleTitle}>{submodule.title}</Text>
+                            </View>
+                          </TouchableOpacity>
+                        )}
+                      />
+                    </Animated.View>
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View >
+      </LoadingComponent>
     </ImageBackground>
   );
 });
