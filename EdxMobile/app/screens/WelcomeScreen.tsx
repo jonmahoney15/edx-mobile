@@ -14,18 +14,21 @@ import { log } from "console"
 
 const courses = [
   {
+    id: '3123123',
     title: 'Introduction to React Native',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'Learn the basics of building mobile apps with React Native.',
   },
   {
+    id: '3123124',
     title: 'Advanced React Native',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'React Native skills with advanced topics.',
   },
   {
+    id: '3123125',
     title: 'HTML, JavaScript, CSS',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),

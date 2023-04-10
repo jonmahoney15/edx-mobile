@@ -16,16 +16,14 @@ import {
   ModuleScreen,
   WelcomeScreen,
   SignUpScreen,
-  ProgressScreen
+  ProgressScreen,
+  CourseDetailScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
 
 type CourseDetailScreenParams = {
-  title: string;
-  description: string;
-  image: string;
-  modules: ModuleScreenParams[];
+  id: string
 };
 
 type ModuleScreenParams = {
