@@ -1,14 +1,16 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle } from "react-native"
+import { TextInput, TextStyle, ViewStyle, ImageBackground, View, Image, ImageStyle } from "react-native"
 import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
-
+import { api } from "../services/api"
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
+  
+  const { navigation } = _props
   const authPasswordInput = useRef<TextInput>()
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -27,26 +29,60 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("student@vt.edu")
-    setAuthPassword("password")
+    setAuthEmail("jpmahoney@vt.edu")
+    setAuthPassword("Password1")
   }, [])
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
 
-  function login() {
+  const login = async() => {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
-
+    
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    // Make a request to your server to get an authentication token.
-    // If successful, reset the fields and set the token.
+    const authenticated = true; //= await submitLogin() 
+
+    if (authenticated) {
+      console.log(authenticated)
+      setAuthToken(String(Date.now()))
+    } else {
+      console.log(authenticated)
+      setAuthToken('')
+    }
+
     setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
+  }
 
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
+  const submitLogin = async () => {
+    
+    const success = await api.post(
+        '/api/user/v1/account/login_session/',
+        {
+          "email": authEmail,
+          "password": authPassword
+        }, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          validateStatus: function (status) {
+            return status < 500; // Resolve only if the status code is less than 500
+          }
+        }
+      ).then(response => {
+        console.log(response.data)
+        return response.data.success ? response.data.success : false;
+      })
+      .catch((e) => {
+        console.log('In Login Error:');
+        console.log(e.toJSON());
+        return false;
+      }
+    );
+
+    return success;
   }
 
   const PasswordRightAccessory = useMemo(
@@ -55,7 +91,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         return (
           <Icon
             icon={isAuthPasswordHidden ? "view" : "hidden"}
-            color={colors.palette.neutral800}
+            color={"white"}
             containerStyle={props.style}
             onPress={() => setIsAuthPasswordHidden(!isAuthPasswordHidden)}
           />
@@ -63,6 +99,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       },
     [isAuthPasswordHidden],
   )
+  
+  const handleSignUpPress = () => {
+    navigation.navigate('SignUp');
+  };
 
   useEffect(() => {
     return () => {
@@ -72,64 +112,96 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   }, [])
 
   return (
-    <Screen
-      preset="auto"
-      contentContainerStyle={$screenContentContainer}
-      safeAreaEdges={["top", "bottom"]}
-    >
-      <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-      {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+      <View style={$contentandbackgroundImage}> 
+        <View style={$contentContainer}>
+          <Text testID="login-heading" tx="loginScreen.loginScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
+          {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+          
+          <Image
+            source={require('../../assets/images/app-icon-all.png')}
+            style={$openEdxLogoImage}
+          />
+          <TextField
+            value={authEmail}
+            onChangeText={setAuthEmail}
+            containerStyle={$textField}
+            autoCapitalize="none"
+            autoComplete="email"
+            autoCorrect={false}
+            keyboardType="email-address"
+            placeholderTx="loginScreen.emailFieldPlaceholder"
+            helper={errors?.authEmail}
+            status={errors?.authEmail ? "error" : undefined}
+            onSubmitEditing={() => authPasswordInput.current?.focus()}
+          />
 
-      <TextField
-        value={authEmail}
-        onChangeText={setAuthEmail}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="email"
-        autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen.emailFieldLabel"
-        placeholderTx="loginScreen.emailFieldPlaceholder"
-        helper={errors?.authEmail}
-        status={errors?.authEmail ? "error" : undefined}
-        onSubmitEditing={() => authPasswordInput.current?.focus()}
-      />
+          <TextField
+            ref={authPasswordInput}
+            value={authPassword}
+            onChangeText={setAuthPassword}
+            containerStyle={$textField}
+            autoCapitalize="none"
+            autoComplete="password"
+            autoCorrect={false}
+            secureTextEntry={isAuthPasswordHidden}
+            placeholderTx="loginScreen.passwordFieldPlaceholder"
+            helper={errors?.authPassword}
+            status={errors?.authPassword ? "error" : undefined}
+            onSubmitEditing={login}
+            RightAccessory={PasswordRightAccessory}
+          />
 
-      <TextField
-        ref={authPasswordInput}
-        value={authPassword}
-        onChangeText={setAuthPassword}
-        containerStyle={$textField}
-        autoCapitalize="none"
-        autoComplete="password"
-        autoCorrect={false}
-        secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen.passwordFieldLabel"
-        placeholderTx="loginScreen.passwordFieldPlaceholder"
-        helper={errors?.authPassword}
-        status={errors?.authPassword ? "error" : undefined}
-        onSubmitEditing={login}
-        RightAccessory={PasswordRightAccessory}
-      />
+          <Button
+            testID="login-button"
+            tx="loginScreen.tapToSignIn"
+            style={$tapButton}
+            preset="reversed"
+            onPress={login}
+          />
 
-      <Button
-        testID="login-button"
-        tx="loginScreen.tapToSignIn"
-        style={$tapButton}
-        preset="reversed"
-        onPress={login}
-      />
-    </Screen>
+          <Button
+            tx="loginScreen.signUp"
+            style={$signUpButton}
+            preset="reversed"
+            onPress={handleSignUpPress}
+          />
+        </View>
+        <ImageBackground source={require('../../assets/images/loginPageImage.png')} style={$backgroundImage}>
+        </ImageBackground>
+      </View>
   )
 })
 
-const $screenContentContainer: ViewStyle = {
-  paddingVertical: spacing.huge,
-  paddingHorizontal: spacing.large,
-}
+const $openEdxLogoImage: ImageStyle = {
+  width: 100, 
+  height: 100,
+  alignSelf: 'center',
+  resizeMode: 'contain',
+};
 
-const $signIn: TextStyle = {
+const $contentandbackgroundImage: ViewStyle = {
+  flex: 1,
+  backgroundColor: 'black',
+};
+
+const $backgroundImage: ViewStyle = {
+  flex: 1,
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+};
+
+const $contentContainer: ViewStyle = {
+  flex: 1,
+  justifyContent: 'center',
+  padding: 50
+};
+
+const $loginScreenTitleStyle: TextStyle = {
+  marginTop: spacing.extraLarge,
   marginBottom: spacing.small,
+  color: "white", // add this line to set the text color of the heading to white
+  textAlign: 'center',
+  fontSize: 34, // set the font size to 28
 }
 
 const $enterDetails: TextStyle = {
@@ -142,11 +214,13 @@ const $hint: TextStyle = {
 }
 
 const $textField: ViewStyle = {
-  marginBottom: spacing.large,
+  marginBottom: spacing.medium,
 }
 
 const $tapButton: ViewStyle = {
   marginTop: spacing.extraSmall,
 }
 
-// @demo remove-file
+const $signUpButton: ViewStyle = {
+  marginTop: spacing.extraSmall,
+}

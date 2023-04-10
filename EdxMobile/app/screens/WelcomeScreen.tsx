@@ -14,36 +14,6 @@ const courses = [
     title: 'Introduction to React Native',
     image: require("../../assets/images/word-cloud.jpeg"),
     description: 'Learn the basics of building mobile apps with React Native.',
-    modules: [
-      {
-        id: '1',
-        title: 'Getting Started',
-        duration: '1h 30m',
-        videoId: '6oFuwhIibo4',
-        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      },
-      {
-        id: '2',
-        title: 'Building UI with Components',
-        duration: '2h 15m',
-        videoId: '6oFuwhIibo4',
-        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      },
-      {
-        id: '3',
-        title: 'Navigating Between Screens',
-        duration: '1h 45m',
-        videoId: '6oFuwhIibo4',
-        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      },
-      {
-        id: '4',
-        title: 'Managing State with Redux',
-        duration: '2h 30m',
-        videoId: '6oFuwhIibo4',
-        bodyText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      },
-    ]
   },
   {
     title: 'Advanced React Native',
@@ -70,10 +40,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 
   const handleCoursePress = (course) => {
     navigation.navigate('CourseDetail', {
-      title: course.title,
-      description: course.description,
-      image: course.image,
-      modules: course.modules,
+      id: course.id,
     });
   };
 
@@ -85,9 +52,8 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     <View style={$container}>
       <Header
         placement="left"
-        leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => logout()}/>}
         centerComponent={{ text: 'Courses', style: { color: '#fff', fontSize: 20 } }}
-        rightComponent={<FontAwesome name="user" size={32} color="#fff" onPress={() => handleProfilePress()}/>}
+        rightComponent={<FontAwesome name="user" size={28} color="#fff" onPress={() => handleProfilePress()}/>}
         containerStyle={{
           justifyContent: 'space-around',
         }}

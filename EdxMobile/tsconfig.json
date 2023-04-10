@@ -14,7 +14,12 @@
     "target": "esnext",
     "lib": ["esnext", "dom"],
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "typeRoots": ["./app/types"],
+    "baseUrl": ".",
+    "paths": {
+      "@env": ["node_modules/react-native-dotenv"]
+    }
   },
   "exclude": ["node_modules"],
   "include": ["index.js", "App.js", "app", "test"],

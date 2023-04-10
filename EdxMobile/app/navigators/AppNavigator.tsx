@@ -12,13 +12,13 @@ import Config from "../config"
 import { useStores } from "../models"
 import {
   LoginScreen,
-  CourseDetailScreen,
   ProfileScreen,
   ModuleScreen,
-  WelcomeScreen
+  WelcomeScreen,
+  SignUpScreen,
+  ProgressScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-import { Tab } from "react-native-elements"
 import { TabNavigator } from "./TabNavigator"
 
 type CourseDetailScreenParams = {
@@ -42,6 +42,9 @@ export type AppStackParamList = {
   Profile: undefined
   CourseDetail: CourseDetailScreenParams
   Module: ModuleScreenParams
+  Discussion: undefined
+  SignUp: undefined
+  Progress: undefined
 }
 
 const exitRoutes = Config.exitRoutes
@@ -66,17 +69,33 @@ const AppStack = observer(function AppStack() {
       {isAuthenticated ? (
         <>
           <Stack.Screen 
-            name="Welcome" 
+            name="Welcome"
+            component={WelcomeScreen}
+          />
+          <Stack.Screen
+            name="CourseDetail"
             component={TabNavigator}
           />
           <Stack.Screen 
-            name="Profile"
-            component={ProfileScreen}  
+            name="Profile" 
+            component={ProfileScreen} 
+          />
+          <Stack.Screen
+            name="Module"
+            component={ModuleScreen}
+          />
+          <Stack.Screen
+            name="Progress"
+            component={ProgressScreen}
           />
         </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+          />
         </>
       )}
     </Stack.Navigator>

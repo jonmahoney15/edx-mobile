@@ -6,6 +6,12 @@ const plugins = [
     },
   ],
   ["@babel/plugin-proposal-optional-catch-binding"],
+  ["module:react-native-dotenv", {
+    "moduleName": "@env",
+    "path": ".env",
+    "safe": true,
+    "allowUndefined": false
+  }],
   "react-native-reanimated/plugin", // NOTE: this must be last in the plugins
 ]
 

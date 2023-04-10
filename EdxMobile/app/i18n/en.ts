@@ -28,13 +28,14 @@ const en = {
     invalidEmail: "Invalid email address.",
   },
   loginScreen: {
-    signIn: "Sign In",
+    loginScreenTitle: "Start Learning With",
     emailFieldLabel: "Email",
     passwordFieldLabel: "Password",
-    emailFieldPlaceholder: "Enter your email address",
-    passwordFieldPlaceholder: "Super secret password here",
-    tapToSignIn: "Sign in!",
+    emailFieldPlaceholder: "Username or email",
+    passwordFieldPlaceholder: "Password",
+    tapToSignIn: "Login",
     hint: "Hint: you can use any email address and your favorite password :)",
+    signUp: "Sign Up"
   },
 }
 
