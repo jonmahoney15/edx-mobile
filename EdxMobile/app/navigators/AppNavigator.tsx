@@ -72,7 +72,7 @@ const AppStack = observer(function AppStack() {
           />
           <Stack.Screen
             name="CourseDetail"
-            component={CourseDetailScreen}
+            component={TabNavigator}
           />
           <Stack.Screen 
             name="Profile" 
