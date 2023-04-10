@@ -1,8 +1,8 @@
-import React, { FC, useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { FC, useState, useCallback, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { AppStackScreenProps } from "../navigators";
 import { observer } from "mobx-react-lite";
-import YoutubePlayer from 'react-native-youtube-iframe';
+import YoutubePlayer, { getYoutubeMeta } from 'react-native-youtube-iframe';
 
 interface ModuleScreenProps extends AppStackScreenProps<"Module"> { }
 
@@ -19,11 +19,9 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
 ) {
     const { id, title, duration, videoId, bodyText } = _props.route.params as ModuleParams;
 
-    const handleCompleteModule = () => {
-        _props.navigation.goBack();
-    };
-
     const [playing, setPlaying] = useState(false);
+
+    const [videoTitle, setVideoTitle] = useState('');
 
     const onStateChange = useCallback((state) => {
         if (state === "ended") {
@@ -31,48 +29,52 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
         }
     }, []);
 
-    const togglePlaying = useCallback(() => {
-        setPlaying((prev) => !prev);
-    }, []);
+    useEffect(() => {
+        const fetchVideoMetadata = async () => {
+            const meta = await getYoutubeMeta(videoId);
+            setVideoTitle(meta.title);
+        };
+        fetchVideoMetadata();
+    }, [videoId]);
 
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>{title}</Text>
-            </View>
-            <View style={styles.content}>
-                <Text style={styles.duration}>{duration}</Text>
-                <Text style={styles.duration}>{"\n"}{bodyText}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-                <YoutubePlayer
-                    height={300}
-                    videoId={videoId}
-                    play={playing}
-                    onChangeState={onStateChange}
-                />
-            </View>
-            <TouchableOpacity style={styles.completeButton} onPress={handleCompleteModule}>
-                <Text style={styles.completeButtonText}>✓</Text>
-            </TouchableOpacity>
-        </View>
+        <ImageBackground source={require('../../assets/images/background_module_image.png')} style={styles.container}>
+            <ImageBackground source={require('../../assets/images/module_overlay_background.png')} style={styles.overlay}>
+                <View>
+                    {/* <View style={styles.header}>
+                        <Text style={styles.title}>{title}</Text>
+                    </View> */}
+                    <View style={styles.content}>
+                        {/* <Text style={styles.duration}>{duration}</Text> */}
+                        <Text style={styles.duration}>{"\n"}{bodyText}</Text>
+                    </View>
+                    <View style={styles.video}>
+                        <Text style={styles.videoTitle}>{videoTitle}</Text>
+                        <YoutubePlayer
+                            height={300}
+                            videoId={videoId}
+                            play={playing}
+                            onChangeState={onStateChange}
+                        />
+                    </View>
+                </View>
+            </ImageBackground >
+        </ImageBackground >
     );
 });
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 16,
-        paddingVertical: 24,
-        backgroundColor: '#F9F9F9',
+        resizeMode: 'cover',
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 24,
-        marginTop: 20
-    },
+    // header: {
+    //     flexDirection: 'row',
+    //     alignItems: 'center',
+    //     marginBottom: 24,
+    //     marginTop: 20
+    // },
     title: {
         fontSize: 25,
         fontWeight: 'bold',
@@ -80,43 +82,37 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     duration: {
-        fontSize: 16,
-        color: '#888',
+        fontSize: 14,
+        color: '#FFFFFF',
+    },
+    videoTitle: {
+        fontSize: 13,
+        marginBottom: 8,
+        color: '#FFFFFF',
     },
     content: {
-        flex: 1,
-        backgroundColor: '#FFF',
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-        padding: 16,
-    },
-    completeButton: {
-        position: 'absolute',
-        bottom: 30,
-        right: 20,
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#4CAF50',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    completeButtonText: {
-        fontSize: 24,
-        color: '#FFF',
+        paddingLeft: 30,
+        paddingRight: 30,
+        paddingTop: 30
     },
     video: {
         alignSelf: 'stretch',
-        height: 300,
+        height: 100,
+        paddingLeft: 45,
+        paddingRight: 45,
+        paddingTop: 20
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    overlayImage: {
+        flex: 1,
+        resizeMode: 'cover',
     },
 });
 
