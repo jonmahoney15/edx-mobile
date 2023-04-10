@@ -37,6 +37,9 @@ const en = {
     hint: "Hint: you can use any email address and your favorite password :)",
     signUp: "Sign Up"
   },
+  enrollmentScreen: {
+    viewCourseButtonText: "View Course"
+  }
 }
 
 export default en
