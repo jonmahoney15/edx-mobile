@@ -17,7 +17,8 @@ import {
   WelcomeScreen,
   SignUpScreen,
   ProgressScreen,
-  CourseDetailScreen
+  CourseDetailScreen,
+  DatesScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
@@ -43,6 +44,7 @@ export type AppStackParamList = {
   Discussion: undefined
   SignUp: undefined
   Progress: undefined
+  Dates: undefined
 }
 
 const exitRoutes = Config.exitRoutes
@@ -85,6 +87,10 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen
             name="Progress"
             component={ProgressScreen}
+          />
+           <Stack.Screen
+            name="Dates"
+            component={DatesScreen}
           />
         </>
       ) : (

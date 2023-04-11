@@ -7,4 +7,5 @@ export * from "./ModuleScreen"
 export * from "./DiscussionScreen"
 export * from "./SignUpScreen"
 export * from "./ProgressScreen"
+export * from "./DatesScreen"
 // export other screens here

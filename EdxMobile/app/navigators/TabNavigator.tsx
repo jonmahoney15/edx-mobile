@@ -3,7 +3,8 @@ import { FontAwesome,MaterialCommunityIcons } from '@expo/vector-icons'
 import {
     CourseDetailScreen,
     DiscussionScreen,
-    ProgressScreen
+    ProgressScreen,
+    DatesScreen
   } from "../screens"
 import { CourseNavigator } from './CourseNavigator';
 
@@ -41,6 +42,12 @@ export function TabNavigator({route, navigation}) {
             options={{ tabBarIcon: () => (<FontAwesome name="line-chart" size={24} color="#fff" />)}}
             initialParams={{id: route.params.id}}
             />
+        <Tab.Screen
+            name="Dates"
+            component={DatesScreen}
+            options={{ tabBarIcon: () => (<FontAwesome name="calendar" size={24} color="#fff" />)}}
+            initialParams={{id: route.params.id}}
+        />
       </Tab.Navigator>
     );
   }
