@@ -19,11 +19,8 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
     _props
 ) {
     const { navigation } = _props
-
     const { id, title, duration, videoId, bodyText } = _props.route.params as ModuleParams;
-
     const [playing, setPlaying] = useState(false);
-
     const [videoTitle, setVideoTitle] = useState('');
 
     const onStateChange = useCallback((state) => {
