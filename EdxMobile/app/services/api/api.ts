@@ -1,12 +1,12 @@
 import axios from 'axios';
-import { BASE_URL, CSRF_TOKEN_API_PATH } from '@env'
+import { BASE_URL, CSRF_TOKEN_API_PATH, AUTH_TOKEN } from '@env'
 
 const api = axios.create({
-    baseURL: BASE_URL
+    baseURL: BASE_URL,
+    headers: {
+        Authorization: `Bearer ${AUTH_TOKEN}`
+    }
 });
-
-api.defaults.withCredentials = true;
-api.defaults.headers.common['USE-JWT-COOKIE'] = true;
 
 const retrieveToken = async() => {
     return axios.get(BASE_URL+CSRF_TOKEN_API_PATH)
