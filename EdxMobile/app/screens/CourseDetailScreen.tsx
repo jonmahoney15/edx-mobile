@@ -1,10 +1,13 @@
 import React, { FC, useState } from "react"
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ImageBackground } from 'react-native'
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ImageBackground, StatusBar, SafeAreaView, Platform } from 'react-native'
 import { AppStackScreenProps, goBack } from "../navigators"
 import { observer } from "mobx-react-lite"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { PrettyHeader } from "../components/PrettyHeader"
 import { Course } from "../models/Course"
+import { colors } from "../theme/colors"
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 function FetchCourseDetailFromApi(course_id) {
   const course: Course = {
@@ -81,54 +84,72 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   };
 
   return (
-    <ImageBackground source={require('../../assets/images/futuristic_library_technology.png')} style={styles.container}>
-      <PrettyHeader
-        title={course.title}
-        theme='black'
-        onLeftPress={goBack}
-        onRightPress={handleProfilePress}
-      />
-      <View style={styles.beginContainer}>
-        <Text style={styles.beginCourse}>Begin Your course today</Text>
-        <TouchableOpacity onPress={() => handleModulePress(course.modules[0])}>
-          <View style={styles.startContainer}>
-            <Text style={styles.viewCourse}>Start Course</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-      <View style={{ flex: 2 }}>
-        <View style={styles.textContainer}>
-          <FlatList
-            data={course.modules}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={styles.moduleContainer}
-                onPress={() => handleModulePress(item)}
-              >
-                <View style={styles.component1}>
-                  {checkedModules.includes(item.id) && (
-                    <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
-                      <MaterialCommunityIcons name="check-circle" size={20} color="#000"/>
-                    </TouchableOpacity>
-                  )}
-                  {!checkedModules.includes(item.id) && (
-                    <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
-                      <MaterialCommunityIcons name="circle" size={20} color="#000"/>
-                    </TouchableOpacity>
-                  )}
-                  <Text style={styles.title}>{item.title}</Text>
+    <View style={styles.blackBackground}>
+      <ImageBackground source={require('../../assets/images/futuristic_library_technology.png')} resizeMode="stretch" imageStyle={{height:'70%',}} style={styles.backgroundImage}>
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.8)']}
+          style={styles.linearGradient}
+          start={{ x:0.5, y: 0.01 }}
+        >
+          <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+          <SafeAreaView style={styles.container}>
+            <PrettyHeader
+              title={course.title}
+              theme='black'
+              onLeftPress={goBack}
+              onRightPress={handleProfilePress}
+            />
+            <View style={styles.screenBody}>
+              <View style={styles.beginContainer}>
+                <Text style={styles.beginCourse}>Begin Your course today</Text>
+                <TouchableOpacity onPress={() => handleModulePress(course.modules[0])}>
+                  <View style={styles.startContainer}>
+                    <Text style={styles.viewCourse}>Start Course</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.moduleListArea}>
+                <View style={styles.textContainer}>
+                  <FlatList
+                    contentContainerStyle={{paddingHorizontal: 8, paddingBottom:16,}}
+                    data={course.modules}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.moduleContainer}
+                        onPress={() => handleModulePress(item)}
+                      >
+                        <View style={styles.component1}>
+                          {checkedModules.includes(item.id) && (
+                            <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
+                              <MaterialCommunityIcons name="check-circle" size={20} color="#000"/>
+                            </TouchableOpacity>
+                          )}
+                          {!checkedModules.includes(item.id) && (
+                            <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
+                              <MaterialCommunityIcons name="circle" size={20} color="#000"/>
+                            </TouchableOpacity>
+                          )}
+                          <Text style={styles.title}>{item.title}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    )}
+                  />
                 </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </View >
-    </ImageBackground>
+              </View >
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
+      </ImageBackground>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
+  blackBackground: {
+    flex: 1,
+    backgroundColor: colors.black,
+  },
   component1: {
     width: '100%',
     height: 40,
@@ -148,16 +169,28 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginLeft: 15
   },
-  container: {
-    display: 'flex',
+  backgroundImage: {
     flex: 1,
-    backgroundColor: '#000',
-    resizeMode: 'cover',
+    justifyContent: 'flex-start',
+  },
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  linearGradient: {
+    flex: 1,
+  },
+  screenBody: {
+    flex: 1,
+    alignItems: 'center',
+    paddingBottom: 70,
   },
   textContainer: {
-    marginTop: 40,
+    marginTop: 0,
     flex: 1,
-    padding: 8,
+  },
+  moduleListArea: {
+    flex: 1,
   },
   moduleContainer: {
     flexDirection: 'row',
