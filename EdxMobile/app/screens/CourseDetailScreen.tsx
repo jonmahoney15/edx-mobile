@@ -57,7 +57,6 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   const [checkedModules, setCheckedModules] = useState<string[]>([]);
 
   const handleModulePress = (module) => {
-    console.log(module)
     if (course.modules.length > 0) {
       navigation.navigate('Module', {
         id: module.id,
