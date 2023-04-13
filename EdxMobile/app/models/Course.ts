@@ -1,6 +1,7 @@
 export interface Course {
   id: string;
-  title: string;
+  course_id: string;
+  name: string;
   image: any;
   description: string;
   modules: Array<{

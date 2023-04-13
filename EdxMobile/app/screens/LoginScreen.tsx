@@ -7,6 +7,7 @@ import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { api } from "../services/api"
 import { LinearGradient } from 'expo-linear-gradient';
+import { CLIENT_ID, CLIENT_SECRET } from '@env';
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -35,6 +36,33 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
 
+  const fetchAuthToken = async () => {
+    await api.post(
+      '/oauth2/access_token/',
+      {
+        "username": authEmail,
+        "password": authPassword,
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type": "client_credentials"
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        validateStatus: function (status) {
+          return status < 500;
+        }
+      }
+    ).then(response => {
+      setAuthToken(response.data.access_token);
+    })
+    .catch((e) => {
+      console.log('In Login Error:');
+      console.log(e.toJSON());
+      setAuthToken('');
+    });
+  }
+
   const login = async() => {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
@@ -45,14 +73,12 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
 
     if (authenticated) {
-      setAuthToken(String(Date.now()))
+      fetchAuthToken()
     } else {
       setAuthToken('')
     }
 
-    //setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
+    setIsSubmitted(false)
   }
 
   const submitLogin = async () => {

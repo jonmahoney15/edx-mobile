@@ -17,7 +17,6 @@ import {
   WelcomeScreen,
   SignUpScreen,
   ProgressScreen,
-  CourseDetailScreen,
   DatesScreen,
   DiscussionThreadScreen
 } from "../screens"
@@ -25,11 +24,13 @@ import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
 
 type CourseDetailScreenParams = {
-  id: string
-}
+  id: string;
+  title: string;
+  url: string;
+};
 
 type ModuleScreenParams = {
-  id: string,
+  id: string;
   title: string;
   duration: string;
   videoId: string;
@@ -47,10 +48,10 @@ export type AppStackParamList = {
   CourseDetail: CourseDetailScreenParams
   Module: ModuleScreenParams
   Discussion: undefined
+  DiscussionThread: undefined
   SignUp: undefined
-  Progress: undefined
   Dates: undefined
-  Progress: undefined
+  Progress: ProgressScreenParams
 }
 
 const exitRoutes = Config.exitRoutes

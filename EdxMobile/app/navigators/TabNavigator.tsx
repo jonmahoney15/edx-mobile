@@ -6,15 +6,12 @@ import {
     ProgressScreen,
     DatesScreen
   } from "../screens"
-import { CourseNavigator } from './CourseNavigator';
 import { colors } from '../theme';
-// import { useRoute } from '@react-navigation/native';
 
 
 const Tab = createBottomTabNavigator();
 
 export function TabNavigator({route, navigation}) {
-    const course_id = route.params.course_id; //here I get the parameter from the previous screen
     return (
       <Tab.Navigator screenOptions={({ route }) => ({
         headerShown: false,
@@ -31,8 +28,12 @@ export function TabNavigator({route, navigation}) {
         <Tab.Screen
             name="Modules"
             component={CourseDetailScreen}
-            options={ {tabBarIcon: ({focused}) => (<FontAwesome name='home' size={26} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}}/>)}}
-            initialParams={{id: route.params.id}}
+            options={{ tabBarIcon: ({focused}) => (<FontAwesome name='home' size={30} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}}/>)}}
+            initialParams={{
+              id: route.params.id,
+              title: route.params.title,
+              url: route.params.url
+            }}
         />
         <Tab.Screen
             name="Discussion"

@@ -1,9 +1,11 @@
 import { observer } from "mobx-react-lite"
-import { StatusBar,SafeAreaView, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
+import React, { FC } from "react"
+import { AppStackScreenProps } from "../navigators"
+import { StatusBar,SafeAreaView, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
 
 function FetchDiscussionThreadFromApi(threadId){
-    discussion = {
+    const discussion = {
         thread_id: 213123,
         title: "Got feedback or questions about this Demo course?",
         body: "Hi All,"+
@@ -38,7 +40,7 @@ function FetchDiscussionThreadFromApi(threadId){
     return discussion;
 }
 
-data = FetchDiscussionThreadFromApi("dummy-thread-id")
+const data = FetchDiscussionThreadFromApi("dummy-thread-id")
 
 interface DiscussionThreadScreenProps extends AppStackScreenProps<"DiscussionThread"> {}
 

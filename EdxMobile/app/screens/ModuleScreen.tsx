@@ -9,7 +9,7 @@ import { colors } from "../theme";
 interface ModuleScreenProps extends AppStackScreenProps<"Module"> { }
 
 interface ModuleParams {
-    id: string,
+    id: string;
     title: string;
     duration: string;
     videoId: string;
