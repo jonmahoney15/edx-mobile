@@ -1,11 +1,13 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle, ImageBackground, View, Image, ImageStyle } from "react-native"
-import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
+import { TextInput, TextStyle, ViewStyle, ImageBackground, View, Image, ImageStyle, Platform, StatusBar, SafeAreaView, StyleSheet } from "react-native"
+import {Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { api } from "../services/api"
+import { LinearGradient } from 'expo-linear-gradient';
+
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
@@ -39,7 +41,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    const authenticated = true;//await submitLogin()
+    const authenticated = true//await submitLogin() 
+
 
     if (authenticated) {
       setAuthToken(String(Date.now()))
@@ -106,15 +109,31 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   }, [])
 
   return (
-      <View style={$contentandbackgroundImage}> 
-        <View style={$contentContainer}>
-          <Text testID="login-heading" tx="loginScreen.loginScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
+    <View style={$background}> 
+      <ImageBackground source={require('../../assets/images/loginPageImage.png')} 
+        style={{position: 'absolute', bottom: 0, width:'100%', height: 300,}}>
+
+        <LinearGradient
+           colors={['rgba(0,0,0,0.8)', 'transparent']}
+           style={styles.linearGradient}
+           start={{ x:0.5, y: 0.01 }}
+        >
+
+        </LinearGradient>
+
+      </ImageBackground>
+
+      <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.screenBody}>
+          <Text testID="login-heading" tx="loginScreen.loginScreenTitle" preset="heading" style={$loginScreenTitleStyle}/>
+          <Image
+              source={require('../../assets/images/app-icon-all.png')}
+              style={{width: 100, height: 80, alignSelf: 'center'}}
+            />
+        
           {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
           
-          <Image
-            source={require('../../assets/images/app-icon-all.png')}
-            style={$openEdxLogoImage}
-          />
           <TextField
             value={authEmail}
             onChangeText={setAuthEmail}
@@ -158,42 +177,40 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             style={$signUpButton}
             onPress={handleSignUpPress}
           />
+        
         </View>
-        <ImageBackground source={require('../../assets/images/loginPageImage.png')} style={$backgroundImage} />
-      </View>
+      </SafeAreaView>      
+    </View>
   )
 })
 
-const $openEdxLogoImage: ImageStyle = {
-  width: 100, 
-  height: 100,
-  alignSelf: 'center',
-  resizeMode: 'contain',
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+   
+  },
+  screenBody: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    paddingHorizontal: 46,
+  },
+  linearGradient: {
+    flex: 1,
+  },
+});
 
-const $contentandbackgroundImage: ViewStyle = {
+const $background: ViewStyle = {
   flex: 1,
   backgroundColor: 'black',
 };
 
-const $backgroundImage: ViewStyle = {
-  flex: 1,
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-};
-
-const $contentContainer: ViewStyle = {
-  flex: 1,
-  justifyContent: 'center',
-  padding: 50
-};
-
 const $loginScreenTitleStyle: TextStyle = {
-  marginTop: spacing.extraLarge,
-  marginBottom: spacing.small,
+  marginTop: spacing.large,
+  marginBottom: 0,
   color: "white", // add this line to set the text color of the heading to white
   textAlign: 'center',
-  fontSize: 34, // set the font size to 28
+  fontSize: 28, // set the font size to 28
 }
 
 const $enterDetails: TextStyle = {
@@ -210,11 +227,10 @@ const $textField: ViewStyle = {
 }
 
 const $tapButton: ViewStyle = {
-  marginTop: spacing.extraSmall,
+  marginBottom: spacing.medium,
 }
 
 const $signUpButton: TextStyle = {
-  marginTop: spacing.medium,
   textDecorationLine: "underline",
   textAlign: "right",
   fontWeight: "bold",

@@ -1,9 +1,10 @@
 import React, { FC, useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, StatusBar, SafeAreaView, Platform } from 'react-native';
 import { AppStackScreenProps, goBack } from "../navigators";
 import { observer } from "mobx-react-lite";
 import YoutubePlayer, { getYoutubeMeta } from 'react-native-youtube-iframe';
 import { PrettyHeader } from "../components/PrettyHeader";
+import { colors } from "../theme";
 
 interface ModuleScreenProps extends AppStackScreenProps<"Module"> { }
 
@@ -42,37 +43,49 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
     };
 
     return (
-        <ImageBackground source={require('../../assets/images/futuristic_realistic_classroom.png')} style={styles.container}>
-            <ImageBackground source={require('../../assets/images/module_overlay_background.png')} style={styles.overlay}>
-                <PrettyHeader
-                    title={title}
-                    theme='grey'
-                    onLeftPress={goBack}
-                    onRightPress={handleProfilePress}
-                />
-                <View>
-                    <View style={styles.content}>
-                        <Text style={styles.text}>{"\n"}{bodyText}</Text>
+        <ImageBackground source={require('../../assets/images/futuristic_realistic_classroom.png')} resizeMode="cover" style={styles.backgroundImage}>
+            <View style={styles.translucentOverlay}>
+                <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+                <SafeAreaView style={styles.container}>
+                    <PrettyHeader
+                            title={title}
+                            theme='grey'
+                            onLeftPress={goBack}
+                            onRightPress={handleProfilePress}
+                    />
+
+                    <View style={styles.screenBody}> 
+                        <View style={styles.content}>
+                            <Text style={styles.text}>{"\n"}{bodyText}</Text>
+                        </View>
+                        <View style={styles.video}>
+                            <Text style={styles.videoTitle}>{videoTitle}</Text>
+                            <YoutubePlayer
+                                height={300}
+                                videoId={videoId}
+                                play={playing}
+                                onChangeState={onStateChange}
+                            />
+                        </View>
                     </View>
-                    <View style={styles.video}>
-                        <Text style={styles.videoTitle}>{videoTitle}</Text>
-                        <YoutubePlayer
-                            height={300}
-                            videoId={videoId}
-                            play={playing}
-                            onChangeState={onStateChange}
-                        />
-                    </View>
-                </View>
-            </ImageBackground>
+                </SafeAreaView>
+            </View>
         </ImageBackground>
     );
 });
 
 const styles = StyleSheet.create({
+    backgroundImage: {
+        flex: 1,
+    },
     container: {
         flex: 1,
-        resizeMode: 'cover',
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    screenBody: {
+        flex: 1,
+        alignItems: 'center',
+        paddingBottom: 70,
     },
     text: {
         fontSize: 14,
@@ -95,13 +108,9 @@ const styles = StyleSheet.create({
         paddingRight: 45,
         paddingTop: 20
     },
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        bottom: 0,
-        right: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+    translucentOverlay: {
+        flex: 1,
+        backgroundColor: colors.translucentBackground,
     }
 });
 

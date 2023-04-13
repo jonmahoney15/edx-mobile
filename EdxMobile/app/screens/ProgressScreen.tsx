@@ -2,10 +2,11 @@ import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
 import { Platform, StatusBar, SafeAreaView, ImageBackground, StyleSheet, View, Button } from "react-native"
 import { Text } from "../components"
-import { AppStackScreenProps } from "../navigators"
+import { AppStackScreenProps, goBack } from "../navigators"
 import { useStores } from "../models"
 import { FontAwesome, Feather } from '@expo/vector-icons'
 import { colors } from "../theme"
+import { PrettyHeader } from "../components/PrettyHeader"
 
 
 const backgroundImage = require("../../assets/images/futuristic_library_technology.png")
@@ -16,44 +17,42 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
   _props,
 ) {
   const { navigation } = _props
+
+  const handleProfilePress = () => {
+    navigation.navigate('Profile');
+  };
   
   return (
     <View style={styles.blackBackground}>
-      <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
-      <StatusBar translucent={true} backgroundColor="transparent" />
-      <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
-            <View style={styles.titleArea}>
-              <Text numberOfLines={1} style={styles.title}>Course Progress</Text>
+      <ImageBackground source={backgroundImage} resizeMode="stretch" imageStyle={{height: '70%'}} style={styles.backgroundImage}>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+        <SafeAreaView style={styles.container}>
+          <PrettyHeader title="Course Progress" theme="black" onLeftPress={goBack} onRightPress={handleProfilePress}/>
+            <View style={styles.screenBody}>
+              <View style={styles.completionCard}>
+                <View style={styles.leftContent}>
+                  <Text style={styles.cardTitle}>Course completion</Text>
+                  <Text style={styles.description}>This represents how much of the course content you have completed. Note that some content may not yet be released.</Text>
+                </View>
+                <View style={styles.rightContent}>
+                  <Text textBreakStrategy="simple" style={styles.completionPercent}>0%</Text>
+                </View>
               </View>
-            <Feather name="user" color='#fff' size={24} onPress={() => navigation.goBack()}/>
-          </View>
-          <View style={styles.screenBody}>
-            <View style={styles.completionCard}>
-              <View style={styles.leftContent}>
-                <Text style={styles.cardTitle}>Course completion</Text>
-                <Text style={styles.description}>This represents how much of the course content you have completed. Note that some content may not yet be released.</Text>
+              <View style={styles.gradeCard}>
+                <View style={styles.leftContent}>
+                  <Text style={styles.cardTitle}>Grades</Text>
+                  <Text style={styles.description}>This represents your weighted grade against the grade needed to pass this course.</Text>
+                </View>
+                <View style={styles.rightContent}>
+                  <Text textBreakStrategy="simple" style={styles.completionPercent}>0%</Text>
+                </View>
               </View>
-              <View style={styles.rightContent}>
-                <Text textBreakStrategy="simple" style={styles.completionPercent}>0%</Text>
-              </View>
-            </View>
-            <View style={styles.gradeCard}>
-              <View style={styles.leftContent}>
-                <Text style={styles.cardTitle}>Grades</Text>
-                <Text style={styles.description}>This represents your weighted grade against the grade needed to pass this course.</Text>
-              </View>
-              <View style={styles.rightContent}>
-                <Text textBreakStrategy="simple" style={styles.completionPercent}>0%</Text>
+              <View style={styles.gradeCardBottom}> 
+                <Text style={[styles.description, styles.gradeBottomText]}>A weighted grade of <Text weight="bold" style={[styles.description, styles.gradeBottomText]}>50%</Text> is required to pass in this course</Text>
               </View>
             </View>
-            <View style={styles.gradeCardBottom}> 
-              <Text style={[styles.description, styles.gradeBottomText]}>A weighted grade of <Text weight="bold" style={[styles.description, styles.gradeBottomText]}>50%</Text> is required to pass in this course</Text>
-            </View>
-          </View>
-      </SafeAreaView> 
-    </ImageBackground>
+        </SafeAreaView> 
+      </ImageBackground>
     </View>
     
   )
@@ -67,44 +66,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    paddingBottom: 40,
   },
-  image: {
+  backgroundImage: {
     flex: 1,
     justifyContent: 'flex-start',
-    height: '70%',
-  },
-  header: {
-    display: 'flex',
-    width: '100%',
-    height: 40,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    backgroundColor: colors.headerDark,
-    marginTop: 12,
-    
-  },
-  titleArea: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    overflow: 'hidden',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'normal',
-    color: 'white',
-    textAlignVertical: 'center',
-    width: 'auto',
   },
   screenBody: {
     flex: 1,
     justifyContent: 'flex-end',
     paddingHorizontal: 10,
-    paddingVertical: 30,
+    paddingBottom: 70,
   },
   completionCard: { 
     display: 'flex',
