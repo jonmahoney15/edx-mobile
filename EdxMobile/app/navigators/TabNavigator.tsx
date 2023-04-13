@@ -49,7 +49,7 @@ export function TabNavigator({route, navigation}) {
         <Tab.Screen
             name="Dates"
             component={DatesScreen}
-            options={{ tabBarIcon: () => (<FontAwesome name="calendar" size={24} color="#fff" />)}}
+            options={{ tabBarIcon: ({focused}) => (<FontAwesome name="calendar" size={24} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}}/>)}}
             initialParams={{id: route.params.id}}
         />
       </Tab.Navigator>
