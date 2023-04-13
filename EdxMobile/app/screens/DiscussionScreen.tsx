@@ -1,11 +1,12 @@
 import React, { FC } from "react"
-import { StatusBar, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
+import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
 import { AppStackScreenProps } from "../navigators"
 import { observer } from "mobx-react-lite"
 import {Header} from "react-native-elements"
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
+import { colors } from "../theme"
 
-function FetchDiscussionFromApi(course_id){   //sample function should be replaced with code to interact with API
+function FetchDiscussionListFromApi(course_id){   //sample function should be replaced with code to interact with API
     const discussions = [     //dummy discussions
     {
       'id': 0,
@@ -94,11 +95,11 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
   // @ts-ignore
   const course_id = route.params.course_id;
   //@ts-ignore
-  //const { title, description, image, modules } = FetchDiscussionFromApi(course_id);
+  //const { title, description, image, modules } = FetchDiscussionListFromApi(course_id);
   const imagePath = require('../../assets/images/word-cloud.jpeg');
 
   const handlePostPress = (module) => {
-
+    navigation.navigate('DiscussionThread');
   };
 
   const handleProfilePress = () => {
@@ -106,21 +107,20 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
   };
 
   return (
-    <View style={styles.container}>
-    <Header
-        placement="left"
-        leftComponent={<Feather name="chevron-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
-        centerComponent={{ text: "Discussions", style: { color: '#fff', fontSize: 20 } }}
-        rightComponent={<Feather name="user" size={24} color="white" onPress={() => handleProfilePress()}/>}
-        containerStyle={{
-          justifyContent: 'space-around',
-          backgroundColor: 'black'
-        }}
-    />
-      <ImageBackground source={backgroundImage} style={styles.background}>
-        <View style={styles.backgroundTransparency}>
+    <View style={styles.blackBackground}>
+        <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
+        <StatusBar translucent={true} backgroundColor="transparent" />
+        <SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => handleProfilePress()}/>
+                <View style={styles.titleArea}>
+                <Text numberOfLines={1} style={styles.title}>Discussions</Text>
+                </View>
+                <Feather name="user" color='#fff' size={24} onPress={() => navigation.goBack()}/>
+            </View>
+          <View style={styles.screenBody}>
             <FlatList
-              data={FetchDiscussionFromApi("course-13434x")}        //dummy course id
+              data={FetchDiscussionListFromApi("course-13434x")}        //dummy course id
               //keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
@@ -141,8 +141,9 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
                 </TouchableOpacity>
               )}
             />
-        </View>
-      </ImageBackground>
+            </View>
+        </SafeAreaView>
+        </ImageBackground>
     </View>
   );
 });
@@ -150,15 +151,42 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
 const backgroundImage = require('../../assets/images/futuristic-background.png');
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  backgroundTransparency: {
-    flex: 1,
-    backgroundColor: '#000c',
-  },
-  background: {
+  header: {
+      display: 'flex',
+      width: '100%',
+      height: 40,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 12,
+      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      marginTop: 12,
+    },
+  blackBackground: {
+      flex: 1,
+      backgroundColor: '#000c',
+    },
+    container: {
+      flex: 1,
+      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+      paddingBottom: 40,
+      backgroundColor: '#000c',
+    },
+  titleArea: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      paddingHorizontal: 16,
+      overflow: 'hidden',
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: 'normal',
+      color: 'white',
+      textAlignVertical: 'center',
+      width: 'auto',
+    },
+    background: {
     flex: 1,
     resizeMode: 'cover', // or 'stretch' or 'contain'
     width: '100%',
@@ -168,20 +196,20 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   image: {
-    height: 200,
-    width: '100%',
-    resizeMode: 'cover',
-  },
-  postContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    backgroundColor : '#fff0',
-    borderRadius: 8,
-    borderBottomColor: '#fffa',
-    margin: 4,
-    borderBottomWidth: 1,
+      flex: 1,
+      justifyContent: 'flex-start',
+      height: '100%',
+    },
+    postContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 12,
+        backgroundColor : '#fff0',
+        borderRadius: 8,
+        borderBottomColor: '#fffa',
+        margin: 4,
+        borderBottomWidth: 1,
   },
   postTitle: {
     width: '100%',

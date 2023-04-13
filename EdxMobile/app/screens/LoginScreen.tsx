@@ -39,7 +39,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    const authenticated = await submitLogin() 
+    const authenticated = true;//await submitLogin()
 
     if (authenticated) {
       setAuthToken(String(Date.now()))
@@ -47,7 +47,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       setAuthToken('')
     }
 
-    setIsSubmitted(false)
+    //setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
   }
