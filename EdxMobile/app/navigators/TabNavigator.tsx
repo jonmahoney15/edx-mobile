@@ -17,7 +17,7 @@ export function TabNavigator({route, navigation}) {
         headerShown: false,
         tabBarStyle: {
           paddingHorizontal: 5,
-          paddingBottom: 4,
+          paddingBottom: 24,
           backgroundColor: colors.solidBackground,
           position: 'absolute',
           borderTopWidth: 0,

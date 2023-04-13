@@ -1,13 +1,10 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { Platform, StatusBar, SafeAreaView, ImageBackground, StyleSheet, View, Button } from "react-native"
+import { Platform, StatusBar, SafeAreaView, ImageBackground, StyleSheet, View } from "react-native"
 import { Text } from "../components"
 import { AppStackScreenProps, goBack } from "../navigators"
-import { useStores } from "../models"
-import { FontAwesome, Feather } from '@expo/vector-icons'
-import { colors, typography } from "../theme"
+import { colors } from "../theme"
 import Timeline from 'react-native-timeline-flatlist'
-import { fonts } from "react-native-elements/dist/config"
 import { PrettyHeader } from "../components/PrettyHeader"
 
 
