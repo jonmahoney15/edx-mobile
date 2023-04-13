@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     backgroundColor: colors.translucentBackground,
-    marginTop: 12,
+    marginTop: 75,
   },
   blackHeader: {
     display: 'flex',
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     backgroundColor: colors.headerDark,
-    marginTop: 12, 
+    marginTop: 75, 
   },
   titleArea: {
     flex: 1,

@@ -18,7 +18,8 @@ import {
   SignUpScreen,
   ProgressScreen,
   CourseDetailScreen,
-  DatesScreen
+  DatesScreen,
+  DiscussionThreadScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
@@ -92,10 +93,17 @@ const AppStack = observer(function AppStack() {
             name="Dates"
             component={DatesScreen}
           />
+          <Stack.Screen
+            name="DiscussionThread"
+            component={DiscussionThreadScreen}
+          />
         </>
       ) : (
         <>
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen 
+            name="Login" 
+            component={LoginScreen}
+          />
           <Stack.Screen
             name="SignUp"
             component={SignUpScreen}

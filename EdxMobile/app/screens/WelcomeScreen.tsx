@@ -1,54 +1,60 @@
 import { observer } from "mobx-react-lite"
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { Image, TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet} from "react-native"
 import { Button, Text } from "../components"
-import { isRTL } from "../i18n"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
-import { colors, spacing } from "../theme"
-import {Card, Header} from "react-native-elements"
-import { FontAwesome } from '@expo/vector-icons' 
-import { NONE } from "apisauce"
-import { LoginScreen } from "./LoginScreen"
-import { log } from "console"
+import { colors } from "../theme"
+import { Card } from "react-native-elements"
+import { FontAwesome, Feather } from '@expo/vector-icons'
+import { api } from '../services/api' 
 
-const courses = [
+const hardcodedCourses = [
   {
-    id: '3123123',
-    title: 'Introduction to React Native',
-    courseInfo: 'edX - DemoX',
-    image: require("../../assets/images/word-cloud.jpeg"),
-    description: 'Learn the basics of building mobile apps with React Native.',
+    id: 0,
+    course_id: 'course-v1:edx+DemoX+Into_React_Native',
+    name: 'Introduction to React Native',
+    org: 'edx',
+    number: 'DemoX',
+    short_description: 'Learn the basics of building mobile apps with React Native.',
   },
   {
-    id: '3123124',
-    title: 'Advanced React Native',
+    id: 1,
+    name: 'Advanced React Native',
+    org: 'edx',
+    number: 'DemoX',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),
-    description: 'React Native skills with advanced topics.',
+    short_description: 'React Native skills with advanced topics.',
   },
   {
-    id: '3123125',
-    title: 'HTML, JavaScript, CSS',
+    id: 2,
+    name: 'HTML, JavaScript, CSS',
+    org: 'edx',
+    number: 'DemoX',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),
-    description: 'Get started with the basics',
+    short_description: 'Get started with the basics',
   },
   {
-    title: 'Advanced React Native 2',
+    id: 3,
+    name: 'Advanced React Native 2',
+    org: 'edx',
+    number: 'DemoX',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),
-    description: 'React Native skills with advanced topics.',
+    short_description: 'React Native skills with advanced topics.',
   },
   {
-    title: 'HTML, JavaScript, CSS 2',
+    id: 4,
+    name: 'HTML, JavaScript, CSS 2',
+    org: 'edx',
+    number: 'DemoX',
     courseInfo: 'edX - DemoX',
     image: require("../../assets/images/word-cloud.jpeg"),
-    description: 'Get started with the basics',
+    short_description: 'Get started with the basics',
   }
 ]
-
-
 
 interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> { }
 
@@ -66,15 +72,12 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     });
   };
 
-  const handleBackArrowPress = () => {
-    navigation.navigate('Login');
-  };
-
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
 
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [courses, setCourses] = useState([]);
   const initialPaddingTop = 400;
 
   const handleScroll = (event) => {
@@ -82,6 +85,28 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   };
 
 
+  const requestCourses = async () => {
+    await api.get('/api/courses/v1/courses', {
+          validateStatus: function (status) {
+            return status < 500;
+          }
+        }
+      ).then(response => {
+        let num = 0;
+        let courses = [...response.data.results.map(course => ({...course, id: num+1})), ...hardcodedCourses]
+        setCourses(courses)
+      })
+      .catch((e) => {
+        console.log('In Login Error:');
+        console.log(e.toJSON());
+        setCourses([...hardcodedCourses]);
+      }
+    );
+  } 
+
+  useEffect(() => {
+    requestCourses();
+  }, []);
 
   const paddingTop = initialPaddingTop - scrollPosition;
 
@@ -94,27 +119,27 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     />
     <SafeAreaView>
       <View style={styles.header}>
-        <FontAwesome name="arrow-left" color='#fff' size={24} onPress={logout}/>
-        <View style={styles.titleArea}>
-          <Text numberOfLines={1} style={styles.title}>Course Progress</Text>
-          </View>
-        <FontAwesome name="user" size={25} color="#fff" onPress={() => handleProfilePress()}/>
+        <Text style={{color: "#FF0000"}} onPress={() => logout()}>Logout</Text>
+        <View style={styles.nameArea}>
+          <Text numberOfLines={1} style={styles.name}>Course Progress</Text>
+        </View>
+        <Feather name="user" size={25} color="#fff" onPress={() => handleProfilePress()}/>
       </View>
       <View style={$bottomContainer}>
         <ScrollView>
           {
             courses.map((c, i) => ( 
               //@ts-ignore
-              <Card key={c.title} containerStyle={$cardStyle}>
+              <Card key={c.name} containerStyle={$cardStyle}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <View>
-                    <Text style={{ fontSize: 16, color: "white"}}>{c.title}</Text>
+                    <Text style={{ fontSize: 16, color: "white"}}>{c.name}</Text>
                   </View>
-                  <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <TouchableOpacity onPress={() => console.log("add navigation to something?")}>
                     <FontAwesome name="gear" color='#fff' size={24} />
                   </TouchableOpacity>
                 </View>
-                <Text style={{ fontSize: 16, color: "grey"}}>{c.courseInfo}</Text>
+                <Text style={{ fontSize: 16, color: "grey"}}>{c.org} - {c.number}</Text>
                 <View style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
                   <Button
                     tx="enrollmentScreen.viewCourseButtonText"
@@ -146,14 +171,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
     marginTop: 12,
   },
-  titleArea: {
+  nameArea: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     paddingHorizontal: 16,
     overflow: 'hidden',
   },
-  title: {
+  name: {
     fontSize: 16,
     fontWeight: 'normal',
     color: 'white',
@@ -186,9 +211,7 @@ const $viewCourseFontStyle: TextStyle = {
 const $bottomContainer: ViewStyle = {
   flexShrink: 1,
   flexGrow:  0,
-  flexBasis: "50%",
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
   justifyContent: "space-around",
-  marginTop: 400
 }

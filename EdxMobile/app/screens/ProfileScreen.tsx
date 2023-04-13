@@ -34,7 +34,7 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
         <Header
             placement="left"
             leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
-            containerStyle={{
+            containerStyle={{ backgroundColor: 'black',
             justifyContent: 'space-around',
           }}
         />

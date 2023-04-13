@@ -9,8 +9,6 @@ import { AppStackScreenProps } from "../navigators";
 
 interface SignUpScreenProps extends AppStackScreenProps<"SignUp"> { }
 
-       
-
 export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScreen(
   _props
 ) {
@@ -34,61 +32,103 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
             )
           },
         [isPasswordHidden],
-      )
+    );
 
-      const handleSignUpPress = () => {
-        navigation.navigate('Login');
-      };
+    const submitRegistration = async () => {
+        const success = await api.post(
+            '/api/user/v1/account/registration/', {
+                "name": name,
+                "email": email,
+                "password": password,
+                "username": username,
+                "terms_of_service": true
+            }, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                validateStatus: function (status) {
+                    return status < 500;
+                }
+            }
+        ).then(response => {
+            console.log(response.data);
+            return response.data.success;
+        }).catch((e) => {
+            console.log('In Sign Up Error:');
+            console.log(e.toJSON());
+            return false;
+        });
+        
+        return success;
+    }
 
-  return (
-    <View style={$contentandbackgroundImage}> 
-        <View style={$contentContainer}>
-            <Text testID="login-heading" tx="loginScreen.loginScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
-            <Image
-                source={require('../../assets/images/app-icon-all.png')}
-                style={$openEdxLogoImage}
-            />
-            <TextField
-                value={email}
-                onChangeText={setEmail}
-                containerStyle={$textField}
-                autoCapitalize="none"
-                autoComplete="email"
-                autoCorrect={false}
-                keyboardType="email-address"
-            />
-            <TextField
-                value={username}
-                onChangeText={setUsername}
-                containerStyle={$textField}
-                autoCapitalize="none"
-            />
-            <TextField
-                value={name}
-                onChangeText={setName}
-                containerStyle={$textField}
-            />
-            <TextField
-                value={password}
-                onChangeText={setPassword}
-                containerStyle={$textField}
-                autoCapitalize="none"
-                autoComplete="password"
-                autoCorrect={false}
-                secureTextEntry={isPasswordHidden}
-                placeholderTx="loginScreen.passwordFieldPlaceholder"
-                RightAccessory={PasswordRightAccessory}
-            />
+    const handleSignUpPress = async () => {
+        const successfullyCreated = await submitRegistration();
 
-            <Button
-                tx="loginScreen.signUp"
-                style={$tapButton}
-                preset="reversed"
-                onPress={handleSignUpPress}
-            />
+        if (successfullyCreated) {
+            navigation.navigate('Login');
+        } else {
+            
+        }
+    };
+
+    const fieldValidation = () => email.trim() !== "" && 
+        name.trim() !== "" &&
+        password.trim() !== "" &&
+        username.trim() !== "";
+
+    return (
+        <View style={$contentandbackgroundImage}> 
+            <View style={$contentContainer}>
+                <Text testID="login-heading" tx="signUpScreen.signUpScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
+                <Image
+                    source={require('../../assets/images/app-icon-all.png')}
+                    style={$openEdxLogoImage}
+                />
+                <TextField
+                    value={email}
+                    onChangeText={setEmail}
+                    containerStyle={$textField}
+                    labelTx={"signUpScreen.emailFieldLabel"}
+                    autoCapitalize="none"
+                    autoComplete="email"
+                    autoCorrect={false}
+                    keyboardType="email-address"
+                />
+                <TextField
+                    value={username}
+                    labelTx="signUpScreen.usernameFieldLabel"
+                    onChangeText={setUsername}
+                    containerStyle={$textField}
+                    autoCapitalize="none"
+                />
+                <TextField
+                    value={name}
+                    labelTx="signUpScreen.nameFieldLabel"
+                    onChangeText={setName}
+                    containerStyle={$textField}
+                />
+                <TextField
+                    value={password}
+                    onChangeText={setPassword}
+                    containerStyle={$textField}
+                    labelTx="signUpScreen.passwordFieldLabel"
+                    autoCapitalize="none"
+                    autoComplete="password"
+                    autoCorrect={false}
+                    secureTextEntry={isPasswordHidden}
+                    RightAccessory={PasswordRightAccessory}
+                />
+                <Button
+                    tx="signUpScreen.signUp"
+                    style={!fieldValidation() ? $disableButton : $tapButton}
+                    preset="reversed"
+                    onPress={handleSignUpPress}
+                    disabled={!fieldValidation()}
+                />
+            </View>
         </View>
-    </View>
-  );
+    );
 });
 
 
@@ -138,5 +178,9 @@ const $textField: ViewStyle = {
 }
 
 const $tapButton: ViewStyle = {
-    marginTop: spacing.extraSmall,
+    marginTop: spacing.extraSmall 
+}
+
+const $disableButton: ViewStyle = {
+    backgroundColor: colors.palette.neutral700
 }

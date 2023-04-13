@@ -6,8 +6,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { PrettyHeader } from "../components/PrettyHeader"
 import { Course } from "../models/Course"
 
-function FetchCourseDetailFromApi(course_id) {   //sample function should be replaced with code to interact with API
-  const course: Course = {              //sample course detail
+function FetchCourseDetailFromApi(course_id) {
+  const course: Course = {
     id: '3123123',
     title: 'Introduction to React Native',
     image: require("../../assets/images/word-cloud.jpeg"),
@@ -57,7 +57,6 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   const [checkedModules, setCheckedModules] = useState<string[]>([]);
 
   const handleModulePress = (module) => {
-    console.log(module)
     if (course.modules.length > 0) {
       navigation.navigate('Module', {
         id: module.id,
@@ -150,6 +149,7 @@ const styles = StyleSheet.create({
     marginLeft: 15
   },
   container: {
+    display: 'flex',
     flex: 1,
     backgroundColor: '#000',
     resizeMode: 'cover',
@@ -168,10 +168,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   beginContainer: {
-    marginBottom: 100,
-    position: 'relative',
-    top: 140,
-    marginLeft: 20,
+    margin: 50,
+    marginBottom: 0,
     width: 336,
     height: 110,
     backgroundColor: '#282424',

@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
     marginVertical: 20,
-
   },
   leftContent: {
     display: 'flex',

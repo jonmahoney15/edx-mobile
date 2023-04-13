@@ -1,30 +1,35 @@
 import axios from 'axios';
-import { BASE_URL, CSRF_TOKEN_API_PATH } from '@env'
+import { BASE_URL, CSRF_TOKEN_API_PATH, AUTH_TOKEN } from '@env'
 
 const api = axios.create({
-    baseURL: BASE_URL
+    baseURL: BASE_URL,
+    headers: {
+        Authorization: `Bearer ${AUTH_TOKEN}`
+    }
 });
 
-api.defaults.withCredentials = true;
-api.defaults.headers.common['USE-JWT-COOKIE'] = true;
-
 const retrieveToken = async() => {
-    return api.get(CSRF_TOKEN_API_PATH).then(response => response.data.csrfToken).catch(error => {
-        console.log("An Error occured loading the csrf token");
-        console.log(error)
-        return null;
-    })
+    return axios.get(BASE_URL+CSRF_TOKEN_API_PATH)
+        .then(response => response.data.csrfToken)
+        .catch(error => {
+            console.log("An Error occured loading the csrf token");
+            console.log(error)
+            return null;
+        });
 }
 
 api.interceptors.request.use(async config => {
-    const token = await retrieveToken();
-    
-    if (token) {
-        config.headers['X-CSRFToken'] = token;
+    if (!config.headers['X-CSRFToken']) {
+        const token = await retrieveToken();
+        
+        if (token) {
+            config.headers['X-CSRFToken'] = token;
+        }
     }
 
     return config;
 }, error => {
+    console.log("Error in intecept")
     Promise.reject(error);
 });
 

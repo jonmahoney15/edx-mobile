@@ -27,8 +27,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   } = useStores()
 
   useEffect(() => {
-    // Here is where you could fetch credentials from keychain or storage
-    // and pre-fill the form fields.
     setAuthEmail("jpmahoney@vt.edu")
     setAuthPassword("Password1")
   }, [])
@@ -41,23 +39,20 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    const authenticated = true; //= await submitLogin() 
+    const authenticated = true;//await submitLogin()
 
     if (authenticated) {
-      console.log(authenticated)
       setAuthToken(String(Date.now()))
     } else {
-      console.log(authenticated)
       setAuthToken('')
     }
 
-    setIsSubmitted(false)
+    //setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
   }
 
   const submitLogin = async () => {
-    
     const success = await api.post(
         '/api/user/v1/account/login_session/',
         {
@@ -68,11 +63,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             'Content-Type': 'multipart/form-data'
           },
           validateStatus: function (status) {
-            return status < 500; // Resolve only if the status code is less than 500
+            return status < 500;
           }
         }
       ).then(response => {
-        console.log(response.data)
         return response.data.success ? response.data.success : false;
       })
       .catch((e) => {
@@ -159,15 +153,13 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             onPress={login}
           />
 
-          <Button
+          <Text
             tx="loginScreen.signUp"
             style={$signUpButton}
-            preset="reversed"
             onPress={handleSignUpPress}
           />
         </View>
-        <ImageBackground source={require('../../assets/images/loginPageImage.png')} style={$backgroundImage}>
-        </ImageBackground>
+        <ImageBackground source={require('../../assets/images/loginPageImage.png')} style={$backgroundImage} />
       </View>
   )
 })
@@ -221,6 +213,10 @@ const $tapButton: ViewStyle = {
   marginTop: spacing.extraSmall,
 }
 
-const $signUpButton: ViewStyle = {
-  marginTop: spacing.extraSmall,
+const $signUpButton: TextStyle = {
+  marginTop: spacing.medium,
+  textDecorationLine: "underline",
+  textAlign: "right",
+  fontWeight: "bold",
+  color: colors.orangeButtonBackgroundColor
 }
