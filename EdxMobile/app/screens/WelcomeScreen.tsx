@@ -65,12 +65,14 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 ) {
   const { navigation } = _props
   const {
-    authenticationStore: { logout },
+    authenticationStore: { logout, isAuthenticated, authToken },
   } = useStores()
 
   const handleCoursePress = (course) => {
-    navigation.navigate('CourseDetail', {
-      id: course.id,
+    navigation.push('CourseDetail', {
+      id: course.course_id,
+      title: course.name,
+      url: course.blocks_url
     });
   };
 
@@ -78,17 +80,18 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     navigation.navigate('Profile');
   };
 
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [courses, setCourses] = useState([]);
-  const initialPaddingTop = 400;
-
-  const handleScroll = (event) => {
-    setScrollPosition(event.nativeEvent.contentOffset.y);
-  };
-
 
   const requestCourses = async () => {
+
+    if(!isAuthenticated) {
+      logout()
+    }
+
     await api.get('/api/courses/v1/courses', {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          },
           validateStatus: function (status) {
             return status < 500;
           }
@@ -109,8 +112,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   useEffect(() => {
     requestCourses();
   }, []);
-
-  const paddingTop = initialPaddingTop - scrollPosition;
 
   return (
   <View style={$background}>

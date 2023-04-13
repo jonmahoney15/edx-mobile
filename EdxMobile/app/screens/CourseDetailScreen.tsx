@@ -1,5 +1,5 @@
-import React, { FC, useState } from "react"
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, ImageBackground, StatusBar, SafeAreaView, Platform } from 'react-native'
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground, StatusBar, SafeAreaView, Platform } from 'react-native';
+import React, { FC, useEffect, useState } from "react";
 import { AppStackScreenProps, goBack } from "../navigators"
 import { observer } from "mobx-react-lite"
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -7,46 +7,45 @@ import { PrettyHeader } from "../components/PrettyHeader"
 import { Course } from "../models/Course"
 import { colors } from "../theme/colors"
 import { LinearGradient } from 'expo-linear-gradient';
+import { api } from '../services/api'
+import { useStores } from "../models"
 
-
-function FetchCourseDetailFromApi(course_id) {
-  const course: Course = {
-    id: '3123123',
-    title: 'Introduction to React Native',
-    image: require("../../assets/images/word-cloud.jpeg"),
-    description: 'Learn the basics of building mobile apps with React Native.',
-    modules: [
+const hardCodedCourse = 
+    [
       {
         id: '1',
-        title: 'Getting Started',
+        display_name: 'Getting Started',
         duration: '1h 30m',
         videoId: '6oFuwhIibo4',
         bodyText: 'In this module, you will learn the fundamentals of React Native, including how to set up your development environment and create your first mobile app. You will explore the basic syntax and structure of React Native components and learn how to use them to build simple user interfaces. By the end of this module, you will have a solid foundation in React Native and be ready to move on to more advanced topics.',
       },
       {
         id: '2',
-        title: 'Building UI with Components',
+        display_name: 'Building UI with Components',
         duration: '2h 15m',
         videoId: 'eAXow8r3lYY',
         bodyText: 'In this module, you will dive deeper into React Native components and learn how to use them to create complex and beautiful user interfaces. you will explore various built-in components like text, images, buttons, and inputs, and learn how to style them using CSS-like syntax. you will also learn how to create custom components by composing multiple existing components. By the end of this module, you will have the skills to build a variety of user interfaces for your mobile app.',
       },
       {
         id: '3',
-        title: 'Navigating Between Screens',
+        display_name: 'Navigating Between Screens',
         duration: '1h 45m',
         videoId: 'OmQCU-3KPms',
         bodyText: 'In this module, you will learn how to create multi-screen mobile apps using React Navigation, a popular library for navigation in React Native. you will explore various navigation patterns like stack navigation, tab navigation, and drawer navigation, and learn how to implement them using React Navigation. you will also learn how to pass data between screens and handle navigation events like back button presses. By the end of this module, you will be able to create sophisticated navigation flows for your mobile app.',
       },
       {
         id: '4',
-        title: 'Managing State with Redux',
+        display_name: 'Managing State with Redux',
         duration: '2h 30m',
         videoId: 'BtJoy4G3N8U',
         bodyText: 'In this module, you will learn how to manage the state of your React Native app using Redux, a popular library for state management in React. you will explore the basic concepts of Redux like store, actions, and reducers, and learn how to use them to manage complex state in your app. you will also learn how to integrate Redux with React Native components using the React-Redux library. By the end of this module, you will have the skills to manage the state of your mobile app in a scalable and maintainable way.',
       },
-    ]
-  }
-  return course
+    ];
+
+interface ICourseDetailsParams {
+  id: string;
+  title: string;
+  url: string;
 }
 
 interface CourseDetailScreenProps extends AppStackScreenProps<"CourseDetail"> { }
@@ -54,13 +53,43 @@ interface CourseDetailScreenProps extends AppStackScreenProps<"CourseDetail"> { 
 export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function CourseDetailScreen(
   _props
 ) {
-  const { navigation } = _props
-  const course_id = _props.route.params.id;
-  const course: Course = FetchCourseDetailFromApi(course_id);
+  const { navigation } = _props;
+  const { id, title, url }  = _props.route.params as ICourseDetailsParams;
+  const [course, setCourse] = useState([]);
   const [checkedModules, setCheckedModules] = useState<string[]>([]);
+  
+  const {
+    authenticationStore: { authToken },
+  } = useStores()
+
+  const FetchCourseDetailFromApi = async () => {
+    await api.get(url, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          },
+          params: {
+            username: 'jpmahoney', //Have to load user for profile next 
+            student_view_data: 'video',
+            depth: 'all'
+          },
+          validateStatus: function (status) {
+            return status < 500;
+          }
+        }
+      ).then(response => {
+        //@ts-ignore
+        const modules = Object.values(response.data.blocks).filter(item => item.type === "chapter");
+        setCourse(modules)
+      })
+      .catch((e) => {
+        console.log('In Login Error:');
+        setCourse(hardCodedCourse);
+      }
+    );
+  }
 
   const handleModulePress = (module) => {
-    if (course.modules.length > 0) {
+    if (course.length > 0) {
       navigation.navigate('Module', {
         id: module.id,
         title: module.title,
@@ -83,6 +112,10 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
     navigation.navigate('Profile');
   };
 
+  useEffect(() => {
+    FetchCourseDetailFromApi()
+  }, [])
+
   return (
     <View style={styles.blackBackground}>
       <ImageBackground source={require('../../assets/images/futuristic_library_technology.png')} resizeMode="stretch" imageStyle={{height:'70%',}} style={styles.backgroundImage}>
@@ -94,7 +127,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
           <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
           <SafeAreaView style={styles.container}>
             <PrettyHeader
-              title={course.title}
+              title={title}
               theme='black'
               onLeftPress={goBack}
               onRightPress={handleProfilePress}
@@ -102,7 +135,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
             <View style={styles.screenBody}>
               <View style={styles.beginContainer}>
                 <Text style={styles.beginCourse}>Begin Your course today</Text>
-                <TouchableOpacity onPress={() => handleModulePress(course.modules[0])}>
+                <TouchableOpacity onPress={() => handleModulePress(course[0])}>
                   <View style={styles.startContainer}>
                     <Text style={styles.viewCourse}>Start Course</Text>
                   </View>
@@ -112,7 +145,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
                 <View style={styles.textContainer}>
                   <FlatList
                     contentContainerStyle={{paddingHorizontal: 8, paddingBottom:16,}}
-                    data={course.modules}
+                    data={course}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                       <TouchableOpacity
@@ -120,17 +153,10 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
                         onPress={() => handleModulePress(item)}
                       >
                         <View style={styles.component1}>
-                          {checkedModules.includes(item.id) && (
                             <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
-                              <MaterialCommunityIcons name="check-circle" size={20} color="#000"/>
+                              <MaterialCommunityIcons name={checkedModules.includes(item.id) ? "check-circle" : "circle"} size={20} color="#000"/>
                             </TouchableOpacity>
-                          )}
-                          {!checkedModules.includes(item.id) && (
-                            <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
-                              <MaterialCommunityIcons name="circle" size={20} color="#000"/>
-                            </TouchableOpacity>
-                          )}
-                          <Text style={styles.title}>{item.title}</Text>
+                          <Text style={styles.title}>{item.display_name}</Text>
                         </View>
                       </TouchableOpacity>
                     )}
