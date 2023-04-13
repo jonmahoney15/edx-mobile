@@ -43,13 +43,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
     const authenticated = true//await submitLogin() 
 
+
     if (authenticated) {
       setAuthToken(String(Date.now()))
     } else {
       setAuthToken('')
     }
 
-    setIsSubmitted(false)
+    //setIsSubmitted(false)
     setAuthPassword("")
     setAuthEmail("")
   }
@@ -119,8 +120,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         >
 
         </LinearGradient>
-
-  
 
       </ImageBackground>
 
