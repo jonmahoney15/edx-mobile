@@ -1,7 +1,7 @@
 import React from "react"
-import { StyleSheet, View, Text } from "react-native"
+import { StyleSheet, View, Text, Platform } from "react-native"
 import { FontAwesome, Feather } from '@expo/vector-icons'
-import { colors } from "../theme"
+import { colors, typography } from "../theme"
 
 
 export interface PrettyHeaderProps {
