@@ -26,7 +26,7 @@ import { TabNavigator } from "./TabNavigator"
 
 type CourseDetailScreenParams = {
   id: string
-};
+}
 
 type ModuleScreenParams = {
   id: string,
@@ -34,6 +34,10 @@ type ModuleScreenParams = {
   duration: string;
   videoId: string;
   bodyText: string;
+}
+
+type ProgressScreenParams = {
+  screenName: string
 }
 
 export type AppStackParamList = {
@@ -46,6 +50,7 @@ export type AppStackParamList = {
   SignUp: undefined
   Progress: undefined
   Dates: undefined
+  Progress: undefined
 }
 
 const exitRoutes = Config.exitRoutes

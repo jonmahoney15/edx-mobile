@@ -7,39 +7,43 @@ import {
     DatesScreen
   } from "../screens"
 import { CourseNavigator } from './CourseNavigator';
+import { colors } from '../theme';
+// import { useRoute } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
 
 export function TabNavigator({route, navigation}) {
     const course_id = route.params.course_id; //here I get the parameter from the previous screen
-
     return (
       <Tab.Navigator screenOptions={({ route }) => ({
-         headerShown: false,
-         tabBarStyle: {
-           paddingHorizontal: 5,
-           paddingTop: 0,
-           backgroundColor: 'rgba(34,36,40,1)',
-           position: 'absolute',
-           borderTopWidth: 0,
-       },
+        headerShown: false,
+        tabBarStyle: {
+          paddingHorizontal: 5,
+          paddingBottom: 4,
+          backgroundColor: colors.solidBackground,
+          position: 'absolute',
+          borderTopWidth: 0,
+        },
+        tabBarActiveTintColor: colors.primaryButton,
+        tabBarInactiveTintColor: colors.text,
      })}>
         <Tab.Screen
             name="Modules"
             component={CourseDetailScreen}
-            options={{ tabBarIcon: () => (<FontAwesome name='home' size={30} color="#fff"/>)}}
+            options={ {tabBarIcon: ({focused}) => (<FontAwesome name='home' size={26} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}}/>)}}
             initialParams={{id: route.params.id}}
         />
         <Tab.Screen
             name="Discussion"
             component={DiscussionScreen}
-            options={{ tabBarIcon: () => (<MaterialCommunityIcons name="comment-multiple" size={24} color="#fff" />)}}
+            options={{ tabBarIcon: ({focused}) => (<MaterialCommunityIcons name="comment-multiple" size={20} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}} />)}}
             initialParams={{id: route.params.id}}
         />
         <Tab.Screen
             name="Progress"
             component={ProgressScreen}
-            options={{ tabBarIcon: () => (<FontAwesome name="line-chart" size={24} color="#fff" />)}}
+            options={{ tabBarIcon: ({focused}) => (<FontAwesome name="line-chart" size={20} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}}/>)}}
             initialParams={{id: route.params.id}}
             />
         <Tab.Screen

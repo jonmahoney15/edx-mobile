@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
-import { Image, TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet} from "react-native"
+import { TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Platform, StatusBar, ImageBackground} from "react-native"
 import { Button, Text } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
@@ -8,6 +8,8 @@ import { colors } from "../theme"
 import { Card } from "react-native-elements"
 import { FontAwesome, Feather } from '@expo/vector-icons'
 import { api } from '../services/api' 
+import { PrettyHeader } from "app/components/PrettyHeader"
+import { color } from "react-native-reanimated"
 
 const hardcodedCourses = [
   {
@@ -111,55 +113,65 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   const paddingTop = initialPaddingTop - scrollPosition;
 
   return (
-  <View style={$container}>
-    <Image
-      source={require('../../assets/images/enrollmentScreenBackroundImage.png')}
-      style={{ position: 'absolute'}}
-      resizeMode="cover"
-    />
-    <SafeAreaView>
-      <View style={styles.header}>
-        <Text style={{color: "#FF0000"}} onPress={() => logout()}>Logout</Text>
-        <View style={styles.nameArea}>
-          <Text numberOfLines={1} style={styles.name}>Course Progress</Text>
-        </View>
-        <Feather name="user" size={25} color="#fff" onPress={() => handleProfilePress()}/>
+  <View style={$background}>
+    <ImageBackground source={require('../../assets/images/enrollmentScreenBackroundImage.png')} resizeMode="cover" style={styles.backgroundImage}>
+      <View style={styles.translucentOverlay}>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.nameArea}>
+              <Text numberOfLines={1} style={styles.name}>Course Progress</Text>
+            </View>
+            <Feather name="user" size={25} color="#fff" onPress={() => handleProfilePress()}/>
+          </View>
+          <View style={$bottomContainer}>
+            <ScrollView>
+              {
+                courses.map((c, i) => ( 
+                  //@ts-ignore
+                  <Card key={c.name} containerStyle={$cardStyle}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <View>
+                        <Text style={{ fontSize: 16, color: "white"}}>{c.name}</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => console.log("add navigation to something?")}>
+                        <FontAwesome name="gear" color='#fff' size={24} />
+                      </TouchableOpacity>
+                    </View>
+                    <Text style={{ fontSize: 16, color: "grey"}}>{c.org} - {c.number}</Text>
+                    <View style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
+                      <Button
+                        tx="enrollmentScreen.viewCourseButtonText"
+                        style={$viewCourseButtonStyle}
+                        textStyle={$viewCourseFontStyle}
+                        preset="secondOrangeButton"
+                        onPress={() => handleCoursePress(c)}
+                      />
+                    </View>
+                  </Card>
+                ))
+              }
+            </ScrollView>     
+          </View>
+        </SafeAreaView>
       </View>
-      <View style={$bottomContainer}>
-        <ScrollView>
-          {
-            courses.map((c, i) => ( 
-              //@ts-ignore
-              <Card key={c.name} containerStyle={$cardStyle}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <View>
-                    <Text style={{ fontSize: 16, color: "white"}}>{c.name}</Text>
-                  </View>
-                  <TouchableOpacity onPress={() => console.log("add navigation to something?")}>
-                    <FontAwesome name="gear" color='#fff' size={24} />
-                  </TouchableOpacity>
-                </View>
-                <Text style={{ fontSize: 16, color: "grey"}}>{c.org} - {c.number}</Text>
-                <View style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
-                  <Button
-                    tx="enrollmentScreen.viewCourseButtonText"
-                    style={$viewCourseButtonStyle}
-                    textStyle={$viewCourseFontStyle}
-                    preset="secondOrangeButton"
-                    onPress={() => handleCoursePress(c)}
-                  />
-                </View>
-              </Card>
-            ))
-          }
-        </ScrollView>     
-      </View>
-    </SafeAreaView>
+    </ImageBackground>
   </View>
   )
 })
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
+  translucentOverlay: {
+    flex: 1,
+    backgroundColor: colors.translucentOverlay,
+  },
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
   header: {
     display: 'flex',
     width: '100%',
@@ -168,7 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: colors.headerDark,
     marginTop: 12,
   },
   nameArea: {
@@ -187,9 +199,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const $container: ViewStyle = {
+const $background: ViewStyle = {
   flex: 1,
-  backgroundColor: colors.enrollmentScreenBackgroundColor,
 }
 
 const $cardStyle: ViewStyle = {

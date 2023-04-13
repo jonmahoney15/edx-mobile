@@ -235,26 +235,24 @@ const $labelStyle: TextStyle = {
 
 const $inputWrapperStyle: ViewStyle = {
   flexDirection: "row",
-  alignItems: "flex-start",
+  alignItems: "center",
   borderWidth: 1,
-  borderRadius: 40,
+  borderRadius: 100,
+  height: 50,
   backgroundColor: colors.textFieldBackgroundColor,
   borderColor: colors.textFieldBorderColor,
   overflow: "hidden",
+  paddingHorizontal: spacing.large, // add horizontal padding
+  paddingVertical: spacing.small, // add vertical padding
+
 }
 
 const $inputStyle: TextStyle = {
   flex: 1,
-  alignSelf: "stretch",
+  alignSelf: "center",
   fontFamily: typography.primary.normal,
   color: colors.textFieldTextColor,
   fontSize: 16,
-  height: 40,
-  // https://github.com/facebook/react-native/issues/21720#issuecomment-532642093
-  paddingHorizontal: spacing.small, // add horizontal padding
-  paddingVertical: spacing.small, // add vertical padding
-  marginVertical: spacing.extraSmall,
-  marginHorizontal: spacing.small,
 }
 
 const $helperStyle: TextStyle = {
@@ -263,13 +261,11 @@ const $helperStyle: TextStyle = {
 
 const $rightAccessoryStyle: ViewStyle = {
   marginEnd: spacing.large,
-  height: 50,
   justifyContent: "center",
   alignItems: "center",
 }
 const $leftAccessoryStyle: ViewStyle = {
   marginStart: spacing.extraSmall,
-  height: 40,
   justifyContent: "center",
   alignItems: "center",
 }

@@ -89,6 +89,7 @@ export const colors = {
   text: "#FFFFFF",
   textDim: "rgba(255, 255, 255, 0.75)",
   translucentBackground: "rgba(40, 36, 36, 0.88)",
+  translucentOverlay: "rgba(0,0,0,0.5)",
   solidBackground: "#282424",
   primaryButton: "#FFB267",
   inputBorder: "rgba(255, 178, 103, 0.6)",
