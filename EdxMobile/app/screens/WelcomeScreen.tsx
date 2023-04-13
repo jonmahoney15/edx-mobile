@@ -99,7 +99,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
       .catch((e) => {
         console.log('In Login Error:');
         console.log(e.toJSON());
-        setCourses([]);
+        setCourses([...hardcodedCourses]);
       }
     );
   } 
