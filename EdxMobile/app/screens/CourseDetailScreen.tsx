@@ -60,6 +60,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   
   const {
     authenticationStore: { authToken },
+    userStore: { username }
   } = useStores()
 
   const FetchCourseDetailFromApi = async () => {
@@ -68,7 +69,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
             Authorization: `Bearer ${authToken}`
           },
           params: {
-            username: 'jpmahoney', //Have to load user for profile next 
+            username: username, 
             student_view_data: 'video',
             depth: 'all'
           },
