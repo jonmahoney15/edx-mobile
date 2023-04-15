@@ -1,15 +1,14 @@
-import { observer } from "mobx-react-lite"
-import React, { FC, useEffect, useState } from "react"
-import { TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Platform, StatusBar, ImageBackground} from "react-native"
-import { Button, Text } from "../components"
-import { useStores } from "../models"
-import { AppStackScreenProps } from "../navigators"
-import { colors } from "../theme"
-import { Card } from "react-native-elements"
-import { FontAwesome, Feather } from '@expo/vector-icons'
-import { api } from '../services/api' 
-import { PrettyHeader } from "app/components/PrettyHeader"
-import { color } from "react-native-reanimated"
+import { observer } from "mobx-react-lite";
+import React, { FC, useEffect, useState } from "react";
+import { TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Platform, StatusBar, ImageBackground} from "react-native";
+import { Button, Text } from "../components";
+import { useStores } from "../models";
+import { AppStackScreenProps } from "../navigators";
+import { colors } from "../theme";
+import { Card } from "react-native-elements";
+import { FontAwesome, Feather } from '@expo/vector-icons';
+import { api } from '../services/api'; 
+import { User, emptyUser } from "../models";
 
 const hardcodedCourses = [
   {
@@ -65,7 +64,17 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 ) {
   const { navigation } = _props
   const {
-    authenticationStore: { logout, isAuthenticated, authToken },
+    authenticationStore: { logout, isAuthenticated, authEmail, authToken },
+    userStore: { 
+      setUserUsername, 
+      setUserEmail, 
+      setUserCountry,
+      setUserDateJoined,
+      setUserEducation,
+      setUserFullName,
+      setUserLanguage,
+      setUserProfileImage 
+    }
   } = useStores()
 
   const handleCoursePress = (course) => {
@@ -99,7 +108,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
       ).then(response => {
         let num = 0;
         let courses = [...response.data.results.map(course => ({...course, id: num+1})), ...hardcodedCourses]
-        setCourses(courses)
+        setCourses(courses);
       })
       .catch((e) => {
         console.log('In Login Error:');
@@ -109,7 +118,32 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     );
   } 
 
+  const fetchUserInfo = async() => {
+    await api.get(`/api/user/v1/accounts?email=${authEmail}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      },
+      validateStatus: function (status) {
+        return status < 500;
+      }
+    }).then(response => {
+      const user = response.data[0];
+      setUserCountry(user.country || "");
+      setUserDateJoined(user.date_joined || "");
+      setUserEmail(user.email || "");
+      setUserFullName(user.name || "");
+      setUserProfileImage(user.profile_image.image_url_full || "");
+      setUserUsername(user.username || "");
+      setUserLanguage(user?.language_proficiences?.length > 0 ? user.language_proficiences[0] : "");
+      setUserEducation(user?.level_of_education || "");
+    }).catch((e) => {
+      console.log('Profile Load Error:');
+      console.log(e.toJSON());
+    });
+  }
+
   useEffect(() => {
+    fetchUserInfo();
     requestCourses();
   }, []);
 

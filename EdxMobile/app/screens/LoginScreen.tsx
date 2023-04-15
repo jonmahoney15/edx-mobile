@@ -1,13 +1,13 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useMemo, useRef, useState } from "react"
-import { TextInput, TextStyle, ViewStyle, ImageBackground, View, Image, ImageStyle, Platform, StatusBar, SafeAreaView, StyleSheet } from "react-native"
-import {Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "../components"
+import { TextInput, TextStyle, ViewStyle, ImageBackground, View, Image, Platform, StatusBar, SafeAreaView, StyleSheet } from "react-native"
+import { Button, Icon, Text, TextField, TextFieldAccessoryProps } from "../components"
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
-import { api } from "../services/api"
+import { api } from "../services/api";
+import { CLIENT_ID, CLIENT_SECRET } from "@env"
 import { LinearGradient } from 'expo-linear-gradient';
-import { CLIENT_ID, CLIENT_SECRET } from '@env';
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -36,41 +36,13 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
 
-  const fetchAuthToken = async () => {
-    await api.post(
-      '/oauth2/access_token/',
-      {
-        "username": authEmail,
-        "password": authPassword,
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type": "client_credentials"
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        validateStatus: function (status) {
-          return status < 500;
-        }
-      }
-    ).then(response => {
-      setAuthToken(response.data.access_token);
-    })
-    .catch((e) => {
-      console.log('In Login Error:');
-      console.log(e.toJSON());
-      setAuthToken('');
-    });
-  }
-
   const login = async() => {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
     
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    const authenticated = true//await submitLogin() 
-
+    const authenticated = await submitLogin() 
 
     if (authenticated) {
       fetchAuthToken()
@@ -79,6 +51,33 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     }
 
     setIsSubmitted(false)
+  }
+
+  const fetchAuthToken = async () => {
+    await api.post(
+        '/oauth2/access_token/',
+        {
+        "username": authEmail,
+        "password": authPassword,
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type": "client_credentials"
+        }, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        validateStatus: function (status) {
+            return status < 500;
+        }
+        }
+    ).then(response => {
+        setAuthToken(response.data.access_token);
+    })
+    .catch((e) => {
+        console.log('In Login Error:');
+        console.log(e.toJSON());
+        setAuthToken('');
+    });
   }
 
   const submitLogin = async () => {
@@ -136,19 +135,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   return (
     <View style={$background}> 
-      <ImageBackground source={require('../../assets/images/loginPageImage.png')} 
-        style={{position: 'absolute', bottom: 0, width:'100%', height: 300,}}>
-
-        <LinearGradient
-           colors={['rgba(0,0,0,0.8)', 'transparent']}
-           style={styles.linearGradient}
-           start={{ x:0.5, y: 0.01 }}
-        >
-
-        </LinearGradient>
-
-      </ImageBackground>
-
       <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
       <SafeAreaView style={styles.container}>
         <View style={styles.screenBody}>
@@ -157,9 +143,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
               source={require('../../assets/images/app-icon-all.png')}
               style={{width: 100, height: 80, alignSelf: 'center'}}
             />
-        
           {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
-          
           <TextField
             value={authEmail}
             onChangeText={setAuthEmail}
@@ -173,7 +157,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             status={errors?.authEmail ? "error" : undefined}
             onSubmitEditing={() => authPasswordInput.current?.focus()}
           />
-
           <TextField
             ref={authPasswordInput}
             value={authPassword}
@@ -189,7 +172,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             onSubmitEditing={login}
             RightAccessory={PasswordRightAccessory}
           />
-
           <Button
             testID="login-button"
             tx="loginScreen.tapToSignIn"
@@ -197,15 +179,20 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             preset="orangeButton"
             onPress={login}
           />
-
           <Text
             tx="loginScreen.signUp"
             style={$signUpButton}
             onPress={handleSignUpPress}
           />
-        
         </View>
-      </SafeAreaView>      
+      </SafeAreaView>
+      <ImageBackground source={require('../../assets/images/loginPageImage.png')} 
+        style={{flex:1, paddingBottom:0, bottom: 0, width:'100%', height: '100%',}}>
+        <LinearGradient
+           colors={['rgba(0,0,0,0.3)', 'transparent']}
+           style={styles.linearGradient}
+           start={{ x:0.5, y: 0.01 }}/>
+      </ImageBackground>     
     </View>
   )
 })

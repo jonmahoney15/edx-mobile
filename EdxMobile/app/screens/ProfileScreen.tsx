@@ -5,20 +5,10 @@ import { Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import { Header, Avatar } from "react-native-elements" 
 import { useStores } from "../models"
-import { FontAwesome, FontAwesome5, SimpleLineIcons,Feather } from '@expo/vector-icons'
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { formatDate } from "../utils/formatDate"
 
 const backgroundImage = require('../../assets/images/futuristic-background.png');
-
-const user = {
-    id:"sloanej",
-    memberSince: "2023",
-    fullName : "Jack Sloane",
-    avatar : undefined,
-    location: "United States",
-    education: "Bachelor's Degree",
-    language: "English",
-    email: "random@google.com"
-}
 
 interface ProfileScreenProps extends AppStackScreenProps<"Profile"> {}
 
@@ -28,7 +18,9 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
   const { navigation } = _props
   const {
     authenticationStore: { logout },
-  } = useStores()
+    userStore: { username, language, country, name, level_of_education, profile_image, email, date_joined }
+  } = useStores();
+
   return (
     <View style={styles.container}>
         <Header
@@ -41,31 +33,27 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
         <ImageBackground source={backgroundImage} style={styles.background}>
             <View style={styles.backgroundTransparency}>
                 <View style={styles.box}>
-                    {user.avatar ? (
-                        <Image source={{ uri: user.avatar }}  style={styles.avatar}/>
-                      ) : (
-                         <View style={styles.avatarIcon}>
-                            <FontAwesome5 name="user-alt" size={50} color="white" />
-                         </View>
-                    )}
-                  <Text style={styles.userId}>{user.id}</Text>
-                  <Text style={styles.memberSince}>Member since {user.memberSince}</Text>
+                  <Image source={{ uri: profile_image }}  style={styles.avatar}/>
+                  <Text style={styles.userId}>{username}</Text>
+                  <Text style={styles.memberSince}>Member since {formatDate(date_joined)}</Text>
                   <View style={styles.separator}/>
                   <Text style={styles.rowTextKey}>Full Name</Text>
-                  <Text style={styles.rowTextValue}>{user.fullName}</Text>
+                  <Text style={styles.rowTextValue}>{name}</Text>
+                  <Text style={styles.rowTextKey}>Email</Text>
+                  <Text style={styles.rowTextValue}>{email}</Text>
                   <Text style={styles.rowTextKey}>Location</Text>
-                  <Text style={styles.rowTextValue}>{user.location}</Text>
+                  <Text style={styles.rowTextValue}>{country}</Text>
                   <Text style={styles.rowTextKey}>Education</Text>
-                  <Text style={styles.rowTextValue}>{user.education}</Text>
+                  <Text style={styles.rowTextValue}>{level_of_education}</Text>
                   <Text style={styles.rowTextKey}>Primary Language Spoken</Text>
-                  <Text style={styles.rowTextValue}>{user.language}</Text>
+                  <Text style={styles.rowTextValue}>{language}</Text>
                   <Button title="Logout" color="red" onPress={logout} />
                 </View>
             </View>
         </ImageBackground>
     </View>
   )
-})
+});
 
 
 const styles = StyleSheet.create({
@@ -90,6 +78,7 @@ const styles = StyleSheet.create({
     },
     userId:{
         flexDirection: 'row',
+        marginTop: 10,
         width: '100%',
         color: 'white',
         fontSize: 26,
