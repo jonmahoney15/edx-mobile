@@ -66,6 +66,7 @@
     "react": "18.1.0",
     "react-native": "0.70.8",
     "react-native-bootsplash": "4.3.2",
+    "react-native-cookies": "^3.3.0",
     "react-native-dotenv": "^3.4.8",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.8.0",
@@ -79,6 +80,7 @@
     "reactotron-mst": "3.1.4",
     "reactotron-react-js": "^3.3.7",
     "reactotron-react-native": "5.0.3",
+    "tough-cookie": "^4.1.2",
     "universal-cookie": "^4.0.4"
   },
   "devDependencies": {
@@ -95,6 +97,7 @@
     "@types/react": "~18.0.24",
     "@types/react-native": "~0.70.6",
     "@types/react-native-vector-icons": "^6.4.13",
+    "@types/tough-cookie": "^4.0.2",
     "@typescript-eslint/eslint-plugin": "5.28.0",
     "@typescript-eslint/parser": "5.28.0",
     "babel-jest": "26.6.3",

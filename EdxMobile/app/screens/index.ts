@@ -8,5 +8,5 @@ export * from "./DiscussionScreen"
 export * from "./DiscussionThreadScreen"
 export * from "./SignUpScreen"
 export * from "./ProgressScreen"
-export * from "./DatesScreen"
+export * from "./DatesScreen/DatesScreen"
 // export other screens here

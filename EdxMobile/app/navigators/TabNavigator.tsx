@@ -8,7 +8,6 @@ import {
   } from "../screens"
 import { colors } from '../theme';
 
-
 const Tab = createBottomTabNavigator();
 
 export function TabNavigator({route, navigation}) {
@@ -31,8 +30,7 @@ export function TabNavigator({route, navigation}) {
             options={{ tabBarIcon: ({focused}) => (<FontAwesome name='home' size={30} color={focused ? colors.primaryButton : colors.text} style={{marginBottom:-5,}}/>)}}
             initialParams={{
               id: route.params.id,
-              title: route.params.title,
-              url: route.params.url
+              title: route.params.title
             }}
         />
         <Tab.Screen

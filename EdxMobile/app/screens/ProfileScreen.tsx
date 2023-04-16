@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { TextStyle, Image, ImageBackground,View,StyleSheet,  ViewStyle, Button } from "react-native"
+import { Image, ImageBackground, View, StyleSheet, Button } from "react-native"
 import { Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
-import { Header, Avatar } from "react-native-elements" 
+import { Header} from "react-native-elements" 
 import { useStores } from "../models"
-import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { formatDate } from "../utils/formatDate"
 
 const backgroundImage = require('../../assets/images/futuristic-background.png');
@@ -20,15 +20,17 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
     authenticationStore: { logout },
     userStore: { username, language, country, name, level_of_education, profile_image, email, date_joined }
   } = useStores();
-
   return (
     <View style={styles.container}>
         <Header
             placement="left"
-            leftComponent={<FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>}
-            containerStyle={{ backgroundColor: 'black',
-            justifyContent: 'space-around',
-          }}
+            leftComponent={
+                <FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
+            }
+            containerStyle={{ 
+                backgroundColor: 'black',
+                justifyContent: 'space-around',
+            }}
         />
         <ImageBackground source={backgroundImage} style={styles.background}>
             <View style={styles.backgroundTransparency}>

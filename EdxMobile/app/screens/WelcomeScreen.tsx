@@ -7,8 +7,7 @@ import { AppStackScreenProps } from "../navigators";
 import { colors } from "../theme";
 import { Card } from "react-native-elements";
 import { FontAwesome, Feather } from '@expo/vector-icons';
-import { api } from '../services/api'; 
-import { User, emptyUser } from "../models";
+import { api } from '../services/api';
 
 const hardcodedCourses = [
   {
@@ -65,7 +64,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   const { navigation } = _props
   const {
     authenticationStore: { logout, isAuthenticated, authEmail, authToken },
-    userStore: { 
+    userStore: {
       setUserUsername, 
       setUserEmail, 
       setUserCountry,
@@ -88,7 +87,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
-
   const [courses, setCourses] = useState([]);
 
   const requestCourses = async () => {
@@ -119,23 +117,31 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   } 
 
   const fetchUserInfo = async() => {
+    console.log(authEmail)
     await api.get(`/api/user/v1/accounts?email=${authEmail}`, {
+      withCredentials: true,
       headers: {
-        Authorization: `Bearer ${authToken}`
+        Authorization: `Bearer ${authToken}`,
       },
       validateStatus: function (status) {
         return status < 500;
       }
-    }).then(response => {
-      const user = response.data[0];
-      setUserCountry(user.country || "");
-      setUserDateJoined(user.date_joined || "");
-      setUserEmail(user.email || "");
-      setUserFullName(user.name || "");
-      setUserProfileImage(user.profile_image.image_url_full || "");
-      setUserUsername(user.username || "");
-      setUserLanguage(user?.language_proficiences?.length > 0 ? user.language_proficiences[0] : "");
-      setUserEducation(user?.level_of_education || "");
+    }).then(async response => {
+      if (response.data?.length > 0) {
+        const user = response.data[0];
+        setUserCountry(user.country || "");
+        setUserDateJoined(user.date_joined || "");
+        setUserEmail(user.email || "");
+        setUserFullName(user.name || "");
+        setUserProfileImage(user.profile_image.image_url_full || "");
+        setUserUsername(user.username || "");
+        setUserLanguage(user?.language_proficiences?.length > 0 ? user.language_proficiences[0] : "");
+        setUserEducation(user?.level_of_education || "");        
+      } else {
+        console.log("No User data, bad user")
+        logout()
+      }
+
     }).catch((e) => {
       console.log('Profile Load Error:');
       console.log(e.toJSON());
