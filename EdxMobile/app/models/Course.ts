@@ -9,5 +9,13 @@ export interface Course {
     duration: string;
     videoId: string;
     bodyText: string;
+    submodules: Array<{
+      id: string;
+      title: string;
+      duration: string;
+      videoId: string;
+      bodyText: string;
+      moduleId: string;
+    }>;
   }>;
 }
