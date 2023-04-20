@@ -1,10 +1,8 @@
 import React, { FC } from "react"
-import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
-import { AppStackScreenProps } from "../navigators"
+import { StatusBar, SafeAreaView, ImageBackground, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { AppStackScreenProps } from "../../navigators"
 import { observer } from "mobx-react-lite"
-import {Header} from "react-native-elements"
-import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
-import { colors } from "../theme"
+import { FontAwesome, EvilIcons, AntDesign, Feather } from '@expo/vector-icons'
 
 function FetchDiscussionListFromApi(course_id){   //sample function should be replaced with code to interact with API
     const discussions = [     //dummy discussions
@@ -92,11 +90,8 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
 ) {
   const { navigation } = _props
   const { route } = _props
-  // @ts-ignore
-  const course_id = route.params.course_id;
-  //@ts-ignore
-  //const { title, description, image, modules } = FetchDiscussionListFromApi(course_id);
-  const imagePath = require('../../assets/images/word-cloud.jpeg');
+  const { id } = route.params;
+  const imagePath = require('../../../assets/images/word-cloud.jpeg');
 
   const handlePostPress = (module) => {
     navigation.navigate('DiscussionThread');
@@ -118,10 +113,9 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
                 </View>
                 <Feather name="user" color='#fff' size={24} onPress={() => handleProfilePress()}/>
             </View>
-          <View style={styles.screenBody}>
+          <View>
             <FlatList
-              data={FetchDiscussionListFromApi("course-13434x")}        //dummy course id
-              //keyExtractor={(item) => item.id}
+              data={FetchDiscussionListFromApi("course-13434x")}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.postContainer}
@@ -148,7 +142,7 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
   );
 });
 
-const backgroundImage = require('../../assets/images/futuristic-background.png');
+const backgroundImage = require('../../../assets/images/futuristic-background.png');
 
 const styles = StyleSheet.create({
   header: {

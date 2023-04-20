@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { FC, useEffect, useState } from "react";
-import { TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Platform, StatusBar, ImageBackground} from "react-native";
+import { TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity, StyleSheet, Platform, StatusBar, ImageBackground } from "react-native";
 import { Button, Text } from "../components";
 import { useStores } from "../models";
 import { AppStackScreenProps } from "../navigators";
@@ -74,27 +74,21 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
       setUserLanguage,
       setUserProfileImage 
     }
-  } = useStores()
-
+  } = useStores();
+  const [courses, setCourses] = useState([]);
+  
   const handleCoursePress = (course) => {
     navigation.push('CourseDetail', {
       id: course.course_id,
-      title: course.name,
-      url: course.blocks_url
+      title: course.name
     });
   };
 
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
-  const [courses, setCourses] = useState([]);
 
   const requestCourses = async () => {
-
-    if(!isAuthenticated) {
-      logout()
-    }
-
     await api.get('/api/courses/v1/courses', {
           headers: {
             Authorization: `Bearer ${authToken}`
@@ -104,22 +98,22 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
           }
         }
       ).then(response => {
-        let num = 0;
-        let courses = [...response.data.results.map(course => ({...course, id: num+1})), ...hardcodedCourses]
-        setCourses(courses);
-      })
-      .catch((e) => {
-        console.log('In Login Error:');
-        console.log(e.toJSON());
-        setCourses([...hardcodedCourses]);
+        if (response.status === 200) {
+          const { data } = response;
+          let num = 0;
+          let courses = [...data.results.map(course => ({...course, id: num++}))]
+          setCourses(courses);
+        }
+      }).catch((e) => {
+        console.log('Error in Courses Load:');
+        const error = Object.assign(e);
+        console.log(error);
       }
     );
   } 
 
   const fetchUserInfo = async() => {
-    console.log(authEmail)
     await api.get(`/api/user/v1/accounts?email=${authEmail}`, {
-      withCredentials: true,
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -141,7 +135,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         console.log("No User data, bad user")
         logout()
       }
-
     }).catch((e) => {
       console.log('Profile Load Error:');
       console.log(e.toJSON());

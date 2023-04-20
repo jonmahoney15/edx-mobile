@@ -31,9 +31,7 @@ type CourseDetailScreenParams = {
 type ModuleScreenParams = {
   id: string;
   title: string;
-  duration: string;
-  videoId: string;
-  bodyText: string;
+  url: string;
 }
 
 type ProgressScreenParams = {
@@ -44,13 +42,17 @@ type DatesScreenParams = {
   id: string,
 }
 
+type DiscussionScreenParams = {
+  id: string,
+}
+
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
   Profile: undefined
   CourseDetail: CourseDetailScreenParams
   Module: ModuleScreenParams
-  Discussion: undefined
+  Discussion: DiscussionScreenParams
   DiscussionThread: undefined
   SignUp: undefined
   Dates: DatesScreenParams

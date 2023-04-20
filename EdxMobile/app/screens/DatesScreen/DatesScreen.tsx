@@ -89,9 +89,8 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
         newCourseDates.push(todayItem)
       }
 
-      setCourseDates([...newCourseDates])
-    })
-    .catch((e) => {
+      setCourseDates(newCourseDates)
+    }).catch((e) => {
       console.log('Error In Course Dates Load:');
       const error = Object.assign(e);
       console.log(error)
