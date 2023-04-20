@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { AppStackScreenProps } from "../navigators"
+import { AppStackScreenProps } from "../../navigators"
 import { StatusBar,SafeAreaView, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
 
@@ -117,7 +117,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
   );
 });
 
-const backgroundImage = require('../../assets/images/futuristic-background.png');
+const backgroundImage = require('../../../assets/images/futuristic-background.png');
 
 const styles = StyleSheet.create({
   header: {

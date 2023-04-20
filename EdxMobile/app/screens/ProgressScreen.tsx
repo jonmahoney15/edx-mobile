@@ -49,7 +49,7 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
 
           setPassingPercent(grade_range*100);
           setGradePercent(course_grade*100);
-          let progress = completed / (completed+incompleted);
+          let progress = Math.trunc((completed / (completed+incompleted))*100);
           setCompletionPercent(progress)
         }
       })

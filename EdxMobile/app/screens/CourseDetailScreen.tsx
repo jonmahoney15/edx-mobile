@@ -79,7 +79,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
           }
         }
       ).then(response => {
-        let modules = hardCodedCourse
+        let modules = hardCodedCourse;
         if (response.status === 200) {
           const { data } = response;
           
@@ -110,10 +110,8 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
     if (course.length > 0) {
       navigation.navigate('Module', {
         id: module.id,
-        title: module.title,
-        duration: module.duration,
-        videoId: module.videoId,
-        bodyText: module.bodyText,
+        title: module.display_name,
+        url: module.lms_web_url
       });
     }
   };
@@ -122,9 +120,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
     navigation.navigate('Module', {
       id: submodule.id,
       title: submodule.title,
-      duration: submodule.duration,
-      videoId: submodule.videoId,
-      bodyText: submodule.bodyText,
+      url: submodule.lms_web_url
     });
   };
 
