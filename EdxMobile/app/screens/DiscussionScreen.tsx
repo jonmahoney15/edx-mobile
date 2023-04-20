@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
+import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { AppStackScreenProps } from "../navigators"
 import { observer } from "mobx-react-lite"
 import {Header} from "react-native-elements"
@@ -112,11 +112,11 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
         <StatusBar translucent={true} backgroundColor="transparent" />
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => handleProfilePress()}/>
+                <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
                 <View style={styles.titleArea}>
                 <Text numberOfLines={1} style={styles.title}>Discussions</Text>
                 </View>
-                <Feather name="user" color='#fff' size={24} onPress={() => navigation.goBack()}/>
+                <Feather name="user" color='#fff' size={24} onPress={() => handleProfilePress()}/>
             </View>
           <View style={styles.screenBody}>
             <FlatList

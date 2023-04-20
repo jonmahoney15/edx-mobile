@@ -54,21 +54,20 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   }
 
   const fetchAuthToken = async () => {
-    await api.post(
-        '/oauth2/access_token/',
+    await api.post('/oauth2/access_token/',
         {
-        "username": authEmail,
-        "password": authPassword,
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type": "client_credentials"
+          "username": authEmail,
+          "password": authPassword,
+          "client_id": CLIENT_ID,
+          "client_secret": CLIENT_SECRET,
+          "grant_type": "client_credentials"
         }, {
-        headers: {
+          headers: {
             'Content-Type': 'multipart/form-data'
-        },
-        validateStatus: function (status) {
+          },
+          validateStatus: function (status) {
             return status < 500;
-        }
+          }
         }
     ).then(response => {
         setAuthToken(response.data.access_token);

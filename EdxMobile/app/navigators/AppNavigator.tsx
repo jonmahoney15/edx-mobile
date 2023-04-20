@@ -26,7 +26,6 @@ import { TabNavigator } from "./TabNavigator"
 type CourseDetailScreenParams = {
   id: string;
   title: string;
-  url: string;
 };
 
 type ModuleScreenParams = {
@@ -38,7 +37,11 @@ type ModuleScreenParams = {
 }
 
 type ProgressScreenParams = {
-  screenName: string
+  id: string,
+}
+
+type DatesScreenParams = {
+  id: string,
 }
 
 export type AppStackParamList = {
@@ -50,7 +53,7 @@ export type AppStackParamList = {
   Discussion: undefined
   DiscussionThread: undefined
   SignUp: undefined
-  Dates: undefined
+  Dates: DatesScreenParams
   Progress: ProgressScreenParams
 }
 

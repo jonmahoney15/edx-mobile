@@ -13,6 +13,7 @@ const getLocale = (): Locale => {
 }
 
 export const formatDate = (date: string, dateFormat?: string, options?: Options) => {
+  console.log(date)
   const locale = getLocale()
   const dateOptions = {
     ...options,

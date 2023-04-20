@@ -1,13 +1,12 @@
 import { observer } from "mobx-react-lite"
-import React, { FC } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { Platform, StatusBar, SafeAreaView, ImageBackground, StyleSheet, View, Button } from "react-native"
 import { Text } from "../components"
 import { AppStackScreenProps, goBack } from "../navigators"
 import { useStores } from "../models"
-import { FontAwesome, Feather } from '@expo/vector-icons'
 import { colors } from "../theme"
 import { PrettyHeader } from "../components/PrettyHeader"
-
+import { api } from "../services/api"
 
 const backgroundImage = require("../../assets/images/futuristic_library_technology.png")
 
@@ -16,18 +15,62 @@ interface ProgressScreenProps extends AppStackScreenProps<"Progress"> {}
 export const ProgressScreen: FC<ProgressScreenProps> = observer(function ProgressScreen(
   _props,
 ) {
-  const { navigation } = _props
 
+  const {
+    authenticationStore: {
+      authToken
+    }
+  } = useStores();
+  const { navigation } = _props
+  const { id }  = _props.route.params
+  const [gradePercent, setGradePercent] = useState(0);
+  const [passingPercent, setPassingPercent] = useState(50);
+  const [completionPercent, setCompletionPercent] = useState(0);
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
+
+  const fetchProgress = async () => {
+    await api.get(`/api/course_home/progress/${id}/`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          },
+          validateStatus: function (status) {
+            return status < 500;
+          }
+        }
+      ).then(response => {
+        if (response.status === 200) {
+          const { data } = response;
+          const completed = data.completion_summary.complete_count;
+          const incompleted = data.completion_summary.incomplete_count;
+          const course_grade = data.course_grade.percent;
+          const grade_range = data.grading_policy?.grade_range?.Pass;
+
+          setPassingPercent(grade_range*100);
+          setGradePercent(course_grade*100);
+          let progress = completed / (completed+incompleted);
+          setCompletionPercent(progress)
+        }
+      })
+      .catch((e) => {
+        console.log('Error In Course Progress Load:');
+        const error = Object.assign(e);
+        console.log(error)
+      }
+    );
+  }
+
+  useEffect(() => {
+    fetchProgress();
+  })
   
   return (
     <View style={styles.blackBackground}>
       <ImageBackground source={backgroundImage} resizeMode="stretch" imageStyle={{height: '70%'}} style={styles.backgroundImage}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
         <SafeAreaView style={styles.container}>
-          <PrettyHeader title="Course Progress" theme="black" onLeftPress={goBack} onRightPress={handleProfilePress}/>
+          <PrettyHeader title="Course Progress" theme="black" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
             <View style={styles.screenBody}>
               <View style={styles.completionCard}>
                 <View style={styles.leftContent}>
@@ -35,7 +78,7 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
                   <Text style={styles.description}>This represents how much of the course content you have completed. Note that some content may not yet be released.</Text>
                 </View>
                 <View style={styles.rightContent}>
-                  <Text textBreakStrategy="simple" style={styles.completionPercent}>0%</Text>
+                  <Text textBreakStrategy="simple" style={styles.completionPercent}>{completionPercent}%</Text>
                 </View>
               </View>
               <View style={styles.gradeCard}>
@@ -44,11 +87,11 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
                   <Text style={styles.description}>This represents your weighted grade against the grade needed to pass this course.</Text>
                 </View>
                 <View style={styles.rightContent}>
-                  <Text textBreakStrategy="simple" style={styles.completionPercent}>0%</Text>
+                  <Text textBreakStrategy="simple" style={styles.completionPercent}>{gradePercent}%</Text>
                 </View>
               </View>
               <View style={styles.gradeCardBottom}> 
-                <Text style={[styles.description, styles.gradeBottomText]}>A weighted grade of <Text weight="bold" style={[styles.description, styles.gradeBottomText]}>50%</Text> is required to pass in this course</Text>
+                <Text style={[styles.description, styles.gradeBottomText]}>A weighted grade of <Text weight="bold" style={[styles.description, styles.gradeBottomText]}>{passingPercent}%</Text> is required to pass in this course</Text>
               </View>
             </View>
         </SafeAreaView> 
