@@ -1,87 +1,98 @@
-import React, { FC } from "react"
-import { StatusBar, SafeAreaView, ImageBackground, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native'
+import React, { FC, useEffect, useState } from "react"
+import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { AppStackScreenProps } from "../../navigators"
 import { observer } from "mobx-react-lite"
-import { FontAwesome, EvilIcons, AntDesign, Feather } from '@expo/vector-icons'
+import { PrettyHeader } from "../../components/PrettyHeader"
+import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
+import { colors } from "../../theme"
+import { useStores } from "../../models"
+import { api } from "../../services/api"
+import { string } from "mobx-state-tree/dist/internal"
 
-function FetchDiscussionListFromApi(course_id){   //sample function should be replaced with code to interact with API
-    const discussions = [     //dummy discussions
-    {
-      'id': 0,
-      'course_id':4255135,
-      'title' : 'Got feedback or questions about this Demo course?',
-      'author' : 'BenPiscopo',
-      'likes_count' : 104,
-      'comments_count' : 419
-    },
-    {
-      'id': 1,
-      'course_id':4255135,
-      'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
-      'author' : 'cpacheco0109',
-      'likes_count' : 20,
-      'comments_count' : 2
-    },
-    {
-      'id': 2,
-      'course_id':4255135,
-      'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
-      'author' : 'Cavinaru',
-      'likes_count' : 0,
-      'comments_count' : 1
-    },
-    {
-      'id': 3,
-      'course_id':4255135,
-      'title' : 'Got feedback or questions about this Demo course?',
-      'author' : 'BenPiscopo',
-      'likes_count' : 104,
-      'comments_count' : 419
-    },
-    {
-      'id': 4,
-      'course_id':4255135,
-      'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
-      'author' : 'cpacheco0109',
-      'likes_count' : 20,
-      'comments_count' : 2
-    },
-    {
-      'id': 5,
-      'course_id':4255135,
-      'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
-      'author' : 'Cavinaru',
-      'likes_count' : 0,
-      'comments_count' : 1
-    },
-    {
-      'id': 6,
-      'course_id': 4255135,
-      'title' : 'Got feedback or questions about this Demo course?',
-      'author' : 'BenPiscopo',
-      'likes_count' : 104,
-      'comments_count' : 419
-    },
-    {
-      'id': 7,
-      'course_id': 4255135,
-      'title' : 'Hello from CR Hello my name is Carolina Pacheco, I ...',
-      'author' : 'cpacheco0109',
-      'likes_count' : 20,
-      'comments_count' : 2
-    },
-    {
-      'id': 8,
-      'course_id':4255135,
-      'title' : 'Hello and greetings from Texas Hi, my name is Carl ...',
-      'author' : 'Cavinaru',
-      'likes_count' : 0,
-      'comments_count' : 1
-    }]
-
-    //const discussion = discussions.filter(discuss => discuss.id == course_id);
-    return discussions;
+interface DiscussionPost {
+  id: string,
+  title: string,
+  preview_body: string,
+  author: string,
+  vote_count: number,
+  comment_count: number,
+  icon?: string
 }
+
+const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
+  {
+    id: '0',
+    title: 'Got feedback or questions about this Demo course?',
+    preview_body: 'Hi All, This course is a sandbox area to explore and',
+    author: 'BenPiscopo',
+    vote_count: 104,
+    comment_count: 419
+  },
+  {
+    id: '1',
+    title: 'Hello from CR',
+    preview_body: 'Hello my name is Carolina Pacheco, I',
+    author: 'cpacheco0109',
+    vote_count: 20,
+    comment_count: 2
+  },
+  {
+    id: '2',
+    title: 'Hello and greetings from Texas',
+    preview_body: 'Hi, my name is Carl. I\'m from Texas and',
+    author: 'Cavinaru',
+    vote_count: 0,
+    comment_count: 1
+  },
+  {
+    id: '3',
+    title: 'Got feedback or questions about this Demo course?',
+    preview_body: 'Hello my name is Carolina Pacheco, I',
+    author: 'BenPiscopo',
+    vote_count: 104,
+    comment_count: 419
+  },
+  {
+    id: '4',
+    title: 'Got feedback or questions about this Demo course?',
+    preview_body: 'Hi All, This course is a sandbox area to explore and',
+    author: 'BenPiscopo',
+    vote_count: 104,
+    comment_count: 419
+  },
+  {
+    id: '5',
+    title: 'Hello from CR',
+    preview_body: 'Hello my name is Carolina Pacheco, I',
+    author: 'cpacheco0109',
+    vote_count: 20,
+    comment_count: 2
+  },
+  {
+    id: '6',
+    title: 'Hello and greetings from Texas',
+    preview_body: 'Hi, my name is Carl. I\'m from Texas and',
+    author: 'Cavinaru',
+    vote_count: 0,
+    comment_count: 1
+  },
+  {
+    id: '7',
+    title: 'Got feedback or questions about this Demo course?',
+    preview_body: 'Hello my name is Carolina Pacheco, I',
+    author: 'BenPiscopo',
+    vote_count: 104,
+    comment_count: 419
+  },
+  {
+    id: '8',
+    title: 'Got feedback or questions about this Demo course?',
+    preview_body: 'Hi All, This course is a sandbox area to explore and',
+    author: 'BenPiscopo',
+    vote_count: 104,
+    comment_count: 419
+  }
+]
 
 interface DiscussionScreenProps extends AppStackScreenProps<"Discussion"> {}
 
@@ -89,10 +100,9 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
   _props
 ) {
   const { navigation } = _props
-  const { route } = _props
-  const { id } = route.params;
-  const imagePath = require('../../../assets/images/word-cloud.jpeg');
 
+  const { id } = _props.route.params
+ 
   const handlePostPress = (module) => {
     navigation.navigate('DiscussionThread');
   };
@@ -101,142 +111,254 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
     navigation.navigate('Profile');
   };
 
+  const {
+    authenticationStore: {
+      authToken
+    }
+  } = useStores();
+
+  const [discussions, setDisucssions] = useState([]);
+  
+  const fetchProfilePicture = async (username) =>  {
+    let profilePicture = "";
+    await api.get(`/api/user/v1/accounts/${encodeURIComponent(username)}`, 
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        },
+        validateStatus: function (status: number) {
+          return status < 500;
+        }
+      }
+    ).then(response => {
+      if (response.status === 200) {
+        const { data } = response
+        if (data.profile_image.has_image){
+          profilePicture = data.profile_image.image_url_small;
+        }
+      } 
+    })
+    .catch((e) => {
+      console.log('Error In Post Author Icon Load:');
+      const error = Object.assign(e);
+      console.log(error);
+    }); 
+    return profilePicture;
+  }
+  const fetchDiscussions = async () => {
+    await api.get(`/api/discussion/v1/threads/?course_id=${encodeURIComponent(id)}`, 
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        },
+        validateStatus: function (status: number) {
+          return status < 500;
+        }
+      }
+    ).then(async response => {
+        let threads: DiscussionPost[] = [];
+        if (response.status === 200) {
+          const { data } = response;
+  
+          const results: any[] = Object.values(data.results) 
+
+          results.forEach(item => {
+            let thread: DiscussionPost = {
+              id: item.id,
+              title: item.title,
+              preview_body: item.preview_body,
+              author: item.author,
+              vote_count: item.vote_count,
+              comment_count: item.comment_count
+            }
+            threads.push(thread)
+          })   
+
+          // append pfp url to thread object if the author has a custom pfp
+          await Promise.all(
+            threads.map(async (thread) => {
+              const profilePictureUrl = await fetchProfilePicture(thread.author)
+              if (profilePictureUrl) {
+                thread.icon = profilePictureUrl 
+              }
+              return thread
+            })
+          )
+          
+
+          setDisucssions(threads);
+
+        } else{
+          setDisucssions(hardCodedDiscussions);
+        }
+       
+      })
+      .catch((e) => {
+        console.log('Error In Discussions Load:');
+        const error = Object.assign(e);
+        console.log(error);
+
+        setDisucssions(hardCodedDiscussions);
+      }
+    );
+  }
+  useEffect(() => {
+    fetchDiscussions();
+  }, [])
+
   return (
-    <View style={styles.blackBackground}>
-        <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
-        <StatusBar translucent={true} backgroundColor="transparent" />
+    <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.backgroundImage}>
+      <View style={styles.translucentOverlay}>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
-                <View style={styles.titleArea}>
-                <Text numberOfLines={1} style={styles.title}>Discussions</Text>
-                </View>
-                <Feather name="user" color='#fff' size={24} onPress={() => handleProfilePress()}/>
-            </View>
-          <View>
+          <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
+          <View style={styles.screenBody}>
             <FlatList
-              data={FetchDiscussionListFromApi("course-13434x")}
+              style = {styles.list}
+              directionalLockEnabled={true}
+              data={discussions}    //dummy course id
+              //keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.postContainer}
                   onPress={() => handlePostPress(item)}
-                >
-                  <EvilIcons name="user" size={36} color="white" />
+                >       
+                  {item.icon ? <Image defaultSource={iconPlaceholder} source={{uri: item.icon}} style={styles.pfp}/> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder}/> }
                   <View style={styles.titleRow}>
-                    <Text style={styles.postTitle}>{item.title}</Text>
-                    <Text style={styles.postAuthor}>{item.author}</Text>
+                    <Text numberOfLines={1} style={styles.postTitle}>
+                      {item.title}
+                      <Text numberOfLines={1} style={styles.postPreview}> 
+                        {" " + item.preview_body}
+                      </Text>
+                    </Text>
+                    <Text numberOfLines={1} style={styles.postAuthor}>{item.author}</Text>
                     <View style={styles.counterRow}>
-                            <AntDesign name="like1" size={16} color="white" />
-                            <Text style={styles.postCounter}>{item.likes_count}</Text>
-                            <FontAwesome name="comments" size={16} color="white" />
-                            <Text style={styles.postCounter}> {item.comments_count}</Text>
+                      <View style={styles.likes}>
+                        <AntDesign name="like1" size={16} color="white" style={{marginRight: 5,}}/>
+                        <Text style={styles.postCounter}>{item.vote_count}</Text>
+                      </View>
+                      <View style={styles.posts}>
+                        <FontAwesome name="comments" size={16} color="white" style={{marginRight: 5,}}/>
+                        <Text style={styles.postCounter}> {item.comment_count}</Text>
+                      </View>
                     </View>
                   </View>
                 </TouchableOpacity>
               )}
             />
-            </View>
+          </View>
         </SafeAreaView>
-        </ImageBackground>
-    </View>
+      </View>
+    </ImageBackground>
   );
 });
 
 const backgroundImage = require('../../../assets/images/futuristic-background.png');
+const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
 
 const styles = StyleSheet.create({
-  header: {
-      display: 'flex',
-      width: '100%',
-      height: 40,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 12,
-      backgroundColor: 'rgba(0, 0, 0, 0.3)',
-      marginTop: 12,
-    },
-  blackBackground: {
-      flex: 1,
-      backgroundColor: '#000c',
-    },
-    container: {
-      flex: 1,
-      paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-      paddingBottom: 40,
-      backgroundColor: '#000c',
-    },
-  titleArea: {
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'center',
-      paddingHorizontal: 16,
-      overflow: 'hidden',
-    },
-    title: {
-      fontSize: 16,
-      fontWeight: 'normal',
-      color: 'white',
-      textAlignVertical: 'center',
-      width: 'auto',
-    },
-    background: {
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    height: '100%',
+  },
+  translucentOverlay: {
+    flex: 1,
+    backgroundColor: colors.translucentBackground,
+  },
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  screenBody: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingBottom: 40,
+  },
+  background: {
     flex: 1,
     resizeMode: 'cover', // or 'stretch' or 'contain'
     width: '100%',
     height: '100%',
   },
-  titleRow:{
-    width: '100%'
+  list: {
+    width: '100%',
   },
-  image: {
-      flex: 1,
-      justifyContent: 'flex-start',
-      height: '100%',
-    },
-    postContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 12,
-        backgroundColor : '#fff0',
-        borderRadius: 8,
-        borderBottomColor: '#fffa',
-        margin: 4,
-        borderBottomWidth: 1,
+  postContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomColor: '#fffa',
+    borderBottomWidth: 1,
+    marginBottom: 12,
+  },
+  pfp: {
+    width: 35,
+    height: 35,
+    marginLeft: -10, 
+    marginRight: 10,
+    borderRadius:100,
+  },
+  pfp_placeholder: {
+    marginLeft: -10, 
+    marginRight: 5,
+  },
+  titleRow: {
+    flex: 1,
   },
   postTitle: {
-    width: '100%',
-    height: 18,
     fontStyle: 'normal',
     fontWeight: '700',
     fontSize: 14,
     letterSpacing: 0.01,
     color: '#FFF',
     order: 0,
+    marginBottom: 2,
+  },
+  postPreview: {
+    fontStyle: 'normal',
+    fontSize: 14,
+    letterSpacing: 0.01,
+    color: '#FFF',
+    order: 0,
+    marginBottom: 2,
   },
   postAuthor: {
-    width: '100%',
-    height: 18,
     fontStyle: 'normal',
     fontWeight: '400',
     fontSize: 12,
     letterSpacing: 0.01,
     color: '#FFF',
     order: 0,
+    marginBottom: 5,
   },
   counterRow: {
-        height: 18,
-  flexDirection: 'row',
-    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  likes: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
+  },
+  posts: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'baseline',
   },
   postLikes:{
     backgroundColor: '#fff',
     flex: 0,
   },
   postComments:{
-       backgroundColor: '#fff',
- flex: 0,
+    backgroundColor: '#fff',
+    flex: 0,
   },
   postCounter: {
     color: '#FFFFFF',
