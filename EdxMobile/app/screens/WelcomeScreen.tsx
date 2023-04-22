@@ -76,7 +76,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
     }
   } = useStores();
   const [courses, setCourses] = useState([]);
-  
+
   const handleCoursePress = (course) => {
     navigation.push('CourseDetail', {
       id: course.course_id,
