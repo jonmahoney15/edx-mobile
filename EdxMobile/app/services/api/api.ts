@@ -3,10 +3,11 @@ import { BASE_URL, CSRF_TOKEN_API_PATH } from '@env';
 
 const api = axios.create({
     baseURL: BASE_URL,
-    responseType: 'json',
     headers: {
+        "Content-Type": "application/json",
         Referer: BASE_URL
-    }
+    },
+    withCredentials: true
 });
 
 const retrieveToken = async() => {
