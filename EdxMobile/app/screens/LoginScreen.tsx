@@ -30,8 +30,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   } = useStores()
 
   useEffect(() => {
-    setAuthEmail("jpmahoney@vt.edu")
-    setAuthPassword("Password1")
+    setAuthEmail("srijeet@vt.edu")
+    setAuthPassword("gvc5eF3s5UksWic")
   }, [])
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
@@ -42,7 +42,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     
     if (Object.values(validationErrors).some((v) => !!v)) return
 
-    const authenticated = await submitLogin() 
+    const authenticated = await submitLogin()
 
     if (authenticated) {
       fetchAuthToken()
