@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite"
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { AppStackScreenProps } from "../../navigators"
-import { StatusBar,SafeAreaView, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { StatusBar,SafeAreaView, TextInput, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
 
 function FetchDiscussionThreadFromApi(threadId){
@@ -57,6 +57,48 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
     navigation.navigate('Profile');
   };
 
+  const TextEntry = ({ onCancel, onSubmit }) => {
+    const [visible, setVisible] = useState(false);
+
+    const handleSubmit = () => {
+      onSubmit(text);
+      setText('');
+    };
+
+    const handleCancel = () => {
+      setVisible(false);
+    };
+
+    const handleNewResponseButtonPress = () => {
+      setVisible(!visible);
+    };
+    return (
+      <View>
+          {visible ?
+          <View style={styles.textBoxContainer}>
+            <TextInput
+              style={styles.textBox}
+              multiline={true}
+              numberOfLines={4}
+            />
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleSubmit}>
+              <View style={styles.button}>
+                <Text style={styles.buttonText}>Submit</Text>
+              </View>
+            <Text style={{color:'red'}} onPress={handleCancel}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+          :
+          <TouchableOpacity style={styles.buttonContainer} onPress={handleNewResponseButtonPress}>
+            <View style={styles.button}>
+                <Text style={styles.buttonText}>Add a response</Text>
+            </View>
+          </TouchableOpacity>
+          }
+      </View>
+    );
+  };    //TextEntry
+
   return (
     <View style={styles.blackBackground}>
         <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
@@ -104,12 +146,9 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                   </View>
                 </TouchableOpacity>
               )}
+              style={styles.list}
+              ListFooterComponent = {TextEntry}
             />
-            <TouchableOpacity style={styles.buttonContainer}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}>Add a response</Text>
-              </View>
-            </TouchableOpacity>
             </View>
         </SafeAreaView>
         </ImageBackground>
@@ -173,6 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 12,
     padding: 10,
+    height: '35%',
   },
   postHeader: {
     flexDirection : 'row',
@@ -271,4 +311,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
   },
+  textBoxContainer: {
+    margin: 20,
+  },
+  textBox: {
+    height: 100,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    color: 'white',
+  },
+  list:{
+    width: '100%',
+    marginTop: 40,
+  },
+  screenBody:{
+    flex: 1,
+  }
 });
