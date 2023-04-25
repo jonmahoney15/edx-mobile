@@ -1,13 +1,14 @@
 import React, { FC, useEffect, useState } from "react"
-import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { StatusBar, SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { AppStackScreenProps } from "../../navigators"
 import { observer } from "mobx-react-lite"
 import { PrettyHeader } from "../../components/PrettyHeader"
-import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
+import { FontAwesome, EvilIcons, AntDesign, Feather } from '@expo/vector-icons'
 import { colors } from "../../theme"
 import { useStores } from "../../models"
 import { api } from "../../services/api"
 import { string } from "mobx-state-tree/dist/internal"
+import LoadingComponent from "../../components/LoadingComponent"
 
 interface DiscussionPost {
   id: string,
@@ -94,7 +95,7 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
   }
 ]
 
-interface DiscussionScreenProps extends AppStackScreenProps<"Discussion"> {}
+interface DiscussionScreenProps extends AppStackScreenProps<"Discussion"> { }
 
 export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function DiscussionScreen(
   _props
@@ -102,7 +103,7 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
   const { navigation } = _props
 
   const { id } = _props.route.params
- 
+
   const handlePostPress = (module) => {
     navigation.navigate('DiscussionThread');
   };
@@ -117,11 +118,12 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
     }
   } = useStores();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [discussions, setDisucssions] = useState([]);
-  
-  const fetchProfilePicture = async (username) =>  {
+
+  const fetchProfilePicture = async (username) => {
     let profilePicture = "";
-    await api.get(`/api/user/v1/accounts/${encodeURIComponent(username)}`, 
+    await api.get(`/api/user/v1/accounts/${encodeURIComponent(username)}`,
       {
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -133,20 +135,20 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
     ).then(response => {
       if (response.status === 200) {
         const { data } = response
-        if (data.profile_image.has_image){
+        if (data.profile_image.has_image) {
           profilePicture = data.profile_image.image_url_small;
         }
-      } 
+      }
     })
-    .catch((e) => {
-      console.log('Error In Post Author Icon Load:');
-      const error = Object.assign(e);
-      console.log(error);
-    }); 
+      .catch((e) => {
+        console.log('Error In Post Author Icon Load:');
+        const error = Object.assign(e);
+        console.log(error);
+      });
     return profilePicture;
   }
   const fetchDiscussions = async () => {
-    await api.get(`/api/discussion/v1/threads/?course_id=${encodeURIComponent(id)}`, 
+    await api.get(`/api/discussion/v1/threads/?course_id=${encodeURIComponent(id)}`,
       {
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -156,97 +158,103 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
         }
       }
     ).then(async response => {
-        let threads: DiscussionPost[] = [];
-        if (response.status === 200) {
-          const { data } = response;
-  
-          const results: any[] = Object.values(data.results) 
+      let threads: DiscussionPost[] = [];
+      if (response.status === 200) {
+        const { data } = response;
 
-          results.forEach(item => {
-            let thread: DiscussionPost = {
-              id: item.id,
-              title: item.title,
-              preview_body: item.preview_body,
-              author: item.author,
-              vote_count: item.vote_count,
-              comment_count: item.comment_count
+        const results: any[] = Object.values(data.results)
+
+        results.forEach(item => {
+          let thread: DiscussionPost = {
+            id: item.id,
+            title: item.title,
+            preview_body: item.preview_body,
+            author: item.author,
+            vote_count: item.vote_count,
+            comment_count: item.comment_count
+          }
+          threads.push(thread)
+        })
+
+        // append pfp url to thread object if the author has a custom pfp
+        await Promise.all(
+          threads.map(async (thread) => {
+            const profilePictureUrl = await fetchProfilePicture(thread.author)
+            if (profilePictureUrl) {
+              thread.icon = profilePictureUrl
             }
-            threads.push(thread)
-          })   
+            return thread
+          })
+        )
 
-          // append pfp url to thread object if the author has a custom pfp
-          await Promise.all(
-            threads.map(async (thread) => {
-              const profilePictureUrl = await fetchProfilePicture(thread.author)
-              if (profilePictureUrl) {
-                thread.icon = profilePictureUrl 
-              }
-              return thread
-            })
-          )
-          
 
-          setDisucssions(threads);
+        setDisucssions(threads);
+        setIsLoading(false);
+      } else {
+        setDisucssions(hardCodedDiscussions);
+        setIsLoading(false);
+      }
 
-        } else{
-          setDisucssions(hardCodedDiscussions);
-        }
-       
-      })
+    })
       .catch((e) => {
         console.log('Error In Discussions Load:');
         const error = Object.assign(e);
         console.log(error);
 
         setDisucssions(hardCodedDiscussions);
+        setIsLoading(false);
       }
-    );
+      );
   }
   useEffect(() => {
+    setIsLoading(true);
     fetchDiscussions();
   }, [])
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.backgroundImage}>
       <View style={styles.translucentOverlay}>
-        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-          <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
-          <View style={styles.screenBody}>
-            <FlatList
-              style = {styles.list}
-              directionalLockEnabled={true}
-              data={discussions}    //dummy course id
-              //keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.postContainer}
-                  onPress={() => handlePostPress(item)}
-                >       
-                  {item.icon ? <Image defaultSource={iconPlaceholder} source={{uri: item.icon}} style={styles.pfp}/> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder}/> }
-                  <View style={styles.titleRow}>
-                    <Text numberOfLines={1} style={styles.postTitle}>
-                      {item.title}
-                      <Text numberOfLines={1} style={styles.postPreview}> 
-                        {" " + item.preview_body}
+          <LoadingComponent isLoading={isLoading}>
+
+            <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
+            <View style={styles.screenBody}>
+              <FlatList
+                style={styles.list}
+                directionalLockEnabled={true}
+                data={discussions}    //dummy course id
+                //keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.postContainer}
+                    onPress={() => handlePostPress(item)}
+                  >
+                    {item.icon ? <Image defaultSource={iconPlaceholder} source={{ uri: item.icon }} style={styles.pfp} /> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder} />}
+                    <View style={styles.titleRow}>
+                      <Text numberOfLines={1} style={styles.postTitle}>
+                        {item.title}
+                        <Text numberOfLines={1} style={styles.postPreview}>
+                          {" " + item.preview_body}
+                        </Text>
                       </Text>
-                    </Text>
-                    <Text numberOfLines={1} style={styles.postAuthor}>{item.author}</Text>
-                    <View style={styles.counterRow}>
-                      <View style={styles.likes}>
-                        <AntDesign name="like1" size={16} color="white" style={{marginRight: 5,}}/>
-                        <Text style={styles.postCounter}>{item.vote_count}</Text>
-                      </View>
-                      <View style={styles.posts}>
-                        <FontAwesome name="comments" size={16} color="white" style={{marginRight: 5,}}/>
-                        <Text style={styles.postCounter}> {item.comment_count}</Text>
+                      <Text numberOfLines={1} style={styles.postAuthor}>{item.author}</Text>
+                      <View style={styles.counterRow}>
+                        <View style={styles.likes}>
+                          <AntDesign name="like1" size={16} color="white" style={{ marginRight: 5, }} />
+                          <Text style={styles.postCounter}>{item.vote_count}</Text>
+                        </View>
+                        <View style={styles.posts}>
+                          <FontAwesome name="comments" size={16} color="white" style={{ marginRight: 5, }} />
+                          <Text style={styles.postCounter}> {item.comment_count}</Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </LoadingComponent>
         </SafeAreaView>
       </View>
     </ImageBackground>
@@ -298,12 +306,12 @@ const styles = StyleSheet.create({
   pfp: {
     width: 35,
     height: 35,
-    marginLeft: -10, 
+    marginLeft: -10,
     marginRight: 10,
-    borderRadius:100,
+    borderRadius: 100,
   },
   pfp_placeholder: {
-    marginLeft: -10, 
+    marginLeft: -10,
     marginRight: 5,
   },
   titleRow: {
@@ -352,11 +360,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'baseline',
   },
-  postLikes:{
+  postLikes: {
     backgroundColor: '#fff',
     flex: 0,
   },
-  postComments:{
+  postComments: {
     backgroundColor: '#fff',
     flex: 0,
   },
