@@ -13,9 +13,11 @@ interface DiscussionPost {
   id: string,
   title: string,
   preview_body: string,
+  full_body: string,
   author: string,
   vote_count: number,
   comment_count: number,
+  comment_list_url: string,
   icon?: string
 }
 
@@ -103,8 +105,10 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
 
   const { id } = _props.route.params
  
-  const handlePostPress = (module) => {
-    navigation.navigate('DiscussionThread');
+  const handlePostPress = (thread) => {
+    navigation.navigate('DiscussionThread', {
+        thread: thread
+      });
   };
 
   const handleProfilePress = () => {
@@ -167,9 +171,11 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
               id: item.id,
               title: item.title,
               preview_body: item.preview_body,
+              full_body: item.rendered_body,
               author: item.author,
               vote_count: item.vote_count,
-              comment_count: item.comment_count
+              comment_count: item.comment_count,
+              comment_list_url: item.comment_list_url,
             }
             threads.push(thread)
           })   
