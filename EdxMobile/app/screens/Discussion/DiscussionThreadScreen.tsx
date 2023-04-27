@@ -1,46 +1,18 @@
 import { observer } from "mobx-react-lite"
-import React, { FC, useState } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { AppStackScreenProps } from "../../navigators"
 import { StatusBar,SafeAreaView, TextInput, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
+import { api } from "../../services/api"
+import { useStores } from "../../models"
+import HTML from 'react-native-render-html'
 
-function FetchDiscussionThreadFromApi(threadId){
-    const discussion = {
-        thread_id: 213123,
-        title: "Got feedback or questions about this Demo course?",
-        body: "Hi All,"+
-              "\n\nThis course is a sandbox area to explore and get familiar with the Open edX platform. If you have technical issues that need an urgent response, please contact edX Learner Support directly."+
-              "\n\nIf you have general feedback you'd like to share with the DemoX course team, please share that here. If you'd prefer to remain anonymous, check the post anonymously button."+
-              "\n\nDue to the large enrollment size in DemoX, we might not be able to respond to every comment. If you have a question, please create a Question post and we will try to respond as soon as possible."+
-              "\n\nI hope you enjoy exploring DemoX!"+
-              "Ben @ edX",
-        author: "BenPiscopo",
-        date: "3y",
-        likes: "104",
-        comments:[
-        {
-            author: "sdfgardiner ",
-            body: "Hi Ben,\n"+
-                   "Everything is great. The only issue is I got all the way to the end of the course, but it keeps saying I am only at 91%. ",
-            date: "1w"
-        },
-        {
-            author: "Endale2030 ",
-            body: "So far so good no problems",
-            date: "4w"
-        },
-        {
-            author: "natasha_943 ",
-            body: "Hi Ben... I am just familiarizing myself with the Demo course and was completely flummoxed by the previous homework question "+
-            "in which country is the edX office located?",
-            date: "8w"
-        },
-        ]
-    }
-    return discussion;
+interface DiscussionComment {
+  id: string,
+  full_body: string,
+  author: string,
+  date: string,
 }
-
-const data = FetchDiscussionThreadFromApi("dummy-thread-id")
 
 interface DiscussionThreadScreenProps extends AppStackScreenProps<"DiscussionThread"> {}
 
@@ -49,35 +21,73 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
 ) {
   const { navigation } = _props
   const { route } = _props
-  const handlePostPress = (module) => {
-    navigation.navigate('DiscussionThread');
-  };
+  const { thread } = _props.route.params
 
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
 
+  const {
+    authenticationStore: {
+      authToken
+    }
+  } = useStores();
+
   const TextEntry = ({ onCancel, onSubmit }) => {
     const [visible, setVisible] = useState(false);
+    const [text, setText] = useState('');
 
     const handleSubmit = () => {
-      onSubmit(text);
+      const commentData = {
+        comment: {
+          parent_id: null,
+          thread_id: 'thread.id',
+          raw_body: 'new comment',
+        }
+      };
+
+      api.post(`/api/discussion/v1/comments`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`
+        },
+        validateStatus: function (status: number) {
+          return status < 500;
+        },
+        body: JSON.stringify(commentData)
+      }
+     )
+     .then(response => response.json())
+     .then(data => console.log(data))
+     .catch(error => console.error(error));
+
       setText('');
     };
 
+    const postNewComment = async (data) => {
+
+
+    };
+
     const handleCancel = () => {
+      setText('');
       setVisible(false);
     };
 
     const handleNewResponseButtonPress = () => {
       setVisible(!visible);
     };
+
     return (
       <View>
           {visible ?
           <View style={styles.textBoxContainer}>
             <TextInput
               style={styles.textBox}
+              value={text}
+              onChangeText={setText}
               multiline={true}
               numberOfLines={4}
             />
@@ -99,6 +109,52 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
     );
   };    //TextEntry
 
+  const [comments, setComments] = useState([]);
+
+  const fetchComments = async () => {
+      await api.get(thread.comment_list_url,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          },
+          validateStatus: function (status: number) {
+            return status < 500;
+          }
+        }
+      ).then(async response => {
+          let comments: DiscussionComment[] = [];
+          if (response.status === 200) {
+            const { data } = response;
+
+            const results: any[] = Object.values(data.results)
+
+            results.forEach(item => {
+              let comment: DiscussionComment = {
+                id: item.id,
+                full_body: item.rendered_body,
+                author: item.author,
+                date: item.created_at,
+              }
+              comments.push(comment)
+            })
+
+           setComments(comments);
+
+          }
+        })
+        .catch((e) => {
+          console.log('Error In Comments Load:');
+          const error = Object.assign(e);
+          console.log(error);
+        }
+      );
+  }
+
+
+  useEffect(() => {
+      fetchComments();
+  }, [])
+
   return (
     <View style={styles.blackBackground}>
         <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
@@ -116,24 +172,23 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                 <View style={styles.postHeader}>
                     <EvilIcons name="user" size={36} color="white" />
                     <View style={styles.titleRow}>
-                        <Text style={styles.postTitle}>{data.title}</Text>
-                        <Text style={styles.postAuthor}>{data.author}</Text>
+                        <Text style={styles.postTitle}>{thread.title}</Text>
+                        <Text style={styles.postAuthor}>{thread.author}</Text>
                     </View>
                 </View>
                 <View style={styles.postBody}>
-                    <Text style={styles.postBodyText}>{data.body}</Text>
+                    <Text style={styles.postBodyText}>{thread.full_body}</Text>
                 </View>
                 <View style={styles.counterRow}>
                     <AntDesign name="like1" size={16} color="white" />
-                    <Text style={styles.postCounter}>{data.likes}</Text>
+                    <Text style={styles.postCounter}>{thread.vote_count}</Text>
                 </View>
             </View>
             <FlatList
-              data={data.comments}
+              data={comments}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.commentContainer}
-                  onPress={() => handlePostPress(item)}>
+                  style={styles.commentContainer}>
                   <View style={styles.postHeader}>
                       <EvilIcons name="user" size={36} color="white" />
                       <View style={styles.titleRow}>
@@ -142,7 +197,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                       </View>
                   </View>
                   <View style={styles.commentBody}>
-                      <Text style={styles.postBodyText}>{item.body}</Text>
+                      <Text style={styles.postBodyText}>{item.full_body}</Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -208,11 +263,10 @@ const styles = StyleSheet.create({
   postContainer: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor : '#282424EE',
+    backgroundColor : '#333333aa',
     borderRadius: 12,
     margin: 12,
     padding: 10,
-    height: '35%',
   },
   postHeader: {
     flexDirection : 'row',
@@ -240,7 +294,6 @@ const styles = StyleSheet.create({
   },
   postBody: {
     width:'100%',
-    minHeight: 100,
     flexDirection: 'row',
     color: '#fff',
     margin: 10,
