@@ -6,5 +6,20 @@ interface IBrowserProps {
 }
 
 export const Browser = (props: IBrowserProps) => {
-  return <WebView source={{ uri: props.url }} style={{flex: 1}}/>
+  const run = `
+    window.onload = function() {
+      document.getElementsByClassName("global-header")[0].style.display = "none";
+    };
+    true;
+  `;
+
+  return <WebView
+    source={{ uri: 'http://demo.edxmobile.com/courses/course-v1:edX+DemoX+Demo_Course/' }}
+    // source={{ uri: props.url }}
+    style={{ flex: 1 }}
+    onMessage={(event) => {
+      console.log('event: ', event)
+    }}
+    injectedJavaScript={run}
+  />
 }
