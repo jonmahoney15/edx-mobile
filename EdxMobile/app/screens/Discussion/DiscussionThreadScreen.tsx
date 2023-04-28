@@ -1,11 +1,12 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
 import { AppStackScreenProps } from "../../navigators"
-import { StatusBar,SafeAreaView, TextInput, ImageBackground, Button,View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
-import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
+import { StatusBar, SafeAreaView, TextInput, ImageBackground, Image, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform, useWindowDimensions } from 'react-native'
+import { EvilIcons, AntDesign} from '@expo/vector-icons'
 import { api } from "../../services/api"
 import { useStores } from "../../models"
-import HTML from 'react-native-render-html'
+import { PrettyHeader } from "../../components/PrettyHeader"
+import RenderHtml from 'react-native-render-html';
 
 interface DiscussionComment {
   id: string,
@@ -14,6 +15,17 @@ interface DiscussionComment {
   date: string,
 }
 
+interface DiscussionThreadParams {
+  thread_id: string
+  thread_title: string
+  thread_full_body: string,
+  thread_author: string,
+  thread_vote_count: number,
+  thread_comment_list_url: string,
+  thread_icon: string
+}
+
+
 interface DiscussionThreadScreenProps extends AppStackScreenProps<"DiscussionThread"> {}
 
 export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(function DiscussionThreadScreen(
@@ -21,7 +33,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
 ) {
   const { navigation } = _props
   const { route } = _props
-  const { thread } = _props.route.params
+  const { thread_id, thread_title, thread_full_body, thread_author, thread_vote_count, thread_comment_list_url, thread_icon } = _props.route.params as DiscussionThreadParams
 
   const handleProfilePress = () => {
     navigation.navigate('Profile');
@@ -41,12 +53,12 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
       const commentData = {
         comment: {
           parent_id: null,
-          thread_id: 'thread.id',
-          raw_body: 'new comment',
+          thread_id: thread_id,
+          raw_body: text,
         }
       };
 
-      api.post(`/api/discussion/v1/comments`,
+      const success = api.post(`/api/discussion/v1/comments`,
       {
         method: 'POST',
         headers: {
@@ -58,23 +70,28 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
         },
         body: JSON.stringify(commentData)
       }
-     )
-     .then(response => response.json())
-     .then(data => console.log(data))
-     .catch(error => console.error(error));
+      ).then(response => {
+          console.log(response.data);
+          setText(response.data)
+          return response.data.success ? response.data.success : false;
+      })
+      .catch((e) => {
+        console.log('Sumbit Error:');
+        console.log(e.toJSON());
+        setText('');
+        return false;
+      })
 
-      setText('');
-    };
+      return success
+    }
 
     const postNewComment = async (data) => {
-
-
-    };
+    }
 
     const handleCancel = () => {
       setText('');
       setVisible(false);
-    };
+    }
 
     const handleNewResponseButtonPress = () => {
       setVisible(!visible);
@@ -107,47 +124,47 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
           }
       </View>
     );
-  };    //TextEntry
+    };    //TextEntry
 
   const [comments, setComments] = useState([]);
 
   const fetchComments = async () => {
-      await api.get(thread.comment_list_url,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`
-          },
-          validateStatus: function (status: number) {
-            return status < 500;
-          }
+    await api.get(thread_comment_list_url,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        },
+        validateStatus: function (status: number) {
+          return status < 500;
         }
-      ).then(async response => {
-          let comments: DiscussionComment[] = [];
-          if (response.status === 200) {
-            const { data } = response;
+      }
+    ).then(async response => {
+        let comments: DiscussionComment[] = [];
+        if (response.status === 200) {
+          const { data } = response;
 
-            const results: any[] = Object.values(data.results)
+          const results: any[] = Object.values(data.results)
 
-            results.forEach(item => {
-              let comment: DiscussionComment = {
-                id: item.id,
-                full_body: item.rendered_body,
-                author: item.author,
-                date: item.created_at,
-              }
-              comments.push(comment)
-            })
+          results.forEach(item => {
+            let comment: DiscussionComment = {
+              id: item.id,
+              full_body: item.rendered_body,
+              author: item.author,
+              date: item.created_at,
+            }
+            comments.push(comment)
+          })
 
-           setComments(comments);
+          setComments(comments);
 
-          }
-        })
-        .catch((e) => {
-          console.log('Error In Comments Load:');
-          const error = Object.assign(e);
-          console.log(error);
         }
-      );
+      })
+      .catch((e) => {
+        console.log('Error In Comments Load:');
+        const error = Object.assign(e);
+        console.log(error);
+      }
+    );
   }
 
 
@@ -155,33 +172,30 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
       fetchComments();
   }, [])
 
+
+  const { width } = useWindowDimensions();
   return (
     <View style={styles.blackBackground}>
         <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.image}>
         <StatusBar translucent={true} backgroundColor="transparent" />
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <FontAwesome name="angle-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
-                <View style={styles.titleArea}>
-                    <Text numberOfLines={1} style={styles.title}>Replies</Text>
-                </View>
-                <Feather name="user" color='#fff' size={24} onPress={() => handleProfilePress()}/>
-            </View>
+          <PrettyHeader title={thread_title} theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
           <View style={styles.screenBody}>
             <View style={styles.postContainer}>
                 <View style={styles.postHeader}>
-                    <EvilIcons name="user" size={36} color="white" />
-                    <View style={styles.titleRow}>
-                        <Text style={styles.postTitle}>{thread.title}</Text>
-                        <Text style={styles.postAuthor}>{thread.author}</Text>
+                    {thread_icon ? <Image defaultSource={iconPlaceholder} source={{ uri: thread_icon }} style={styles.pfp} /> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder} />}
+                    <View style={{}}>
+                        <Text style={styles.postTitle}>{thread_title}</Text>
+                        <Text style={styles.postAuthor}>{thread_author}</Text>
                     </View>
                 </View>
                 <View style={styles.postBody}>
-                    <Text style={styles.postBodyText}>{thread.full_body}</Text>
+                  <RenderHtml contentWidth={width} source={ {html: thread_full_body} }/> 
+                    {/* <Text style={styles.postBodyText}>{thread_full_body}</Text> */}
                 </View>
                 <View style={styles.counterRow}>
                     <AntDesign name="like1" size={16} color="white" />
-                    <Text style={styles.postCounter}>{thread.vote_count}</Text>
+                    <Text style={styles.postCounter}>{thread_vote_count}</Text>
                 </View>
             </View>
             <FlatList
@@ -191,7 +205,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                   style={styles.commentContainer}>
                   <View style={styles.postHeader}>
                       <EvilIcons name="user" size={36} color="white" />
-                      <View style={styles.titleRow}>
+                      <View style={{}}>
                           <Text style={styles.commentAuthorText}>{item.author}</Text>
                           <Text style={styles.commentDateText}>{item.date}</Text>
                       </View>
@@ -212,6 +226,8 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
 });
 
 const backgroundImage = require('../../../assets/images/futuristic-background.png');
+const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
+
 
 const styles = StyleSheet.create({
   header: {
@@ -259,6 +275,16 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'flex-start',
       height: '100%',
+  },
+  pfp: {
+    width: 35,
+    height: 35,
+    marginRight: 10,
+    borderRadius: 100,
+  },
+  pfp_placeholder: {
+    marginLeft: -10,
+    marginRight: 5,
   },
   postContainer: {
     justifyContent: 'space-between',

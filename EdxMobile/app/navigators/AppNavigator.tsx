@@ -22,28 +22,39 @@ import {
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
+import { CreateDiscussionScreen } from '../screens/Discussion/CreateDiscussionScreen';
 
 type CourseDetailScreenParams = {
-  id: string;
-  title: string;
+  id: string
+  title: string
 };
 
 type ModuleScreenParams = {
-  id: string;
-  title: string;
-  url: string;
+  id: string
+  title: string
+  url: string
 }
 
 type ProgressScreenParams = {
-  id: string,
+  id: string
 }
 
 type DatesScreenParams = {
-  id: string,
+  id: string
 }
 
 type DiscussionScreenParams = {
-  id: string,
+  id: string
+}
+type DiscussionThreadScreenParams = {
+  id: string
+  thread_id: string
+  thread_title: string
+  thread_full_body: string,
+  thread_author: string,
+  thread_vote_count: number,
+  thread_comment_list_url: string,
+  thread_icon: string
 }
 
 export type AppStackParamList = {
@@ -53,7 +64,8 @@ export type AppStackParamList = {
   CourseDetail: CourseDetailScreenParams
   Module: ModuleScreenParams
   Discussion: DiscussionScreenParams
-  DiscussionThread: undefined
+  DiscussionThread: DiscussionThreadScreenParams
+  CreateDiscussion: undefined
   SignUp: undefined
   Dates: DatesScreenParams
   Progress: ProgressScreenParams
@@ -107,6 +119,10 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen
             name="DiscussionThread"
             component={DiscussionThreadScreen}
+          />
+          <Stack.Screen
+            name="CreateDiscussion"
+            component={CreateDiscussionScreen}
           />
         </>
       ) : (

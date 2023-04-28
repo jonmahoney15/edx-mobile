@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useState } from "react"
-import { StatusBar,SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
+import { StatusBar, SafeAreaView, ImageBackground, View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Platform } from 'react-native'
 import { AppStackScreenProps } from "../../navigators"
 import { observer } from "mobx-react-lite"
 import { PrettyHeader } from "../../components/PrettyHeader"
-import { FontAwesome,EvilIcons,AntDesign, Feather} from '@expo/vector-icons'
+import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons'
 import { colors } from "../../theme"
 import { useStores } from "../../models"
 import { api } from "../../services/api"
-import { string } from "mobx-state-tree/dist/internal"
+import LoadingComponent from "../../components/LoadingComponent"
 
 interface DiscussionPost {
   id: string,
@@ -28,7 +28,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hi All, This course is a sandbox area to explore and',
     author: 'BenPiscopo',
     vote_count: 104,
-    comment_count: 419
+    comment_count: 419,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '1',
@@ -36,7 +38,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hello my name is Carolina Pacheco, I',
     author: 'cpacheco0109',
     vote_count: 20,
-    comment_count: 2
+    comment_count: 2,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '2',
@@ -44,7 +48,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hi, my name is Carl. I\'m from Texas and',
     author: 'Cavinaru',
     vote_count: 0,
-    comment_count: 1
+    comment_count: 1,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '3',
@@ -52,7 +58,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hello my name is Carolina Pacheco, I',
     author: 'BenPiscopo',
     vote_count: 104,
-    comment_count: 419
+    comment_count: 419,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '4',
@@ -60,7 +68,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hi All, This course is a sandbox area to explore and',
     author: 'BenPiscopo',
     vote_count: 104,
-    comment_count: 419
+    comment_count: 419,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '5',
@@ -68,7 +78,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hello my name is Carolina Pacheco, I',
     author: 'cpacheco0109',
     vote_count: 20,
-    comment_count: 2
+    comment_count: 2,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '6',
@@ -76,7 +88,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hi, my name is Carl. I\'m from Texas and',
     author: 'Cavinaru',
     vote_count: 0,
-    comment_count: 1
+    comment_count: 1,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '7',
@@ -84,7 +98,9 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hello my name is Carolina Pacheco, I',
     author: 'BenPiscopo',
     vote_count: 104,
-    comment_count: 419
+    comment_count: 419,
+    full_body: '',
+    comment_list_url: ''
   },
   {
     id: '8',
@@ -92,11 +108,13 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     preview_body: 'Hi All, This course is a sandbox area to explore and',
     author: 'BenPiscopo',
     vote_count: 104,
-    comment_count: 419
+    comment_count: 419,
+    full_body: '',
+    comment_list_url: ''
   }
 ]
 
-interface DiscussionScreenProps extends AppStackScreenProps<"Discussion"> {}
+interface DiscussionScreenProps extends AppStackScreenProps<"Discussion"> { }
 
 export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function DiscussionScreen(
   _props
@@ -106,9 +124,17 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
   const { id } = _props.route.params
  
   const handlePostPress = (thread) => {
-    navigation.navigate('DiscussionThread', {
-        thread: thread
-      });
+    navigation.push('DiscussionThread', {
+      id: id,
+      thread_id: thread.id, 
+      thread_title: thread.title, 
+      thread_full_body: thread.full_body, 
+      thread_author: thread.author, 
+      thread_vote_count: thread.vote_count, 
+      thread_comment_list_url: thread.comment_list_url, 
+      thread_icon: thread.icon
+    });
+   
   };
 
   const handleProfilePress = () => {
@@ -121,11 +147,12 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
     }
   } = useStores();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [discussions, setDisucssions] = useState([]);
-  
-  const fetchProfilePicture = async (username) =>  {
+
+  const fetchProfilePicture = async (username) => {
     let profilePicture = "";
-    await api.get(`/api/user/v1/accounts/${encodeURIComponent(username)}`, 
+    await api.get(`/api/user/v1/accounts/${encodeURIComponent(username)}`,
       {
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -137,20 +164,20 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
     ).then(response => {
       if (response.status === 200) {
         const { data } = response
-        if (data.profile_image.has_image){
+        if (data.profile_image.has_image) {
           profilePicture = data.profile_image.image_url_small;
         }
-      } 
+      }
     })
-    .catch((e) => {
-      console.log('Error In Post Author Icon Load:');
-      const error = Object.assign(e);
-      console.log(error);
-    }); 
+      .catch((e) => {
+        console.log('Error In Post Author Icon Load:');
+        const error = Object.assign(e);
+        console.log(error);
+      });
     return profilePicture;
   }
   const fetchDiscussions = async () => {
-    await api.get(`/api/discussion/v1/threads/?course_id=${encodeURIComponent(id)}`, 
+    await api.get(`/api/discussion/v1/threads/?course_id=${encodeURIComponent(id)}`,
       {
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -160,99 +187,111 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
         }
       }
     ).then(async response => {
-        let threads: DiscussionPost[] = [];
-        if (response.status === 200) {
-          const { data } = response;
-  
-          const results: any[] = Object.values(data.results) 
+      let threads: DiscussionPost[] = [];
+      if (response.status === 200) {
+        const { data } = response;
 
-          results.forEach(item => {
-            let thread: DiscussionPost = {
-              id: item.id,
-              title: item.title,
-              preview_body: item.preview_body,
-              full_body: item.rendered_body,
-              author: item.author,
-              vote_count: item.vote_count,
-              comment_count: item.comment_count,
-              comment_list_url: item.comment_list_url,
+        const results: any[] = Object.values(data.results)
+
+        results.forEach(item => {
+          let thread: DiscussionPost = {
+            id: item.id,
+            title: item.title,
+            preview_body: item.preview_body,
+            full_body: item.rendered_body,
+            author: item.author,
+            vote_count: item.vote_count,
+            comment_count: item.comment_count,
+            comment_list_url: item.comment_list_url,
+          }
+          threads.push(thread)
+        })
+
+        // append pfp url to thread object if the author has a custom pfp
+        await Promise.all(
+          threads.map(async (thread) => {
+            const profilePictureUrl = await fetchProfilePicture(thread.author)
+            if (profilePictureUrl) {
+              thread.icon = profilePictureUrl
+            } else {
+              thread.icon = ''
             }
-            threads.push(thread)
-          })   
+            return thread
+          })
+        )
 
-          // append pfp url to thread object if the author has a custom pfp
-          await Promise.all(
-            threads.map(async (thread) => {
-              const profilePictureUrl = await fetchProfilePicture(thread.author)
-              if (profilePictureUrl) {
-                thread.icon = profilePictureUrl 
-              }
-              return thread
-            })
-          )
-          
 
-          setDisucssions(threads);
+        setDisucssions(threads);
+        setIsLoading(false);
+      } else {
+        setDisucssions(hardCodedDiscussions);
+        setIsLoading(false);
+      }
 
-        } else{
-          setDisucssions(hardCodedDiscussions);
-        }
-       
-      })
+    })
       .catch((e) => {
         console.log('Error In Discussions Load:');
         const error = Object.assign(e);
         console.log(error);
 
         setDisucssions(hardCodedDiscussions);
+        setIsLoading(false);
       }
-    );
+      );
   }
   useEffect(() => {
+    setIsLoading(true);
     fetchDiscussions();
   }, [])
 
   return (
     <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.backgroundImage}>
       <View style={styles.translucentOverlay}>
-        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-          <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
-          <View style={styles.screenBody}>
-            <FlatList
-              style = {styles.list}
-              directionalLockEnabled={true}
-              data={discussions}    //dummy course id
-              //keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.postContainer}
-                  onPress={() => handlePostPress(item)}
-                >       
-                  {item.icon ? <Image defaultSource={iconPlaceholder} source={{uri: item.icon}} style={styles.pfp}/> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder}/> }
-                  <View style={styles.titleRow}>
-                    <Text numberOfLines={1} style={styles.postTitle}>
-                      {item.title}
-                      <Text numberOfLines={1} style={styles.postPreview}> 
-                        {" " + item.preview_body}
+          <LoadingComponent isLoading={isLoading}>
+            <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
+            <View style={styles.screenBody}>
+              <FlatList
+                style={styles.list}
+                directionalLockEnabled={true}
+                data={discussions}    //dummy course id
+                //keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.postContainer}
+                    onPress={() => handlePostPress(item)}
+                  >
+                    {item.icon ? <Image defaultSource={iconPlaceholder} source={{ uri: item.icon }} style={styles.pfp} /> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder} />}
+                    <View style={styles.titleRow}>
+                      <Text numberOfLines={1} style={styles.postTitle}>
+                        {item.title}
+                        <Text numberOfLines={1} style={styles.postPreview}>
+                          {" " + item.preview_body}
+                        </Text>
                       </Text>
-                    </Text>
-                    <Text numberOfLines={1} style={styles.postAuthor}>{item.author}</Text>
-                    <View style={styles.counterRow}>
-                      <View style={styles.likes}>
-                        <AntDesign name="like1" size={16} color="white" style={{marginRight: 5,}}/>
-                        <Text style={styles.postCounter}>{item.vote_count}</Text>
-                      </View>
-                      <View style={styles.posts}>
-                        <FontAwesome name="comments" size={16} color="white" style={{marginRight: 5,}}/>
-                        <Text style={styles.postCounter}> {item.comment_count}</Text>
+                      <Text numberOfLines={1} style={styles.postAuthor}>{item.author}</Text>
+                      <View style={styles.counterRow}>
+                        <View style={styles.likes}>
+                          <AntDesign name="like1" size={16} color="white" style={{ marginRight: 5, }} />
+                          <Text style={styles.postCounter}>{item.vote_count}</Text>
+                        </View>
+                        <View style={styles.posts}>
+                          <FontAwesome name="comments" size={16} color="white" style={{ marginRight: 5, }} />
+                          <Text style={styles.postCounter}> {item.comment_count}</Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </LoadingComponent>
+          <TouchableOpacity style={styles.plusButtonContainer} onPress={() =>navigation.navigate('CreateDiscussion')}>
+            <View style={styles.plusButton}>
+              <FontAwesome name="plus" color='#000' size={20}/>
+            </View>
+          </TouchableOpacity>
         </SafeAreaView>
       </View>
     </ImageBackground>
@@ -263,6 +302,21 @@ const backgroundImage = require('../../../assets/images/futuristic-background.pn
 const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
 
 const styles = StyleSheet.create({
+  plusButtonContainer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    zIndex: 999, // ensure the button is on top of other content
+  },
+  plusButton: {
+    backgroundColor: "#85D5BE",
+    borderRadius: 50,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8, // add some shadow to the button
+  },
   backgroundImage: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -304,12 +358,12 @@ const styles = StyleSheet.create({
   pfp: {
     width: 35,
     height: 35,
-    marginLeft: -10, 
+    marginLeft: -10,
     marginRight: 10,
-    borderRadius:100,
+    borderRadius: 100,
   },
   pfp_placeholder: {
-    marginLeft: -10, 
+    marginLeft: -10,
     marginRight: 5,
   },
   titleRow: {
@@ -358,11 +412,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'baseline',
   },
-  postLikes:{
+  postLikes: {
     backgroundColor: '#fff',
     flex: 0,
   },
-  postComments:{
+  postComments: {
     backgroundColor: '#fff',
     flex: 0,
   },
