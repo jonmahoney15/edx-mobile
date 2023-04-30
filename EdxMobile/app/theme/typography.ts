@@ -9,6 +9,13 @@ import {
   SpaceGrotesk_600SemiBold as spaceGroteskSemiBold,
   SpaceGrotesk_700Bold as spaceGroteskBold,
 } from "@expo-google-fonts/space-grotesk"
+import {
+  Roboto_300Light as    robotoLight,
+  Roboto_400Regular as  robotoRegular,
+  Roboto_500Medium as   robotoMedium,
+  Roboto_700Bold as     robotoBold,
+} from '@expo-google-fonts/roboto';
+
 
 export const customFontsToLoad = {
   spaceGroteskLight,
@@ -16,6 +23,10 @@ export const customFontsToLoad = {
   spaceGroteskMedium,
   spaceGroteskSemiBold,
   spaceGroteskBold,
+  robotoLight,
+  robotoRegular,
+  robotoMedium,
+  robotoBold,
 }
 
 const fonts = {
@@ -49,6 +60,12 @@ const fonts = {
     // Android only font.
     normal: "monospace",
   },
+  roboto: {
+    light:    "robotoLight",
+    normal:   "robotoRegular",
+    medium:   "robotoMedium",
+    bold:     "robotoBold",
+  }
 }
 
 export const typography = {
@@ -59,7 +76,7 @@ export const typography = {
   /**
    * The primary font. Used in most places.
    */
-  primary: fonts.spaceGrotesk,
+  primary: fonts.roboto,
   /**
    * An alternate font used for perhaps titles and stuff.
    */

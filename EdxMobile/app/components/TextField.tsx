@@ -236,20 +236,20 @@ const $labelStyle: TextStyle = {
 const $inputWrapperStyle: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
-  borderWidth: 1,
+  borderWidth: 1.5,
   borderRadius: 100,
   height: 50,
   backgroundColor: colors.textFieldBackgroundColor,
   borderColor: colors.textFieldBorderColor,
   overflow: "hidden",
   paddingHorizontal: spacing.large, // add horizontal padding
-  paddingVertical: spacing.small, // add vertical padding
+  paddingVertical: spacing.extraSmall, // add vertical padding
 
 }
 
 const $inputStyle: TextStyle = {
   flex: 1,
-  alignSelf: "center",
+  textAlignVertical: "center",
   fontFamily: typography.primary.normal,
   color: colors.textFieldTextColor,
   fontSize: 16,

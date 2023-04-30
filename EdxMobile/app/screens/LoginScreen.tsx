@@ -30,8 +30,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   } = useStores()
 
   useEffect(() => {
-    setAuthEmail("jpmahoney@vt.edu")
-    setAuthPassword("Password1")
+    setAuthEmail("")
+    setAuthPassword("")
   }, [])
 
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
@@ -186,11 +186,12 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         </View>
       </SafeAreaView>
       <ImageBackground source={require('../../assets/images/loginPageImage.png')} 
-        style={{flex:1, paddingBottom:0, bottom: 0, width:'100%', height: '100%',}}>
+        style={{ flex: 1, bottom: 0, zIndex: -1, width: '100%', height: '100%', alignSelf: "flex-end" }}
+        resizeMode="cover">
         <LinearGradient
-           colors={['rgba(0,0,0,0.3)', 'transparent']}
+           colors={['rgba(0,0,0,0.8)', 'transparent']}
            style={styles.linearGradient}
-           start={{ x:0.5, y: 0.01 }}/>
+           start={{ x:0.5, y: 0.1}}/>
       </ImageBackground>     
     </View>
   )
@@ -239,7 +240,8 @@ const $textField: ViewStyle = {
 }
 
 const $tapButton: ViewStyle = {
-  marginBottom: spacing.medium,
+  height: 50,
+  marginBottom: spacing.small,
 }
 
 const $signUpButton: TextStyle = {

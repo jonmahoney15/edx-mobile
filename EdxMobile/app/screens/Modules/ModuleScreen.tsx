@@ -25,15 +25,19 @@ export const ModuleScreen: FC<ModuleScreenProps> = observer(function ModuleScree
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <PrettyHeader
-                    title={title}
-                    theme='grey'
-                    onLeftPress={navigation.goBack}
-                    onRightPress={handleProfilePress}
-            />
-            <Browser url={url}/>
-        </SafeAreaView>
+    
+        <View style={styles.translucentOverlay}>
+            <SafeAreaView style={styles.container}>
+                <PrettyHeader
+                        title={title}
+                        theme='grey'
+                        onLeftPress={navigation.goBack}
+                        onRightPress={handleProfilePress}
+                />
+                <Browser url={url}/>
+                </SafeAreaView>
+        </View>
+    
     );
 });
 

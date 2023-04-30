@@ -8,18 +8,20 @@ interface IBrowserProps {
 export const Browser = (props: IBrowserProps) => {
   const run = `
     window.onload = function() {
-      document.getElementsByClassName("global-header")[0].style.display = "none";
+      let nodeList = document.querySelectorAll("body, div, p, header");
+      for (let i = 0; i < nodeList.length; i++) {
+        nodeList[i].style.backgroundColor = "black";
+      }
+      
     };
     true;
   `;
 
   return <WebView
-    source={{ uri: 'http://demo.edxmobile.com/courses/course-v1:edX+DemoX+Demo_Course/' }}
-    // source={{ uri: props.url }}
-    style={{ flex: 1 }}
-    onMessage={(event) => {
-      console.log('event: ', event)
-    }}
-    injectedJavaScript={run}
+    // source={{ uri: 'http://demo.edxmobile.com/courses/course-v1:edX+DemoX+Demo_Course/' }}
+    source={{ uri: props.url }}
+    style={{ flex: 1, backgroundColor: 'transparent' }}
+    onMessage={(event) => {}}
+    // injectedJavaScript={run}
   />
 }
