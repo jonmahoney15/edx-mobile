@@ -18,7 +18,7 @@ interface DiscussionPost {
   vote_count: number,
   comment_count: number,
   comment_list_url: string,
-  icon?: string
+  icon: string
 }
 
 const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
@@ -30,7 +30,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 104,
     comment_count: 419,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '1',
@@ -40,7 +41,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 20,
     comment_count: 2,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '2',
@@ -50,7 +52,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 0,
     comment_count: 1,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '3',
@@ -60,7 +63,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 104,
     comment_count: 419,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '4',
@@ -70,7 +74,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 104,
     comment_count: 419,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '5',
@@ -80,7 +85,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 20,
     comment_count: 2,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '6',
@@ -90,7 +96,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 0,
     comment_count: 1,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '7',
@@ -100,7 +107,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 104,
     comment_count: 419,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   },
   {
     id: '8',
@@ -110,7 +118,8 @@ const hardCodedDiscussions: DiscussionPost[] = [     //dummy discussions
     vote_count: 104,
     comment_count: 419,
     full_body: '',
-    comment_list_url: ''
+    comment_list_url: '',
+    icon: '',
   }
 ]
 
@@ -203,6 +212,7 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
             vote_count: item.vote_count,
             comment_count: item.comment_count,
             comment_list_url: item.comment_list_url,
+            icon: ''
           }
           threads.push(thread)
         })
@@ -213,14 +223,10 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
             const profilePictureUrl = await fetchProfilePicture(thread.author)
             if (profilePictureUrl) {
               thread.icon = profilePictureUrl
-            } else {
-              thread.icon = ''
             }
             return thread
           })
         )
-
-
         setDisucssions(threads);
         setIsLoading(false);
       } else {
@@ -249,8 +255,8 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
       <View style={styles.translucentOverlay}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
+          <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
           <LoadingComponent isLoading={isLoading}>
-            <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
             <View style={styles.screenBody}>
               <FlatList
                 style={styles.list}

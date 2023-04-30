@@ -76,8 +76,8 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
       <ImageBackground source={backgroundImage} resizeMode="stretch" imageStyle={{ height: '70%' }} style={styles.backgroundImage}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
+          <PrettyHeader title="Course Progress" theme="black" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
           <LoadingComponent isLoading={isLoading}>
-            <PrettyHeader title="Course Progress" theme="black" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
             <View style={styles.screenBody}>
               <View style={styles.completionCard}>
                 <View style={styles.leftContent}>
@@ -125,8 +125,9 @@ const styles = StyleSheet.create({
   screenBody: {
     flex: 1,
     justifyContent: 'flex-end',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     paddingBottom: 70,
+    paddingTop: 12,
   },
   completionCard: {
     display: 'flex',

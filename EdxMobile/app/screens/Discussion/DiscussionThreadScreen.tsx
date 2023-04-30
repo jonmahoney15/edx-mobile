@@ -1,18 +1,22 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
 import { AppStackScreenProps } from "../../navigators"
-import { StatusBar, SafeAreaView, TextInput, ImageBackground, Image, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform, useWindowDimensions } from 'react-native'
+import { StatusBar, SafeAreaView, TextInput, ImageBackground, Image, View, Text, StyleSheet, FlatList, TouchableOpacity, Platform, useWindowDimensions, ScrollView } from 'react-native'
 import { EvilIcons, AntDesign} from '@expo/vector-icons'
 import { api } from "../../services/api"
 import { useStores } from "../../models"
 import { PrettyHeader } from "../../components/PrettyHeader"
 import RenderHtml from 'react-native-render-html';
+import { typography } from "../../theme/typography"
+import { LinearGradient } from "expo-linear-gradient"
+import { colors } from "../../theme/colors"
 
 interface DiscussionComment {
   id: string,
   full_body: string,
   author: string,
   date: string,
+  icon: string,
 }
 
 interface DiscussionThreadParams {
@@ -25,6 +29,19 @@ interface DiscussionThreadParams {
   thread_icon: string
 }
 
+const tagsStyles = {
+  body: {
+    color: 'white'
+  },
+  a: {
+    color: 'green'
+  },
+  p: {
+    fontSize: 12,
+    color: 'white',
+    fontFamily: typography.primary.medium
+  }
+}
 
 interface DiscussionThreadScreenProps extends AppStackScreenProps<"DiscussionThread"> {}
 
@@ -127,6 +144,33 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
     };    //TextEntry
 
   const [comments, setComments] = useState([]);
+  
+  const fetchProfilePicture = async (username) => {
+    let profilePicture = "";
+    await api.get(`/api/user/v1/accounts/${encodeURIComponent(username)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        },
+        validateStatus: function (status: number) {
+          return status < 500;
+        }
+      }
+    ).then(response => {
+      if (response.status === 200) {
+        const { data } = response
+        if (data.profile_image.has_image) {
+          profilePicture = data.profile_image.image_url_small;
+        }
+      }
+    })
+      .catch((e) => {
+        console.log('Error In Post Author Icon Load:');
+        const error = Object.assign(e);
+        console.log(error);
+      });
+    return profilePicture;
+  }
 
   const fetchComments = async () => {
     await api.get(thread_comment_list_url,
@@ -151,9 +195,23 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
               full_body: item.rendered_body,
               author: item.author,
               date: item.created_at,
+              icon: '',
             }
             comments.push(comment)
           })
+
+           // append pfp url to thread object if the author has a custom pfp
+          await Promise.all(
+            comments.map(async (comment) => {
+              const profilePictureUrl = await fetchProfilePicture(comment.author)
+              if (profilePictureUrl) {
+                comment.icon = profilePictureUrl
+              } else {
+                comment.icon = ''
+              }
+              return comment
+            })
+          )
 
           setComments(comments);
 
@@ -181,22 +239,25 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
         <SafeAreaView style={styles.container}>
           <PrettyHeader title={thread_title} theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
           <View style={styles.screenBody}>
-            <View style={styles.postContainer}>
-                <View style={styles.postHeader}>
-                    {thread_icon ? <Image defaultSource={iconPlaceholder} source={{ uri: thread_icon }} style={styles.pfp} /> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder} />}
-                    <View style={{}}>
-                        <Text style={styles.postTitle}>{thread_title}</Text>
-                        <Text style={styles.postAuthor}>{thread_author}</Text>
-                    </View>
-                </View>
-                <View style={styles.postBody}>
-                  <RenderHtml contentWidth={width} source={ {html: thread_full_body} }/> 
-                    {/* <Text style={styles.postBodyText}>{thread_full_body}</Text> */}
-                </View>
-                <View style={styles.counterRow}>
+            <View style={{height: 'auto'}}>
+              <ScrollView fadingEdgeLength={100}>
+                <View style={styles.postContainer}>
+                  <View style={styles.postHeader}>
+                      {thread_icon ? <Image defaultSource={iconPlaceholder} source={{ uri: thread_icon }} style={styles.pfp} /> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder} />}
+                      <View style={{}}>
+                          <Text style={styles.postTitle}>{thread_title}</Text>
+                          <Text style={styles.postAuthor}>{thread_author}</Text>
+                      </View>
+                  </View>
+                  <View style={styles.postBody}>
+                    <RenderHtml contentWidth={width} source={{html: thread_full_body}} tagsStyles={tagsStyles}/>
+                  </View>
+                  <View style={styles.counterRow}>
                     <AntDesign name="like1" size={16} color="white" />
-                    <Text style={styles.postCounter}>{thread_vote_count}</Text>
+                    <Text style={styles.postCounter}> {thread_vote_count}</Text>
+                  </View>
                 </View>
+              </ScrollView>
             </View>
             <FlatList
               data={comments}
@@ -204,18 +265,18 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                 <TouchableOpacity
                   style={styles.commentContainer}>
                   <View style={styles.postHeader}>
-                      <EvilIcons name="user" size={36} color="white" />
+                      {item.icon ? <Image defaultSource={iconPlaceholder} source={{ uri: item.icon }} style={styles.reply_pfp} /> : <EvilIcons name="user" size={36} color="white" style={styles.reply_pfp_placeholder} />}
                       <View style={{}}>
                           <Text style={styles.commentAuthorText}>{item.author}</Text>
                           <Text style={styles.commentDateText}>{item.date}</Text>
                       </View>
                   </View>
                   <View style={styles.commentBody}>
-                      <Text style={styles.postBodyText}>{item.full_body}</Text>
+                    <RenderHtml contentWidth={width} source={{html: item.full_body}} tagsStyles={tagsStyles}/>
                   </View>
                 </TouchableOpacity>
               )}
-              style={styles.list}
+              contentContainerStyle={styles.list}
               ListFooterComponent = {TextEntry}
             />
             </View>
@@ -230,17 +291,6 @@ const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
 
 
 const styles = StyleSheet.create({
-  header: {
-      display: 'flex',
-      width: '100%',
-      height: 40,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 12,
-      backgroundColor: 'rgba(0, 0, 0, 0.3)',
-      marginTop: 12,
-    },
   blackBackground: {
       flex: 1,
       backgroundColor: '#000c',
@@ -286,13 +336,22 @@ const styles = StyleSheet.create({
     marginLeft: -10,
     marginRight: 5,
   },
+  reply_pfp: {
+    width: 26,
+    height: 26,
+    marginRight: 6,
+    borderRadius: 100,
+  },
+  reply_pfp_placeholder: {
+    marginLeft: -6,
+  },
   postContainer: {
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor : '#333333aa',
+    backgroundColor: colors.translucentBackground,
     borderRadius: 12,
-    margin: 12,
     padding: 10,
+    marginBottom: 12,
   },
   postHeader: {
     flexDirection : 'row',
@@ -322,7 +381,6 @@ const styles = StyleSheet.create({
     width:'100%',
     flexDirection: 'row',
     color: '#fff',
-    margin: 10,
   },
   postBodyText: {
     color: '#fff',
@@ -332,18 +390,19 @@ const styles = StyleSheet.create({
     height: 18,
     flexDirection: 'row',
     width: '100%',
+    alignItems: 'baseline',
   },
   postLikes:{
     backgroundColor: '#fff',
     flex: 0,
   },
   commentContainer:{
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    borderRadius: 12,
-    padding: 12,
+    paddingHorizontal: 10,
     borderBottomColor: '#fffa',
-    borderBottomWidth: 1,
+    borderBottomWidth: 1.5,
+    marginBottom: 12
   },
   commentHeader:{
     width:'100%',
@@ -360,7 +419,7 @@ const styles = StyleSheet.create({
     width:'100%',
     flexDirection: 'row',
     color: '#fff',
-    margin: 10,
+    marginTop: -6,
   },
   commentBodyText: {
     color: '#fff',
@@ -380,10 +439,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFB267',
     borderRadius: 100,
     width: 150,
-    height: 40,
+    height: 35,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10
+    marginTop: 12
   },
   buttonText: {
     fontStyle: 'normal',
@@ -402,10 +461,15 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   list:{
+    borderTopColor: '#fffa',
+    borderTopWidth: 1.5,
     width: '100%',
-    marginTop: 40,
+    paddingTop: 16,
   },
   screenBody:{
     flex: 1,
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingTop: 16,
   }
 });

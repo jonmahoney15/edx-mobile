@@ -4,11 +4,12 @@ import { TextStyle, View, ViewStyle, ScrollView, SafeAreaView, TouchableOpacity,
 import { Button, Text } from "../components";
 import { useStores } from "../models";
 import { AppStackScreenProps } from "../navigators";
-import { colors } from "../theme";
+import { colors, typography } from "../theme";
 import { Card } from "react-native-elements";
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import { api } from '../services/api';
 import LoadingComponent from "../components/LoadingComponent";
+import { PrettyHeader } from "../components/PrettyHeader";
 
 const hardcodedCourses = [
   {
@@ -131,7 +132,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         setUserFullName(user.name || "");
         setUserProfileImage(user.profile_image.image_url_full || "");
         setUserUsername(user.username || "");
-        setUserLanguage(user?.language_proficiences?.length > 0 ? user.language_proficiences[0] : "");
+        setUserLanguage(user?.language_proficiencies?.length > 0 ? user.language_proficiencies[0].code : "");
         setUserEducation(user?.level_of_education || "");
       } else {
         console.log("No User data, bad user")
@@ -166,12 +167,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         <View style={styles.translucentOverlay}>
           <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
           <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-              <View style={styles.nameArea}>
-                <Text numberOfLines={1} style={styles.name}>Course Progress</Text>
-              </View>
-              <Feather name="user" size={25} color="#fff" onPress={() => handleProfilePress()} />
-            </View>
+            <PrettyHeader title="My Courses" theme="black" hasBackButton={false} onRightPress={handleProfilePress}  />
             <LoadingComponent isLoading={isLoading}>
               <View style={$bottomContainer}>
                 <ScrollView>
@@ -179,15 +175,11 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
                     courses.map((c, i) => (
                       //@ts-ignore
                       <Card key={c.name} containerStyle={$cardStyle}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <View>
-                            <Text style={{ fontSize: 16, color: "white" }}>{c.name}</Text>
-                          </View>
-                          <TouchableOpacity onPress={() => console.log("add navigation to something?")}>
-                            <FontAwesome name="gear" color='#fff' size={24} />
-                          </TouchableOpacity>
+                        <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start', width: '50%' }}> 
+                          <Text style={{ fontFamily: typography.primary.bold, fontSize: 15, color: colors.text, lineHeight: 18}}>{c.name}</Text>
+                          <Text style={{ fontSize: 12, color: colors.textDim, lineHeight: 18 }}>{c.org} - {c.number}</Text>
                         </View>
-                        <Text style={{ fontSize: 16, color: "grey" }}>{c.org} - {c.number}</Text>
+                       
                         <View style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
                           <Button
                             tx="enrollmentScreen.viewCourseButtonText"
@@ -255,13 +247,14 @@ const $background: ViewStyle = {
 
 const $cardStyle: ViewStyle = {
   borderRadius: 20,
-  backgroundColor: "rgba(30, 30, 30, 0.9)",
-  borderColor: "rgba(30, 30, 30, 0.9)",
-  padding: 20
+  backgroundColor: colors.translucentBackground,
+  borderWidth: 0,
+  padding: 14
 }
 
 const $viewCourseButtonStyle: ViewStyle = {
-  width: 180
+  marginTop: 6,
+  width: '50%'
 }
 
 const $viewCourseFontStyle: TextStyle = {
