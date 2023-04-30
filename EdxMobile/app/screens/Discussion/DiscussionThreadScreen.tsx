@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   textBox: {
-    height: 100,
+    height: 150,
     borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 10,
