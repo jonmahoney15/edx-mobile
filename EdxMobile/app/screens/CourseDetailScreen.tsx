@@ -8,7 +8,7 @@ import { Animated } from 'react-native';
 import { api } from '../services/api'
 import { useStores } from "../models"
 import { normalizeOutlineBlocks } from '../utils/formatData';
-import LoadingComponent from '../components/LoadingComponent';
+import { LoadingIcon } from '../components/LoadingIcon';
 
 const hardCodedCourse =
   [
@@ -172,7 +172,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
           onRightPress={handleProfilePress}
         />
       </View>
-      <LoadingComponent isLoading={isLoading}>
+      <LoadingIcon isLoading={isLoading}>
         <View style={styles.beginContainer}>
           <Text style={styles.beginCourse}>Begin Your course today</Text>
           <TouchableOpacity onPress={() => handleModulePress(course[0])}>
@@ -228,7 +228,7 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
             />
           </View>
         </View >
-      </LoadingComponent>
+      </LoadingIcon>
     </ImageBackground>
   );
 });

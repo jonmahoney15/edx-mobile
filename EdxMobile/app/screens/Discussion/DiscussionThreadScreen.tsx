@@ -7,6 +7,8 @@ import { api } from "../../services/api"
 import { useStores } from "../../models"
 import { PrettyHeader } from "../../components/PrettyHeader"
 import RenderHtml from 'react-native-render-html';
+import { TextEntry } from "./TextEntry"
+import { LoadingIcon } from "../../components"
 
 interface DiscussionComment {
   id: string,
@@ -43,92 +45,13 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
     authenticationStore: {
       authToken
     }
-  } = useStores();
-
-  const TextEntry = ({ onCancel, onSubmit }) => {
-    const [visible, setVisible] = useState(false);
-    const [text, setText] = useState('');
-
-    const handleSubmit = () => {
-      const commentData = {
-        comment: {
-          parent_id: null,
-          thread_id: thread_id,
-          raw_body: text,
-        }
-      };
-
-      const success = api.post(`/api/discussion/v1/comments`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`
-        },
-        validateStatus: function (status: number) {
-          return status < 500;
-        },
-        body: JSON.stringify(commentData)
-      }
-      ).then(response => {
-          console.log(response.data);
-          setText(response.data)
-          return response.data.success ? response.data.success : false;
-      })
-      .catch((e) => {
-        console.log('Sumbit Error:');
-        console.log(e.toJSON());
-        setText('');
-        return false;
-      })
-
-      return success
-    }
-
-    const postNewComment = async (data) => {
-    }
-
-    const handleCancel = () => {
-      setText('');
-      setVisible(false);
-    }
-
-    const handleNewResponseButtonPress = () => {
-      setVisible(!visible);
-    };
-
-    return (
-      <View>
-          {visible ?
-          <View style={styles.textBoxContainer}>
-            <TextInput
-              style={styles.textBox}
-              value={text}
-              onChangeText={setText}
-              multiline={true}
-              numberOfLines={4}
-            />
-            <TouchableOpacity style={styles.buttonContainer} onPress={handleSubmit}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}>Submit</Text>
-              </View>
-            <Text style={{color:'red'}} onPress={handleCancel}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-          :
-          <TouchableOpacity style={styles.buttonContainer} onPress={handleNewResponseButtonPress}>
-            <View style={styles.button}>
-                <Text style={styles.buttonText}>Add a response</Text>
-            </View>
-          </TouchableOpacity>
-          }
-      </View>
-    );
-    };    //TextEntry
+  } = useStores();  
 
   const [comments, setComments] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchComments = async () => {
+    setIsLoading(true)
     await api.get(thread_comment_list_url,
       {
         headers: {
@@ -156,20 +79,20 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
           })
 
           setComments(comments);
-
+          setIsLoading(false);
         }
       })
       .catch((e) => {
         console.log('Error In Comments Load:');
         const error = Object.assign(e);
         console.log(error);
+        setIsLoading(false);
       }
     );
   }
 
-
   useEffect(() => {
-      fetchComments();
+    fetchComments();
   }, [])
 
 
@@ -184,41 +107,46 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
             <View style={styles.postContainer}>
                 <View style={styles.postHeader}>
                     {thread_icon ? <Image defaultSource={iconPlaceholder} source={{ uri: thread_icon }} style={styles.pfp} /> : <EvilIcons name="user" size={46} color="white" style={styles.pfp_placeholder} />}
-                    <View style={{}}>
-                        <Text style={styles.postTitle}>{thread_title}</Text>
-                        <Text style={styles.postAuthor}>{thread_author}</Text>
+                    <View>
+                        <Text style={styles.postTitle}>
+                          {thread_title}
+                        </Text>
+                        <Text style={styles.postAuthor}>  
+                          {thread_author}
+                        </Text>
                     </View>
                 </View>
                 <View style={styles.postBody}>
                   <RenderHtml contentWidth={width} source={ {html: thread_full_body} }/> 
-                    {/* <Text style={styles.postBodyText}>{thread_full_body}</Text> */}
                 </View>
                 <View style={styles.counterRow}>
                     <AntDesign name="like1" size={16} color="white" />
                     <Text style={styles.postCounter}>{thread_vote_count}</Text>
                 </View>
             </View>
-            <FlatList
-              data={comments}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.commentContainer}>
-                  <View style={styles.postHeader}>
-                      <EvilIcons name="user" size={36} color="white" />
-                      <View style={{}}>
-                          <Text style={styles.commentAuthorText}>{item.author}</Text>
-                          <Text style={styles.commentDateText}>{item.date}</Text>
-                      </View>
-                  </View>
-                  <View style={styles.commentBody}>
-                      <Text style={styles.postBodyText}>{item.full_body}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-              style={styles.list}
-              ListFooterComponent = {TextEntry}
-            />
-            </View>
+            <LoadingIcon isLoading={isLoading}>
+              <FlatList
+                data={comments}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.commentContainer}>
+                    <View style={styles.postHeader}>
+                        <EvilIcons name="user" size={36} color="white" />
+                        <View style={{}}>
+                            <Text style={styles.commentAuthorText}>{item.author}</Text>
+                            <Text style={styles.commentDateText}>{item.date}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.commentBody}>
+                        <Text style={styles.postBodyText}>{item.full_body}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                style={styles.list}
+                ListFooterComponent = {<TextEntry thread_id={thread_id} fetchComments={fetchComments}/>}
+              />
+            </LoadingIcon>
+          </View>
         </SafeAreaView>
         </ImageBackground>
     </View>
@@ -227,7 +155,6 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
 
 const backgroundImage = require('../../../assets/images/futuristic-background.png');
 const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
-
 
 const styles = StyleSheet.create({
   header: {

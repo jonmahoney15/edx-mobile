@@ -9,7 +9,7 @@ import { api } from "../../services/api"
 import { useStores } from "../../models"
 import { DateItem } from "./DateItem"
 import { formatDate } from "../../utils/formatDate"
-import LoadingComponent from "../../components/LoadingComponent"
+import {LoadingIcon} from "../../components/LoadingIcon"
 
 const backgroundImage = require("../../../assets/images/futuristic_realistic_classroom.png")
 
@@ -113,7 +113,7 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
       <View style={styles.blackBackground}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-          <LoadingComponent isLoading={isLoading}>
+          <LoadingIcon isLoading={isLoading}>
             <PrettyHeader title="Course Dates" theme="grey" onLeftPress={navigation.goBack} onRightPress={handleProfilePress} />
             <View style={styles.screenBody}>
               <Timeline
@@ -127,7 +127,7 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
                 eventContainerStyle={{ marginTop: -14, }}
               />
             </View>
-          </LoadingComponent>
+          </LoadingIcon>
         </SafeAreaView>
       </View>
     </ImageBackground>

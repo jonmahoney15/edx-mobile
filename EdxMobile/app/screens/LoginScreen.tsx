@@ -8,6 +8,7 @@ import { colors, spacing } from "../theme"
 import { api } from "../services/api";
 import { CLIENT_ID, CLIENT_SECRET } from "@env"
 import { LinearGradient } from 'expo-linear-gradient';
+import LoadingDots from "@apolloeagle/loading-dots"
 
 interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
@@ -18,6 +19,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
+  const [isLoading, setIsLoading] = useState(false);
   const {
     authenticationStore: {
       authEmail,
@@ -37,6 +39,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
 
   const login = async() => {
+    setIsLoading(true)
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
     
@@ -48,6 +51,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       fetchAuthToken()
     } else {
       setAuthToken('')
+      setIsLoading(false)
     }
 
     setIsSubmitted(false)
@@ -71,11 +75,13 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         }
     ).then(response => {
         setAuthToken(response.data.access_token);
+        setIsLoading(false)
     })
     .catch((e) => {
         console.log('In Login Error:');
         console.log(e.toJSON());
         setAuthToken('');
+        setIsLoading(false)
     });
   }
 
@@ -171,13 +177,22 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
             onSubmitEditing={login}
             RightAccessory={PasswordRightAccessory}
           />
-          <Button
-            testID="login-button"
-            tx="loginScreen.tapToSignIn"
-            style={$tapButton}
-            preset="orangeButton"
-            onPress={login}
-          />
+          { isLoading ? 
+            <Button style={$tapButton} preset="orangeButton">
+              <View style={$containerLoad}>
+                <LoadingDots animation="typing" color="white" size={10} /> 
+              </View>
+            </Button>
+            
+          :
+            <Button
+              testID="login-button"
+              tx="loginScreen.tapToSignIn"
+              style={$tapButton}
+              preset="orangeButton"
+              onPress={login}
+            /> 
+          }
           <Text
             tx="loginScreen.signUp"
             style={$signUpButton}
@@ -247,4 +262,12 @@ const $signUpButton: TextStyle = {
   textAlign: "right",
   fontWeight: "bold",
   color: colors.orangeButtonBackgroundColor
+}
+
+const $containerLoad: ViewStyle = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 5
 }
