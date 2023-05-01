@@ -209,7 +209,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                             <Text style={styles.commentDateText}>{item.date}</Text>
                         </View>
                     </View>
-                    <View style={styles.commentBody}
+                    <View style={styles.commentBody}>
                       <RenderHtml contentWidth={width} source={{html: item.full_body}} tagsStyles={tagsStyles}/>
                     </View>
                   </TouchableOpacity>
