@@ -193,11 +193,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
               onPress={login}
             /> 
           }
-          <Text
-            tx="loginScreen.signUp"
-            style={$signUpButton}
-            onPress={handleSignUpPress}
-          />
         </View>
       </SafeAreaView>
       <ImageBackground source={require('../../assets/images/loginPageImage.png')} 
