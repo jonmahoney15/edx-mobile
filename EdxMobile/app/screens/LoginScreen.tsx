@@ -39,14 +39,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const errors: typeof validationErrors = isSubmitted ? validationErrors : ({} as any)
 
   const login = async() => {
-    setIsLoading(true)
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
     
     if (Object.values(validationErrors).some((v) => !!v)) return
-
+    setIsLoading(true)
+    
     const authenticated = await submitLogin() 
-
+    
     if (authenticated) {
       fetchAuthToken()
     } else {
@@ -138,6 +138,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     }
   }, [])
 
+  const readyToSubmit = () => authEmail.length > 0 && authPassword.length > 0
+
   return (
     <View style={$background}> 
       <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
@@ -190,6 +192,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
               tx="loginScreen.tapToSignIn"
               style={$tapButton}
               preset="orangeButton"
+              disabled={!readyToSubmit()}
               onPress={login}
             /> 
           }

@@ -9,7 +9,7 @@ import { api } from "../../services/api"
 import { useStores } from "../../models"
 import { DateItem } from "./DateItem"
 import { formatDate } from "../../utils/formatDate"
-import {LoadingIcon} from "../../components/LoadingIcon"
+import { LoadingIcon } from "../../components/LoadingIcon"
 
 const backgroundImage = require("../../../assets/images/futuristic_realistic_classroom.png")
 
@@ -65,6 +65,7 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
         data.course_date_blocks.forEach((date: IDate) => {
           let newItem = {
             title: formatDate(date.date),
+            date: date.date,
             description: <DateItem title={date.title} />
           }
           newCourseDates.push(newItem)
@@ -74,7 +75,10 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
       const today = new Date();
       let found = false;
       newCourseDates.forEach(item => {
-        if ((new Date(item.date)).getTime() === today.getTime()) {
+        const itemDate = new Date(item.date)
+        if (itemDate.getFullYear() === today.getFullYear() &&
+            itemDate.getMonth() === today.getMonth() &&
+            itemDate.getDate() === today.getDate()) {
           found = true;
           item.circleColor = colors.primaryButton;
         }
@@ -86,10 +90,15 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
         let todayItem = {
           circleColor: colors.primaryButton,
           title: formatDate(dateString),
+          date: today,
           description: <DateItem title="Today" />
         }
         newCourseDates.push(todayItem)
       }
+
+      newCourseDates = newCourseDates.sort((a, b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime()
+      })
 
       setCourseDates(newCourseDates)
       setIsLoading(false);

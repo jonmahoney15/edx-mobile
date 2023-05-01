@@ -291,9 +291,6 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
                     <View style={styles.titleRow}>
                       <Text numberOfLines={1} style={styles.postTitle}>
                         {item.title}
-                        <Text numberOfLines={1} style={styles.postPreview}>
-                          {" " + item.preview_body}
-                        </Text>
                       </Text>
                       <Text numberOfLines={1} style={styles.postAuthor}>{item.author}</Text>
                       <View style={styles.counterRow}>
@@ -329,7 +326,7 @@ const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
 const styles = StyleSheet.create({
   plusButtonContainer: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 100,
     right: 20,
     zIndex: 999, // ensure the button is on top of other content
   },
