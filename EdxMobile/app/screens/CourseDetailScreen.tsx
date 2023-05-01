@@ -8,11 +8,11 @@ import { Animated } from 'react-native';
 import { api } from '../services/api'
 import { useStores } from "../models"
 import { normalizeOutlineBlocks } from '../utils/formatData';
-import LoadingComponent from '../components/LoadingComponent';
 import { colors } from '../theme/colors';
 import { Button } from '../components/Button';
 import { spacing, typography } from '../theme';
 import { LinearGradient } from 'expo-linear-gradient';
+import { LoadingIcon } from '../components/LoadingIcon';
 
 
 const hardCodedCourse =
@@ -168,12 +168,13 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   };
 
   return (
+
     <View style={styles.blackBackground}>
       <ImageBackground source={backgroundImage} resizeMode="stretch" imageStyle={{ height: '70%' }} style={styles.backgroundImage}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
         <SafeAreaView style={styles.container}>
           <PrettyHeader title={title} theme='black' onLeftPress={navigation.goBack} onRightPress={handleProfilePress}/>
-          <LoadingComponent isLoading={isLoading}>
+           <LoadingIcon isLoading={isLoading}>
             <View style={styles.screenBody}>
               <View style={styles.beginCard}>
                 <Text style={styles.beginCourse}>Begin Your course Today</Text>
@@ -230,11 +231,10 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
                 />
               </View>
             </View >
-          </LoadingComponent>
+         </LoadingIcon>
         </SafeAreaView>
       </ImageBackground>
     </View>
-    
   );
 });
 

@@ -1,10 +1,12 @@
-import React, { FC } from "react"
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground, StatusBar, SafeAreaView, Platform } from 'react-native';
+import React, { FC, useState } from "react"
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ImageBackground, StatusBar, SafeAreaView, Platform, Alert } from 'react-native';
 import { useStores } from "../../models"
 import { AppStackScreenProps } from "../../navigators"
 import { colors } from "../../theme"
 import { observer } from "mobx-react-lite"
 import { PrettyHeader } from "../../components/PrettyHeader";
+import { api } from "../../services/api";
+import { LoadingIcon } from "../../components";
 
 const backgroundImage = require("../../../assets/images/futuristic_realistic_classroom.png")
 
@@ -14,34 +16,66 @@ export const CreateDiscussionScreen: FC<CreateDiscussionScreenProps> = observer(
     _props
 ) {
 const { navigation } = _props
-const { route } = _props
+const { id, update } = _props.route.params
 const {
-  authenticationStore: { logout },
+  authenticationStore: { logout, authToken },
 } = useStores()
 
-// const CreateDiscussionScreen: React.FC = () => {
-  const [postTitle, setPostTitle] = React.useState('');
-  const [postContent, setPostContent] = React.useState('');
+  const [postTitle, setPostTitle] = useState('');
+  const [postContent, setPostContent] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handlePostTitleChange = (text: string) => {
-    setPostTitle(text);
-  };
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    const discussion = {
+      course_id: id,
+      topic_id: `Discussion for ${id}`,
+      type: "discussion",
+      title: postTitle,
+      raw_body: postContent
+    }
 
-  const handlePostContentChange = (text: string) => {
-    setPostContent(text);
-  };
+    await api.post("/api/discussion/v1/threads/",
+    JSON.stringify(discussion),
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      },
+      validateStatus: function (status) {
+        return status < 500;
+      }
+    }
+    ).then(async response => {
+      if (response.status === 200) {
+        setPostContent("")
+        setPostTitle("")
+        await update()
+        
+        Alert.alert("Success!", "Created Discussion Thread", [{
+          text: 'OK',
+          onPress: () => navigation.navigate("Discussion")
+        }])
+      }
 
-  const handleSubmit = () => {
-    // Handle submit logic
+      setIsLoading(false);
+    })
+    .catch((e) => {
+        console.log('Error In Course Progress Load:');
+        const error = Object.assign(e);
+        console.log(error)
+        setIsLoading(false);
+    });
   };
 
   const handleCancel = () => {
-    // Handle cancel logic
+    navigation.navigate('Discussion');
   };
 
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
+
+  const readyToSubmit = () => postContent.length > 0 && postTitle.length > 0
 
   return (
   
@@ -57,25 +91,29 @@ const {
               placeholder="Enter post title"
               placeholderTextColor="#C4C4C4"
               value={postTitle}
-              onChangeText={handlePostTitleChange}
+              onChangeText={(text)=>setPostTitle(text)}
+              editable={!isLoading}
             />
             <Text style={styles.inputTitle}>Post Content</Text>
             <TextInput
               style={[styles.input, styles.postContentInputBox]}
               placeholder="Enter post content"
               value={postContent}
-              onChangeText={handlePostContentChange}
+              onChangeText={(text) => setPostContent(text)}
               multiline={true}
               numberOfLines={10}
+              editable={!isLoading}
             />
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </View>
+            <LoadingIcon isLoading={isLoading}>
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={readyToSubmit() ? styles.submitButton : styles.disabledButton} disabled={!readyToSubmit()} onPress={handleSubmit}>
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                </TouchableOpacity>
+              </View>
+            </LoadingIcon>
           </View>
         </SafeAreaView>      
       </View>
@@ -148,7 +186,13 @@ const styles = StyleSheet.create({
     fontSize: 14
   },
   submitButton: {
-    backgroundColor: colors.primaryButton,
+    backgroundColor:  colors.primaryButton,
+    borderRadius: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+  },
+  disabledButton: {
+    backgroundColor: "grey",
     borderRadius: 50,
     paddingVertical: 10,
     paddingHorizontal: 40,
@@ -161,4 +205,3 @@ const styles = StyleSheet.create({
 });
 
 export default CreateDiscussionScreen;
-

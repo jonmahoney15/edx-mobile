@@ -10,7 +10,9 @@ import RenderHtml from 'react-native-render-html';
 import { typography } from "../../theme/typography"
 import { LinearGradient } from "expo-linear-gradient"
 import { colors } from "../../theme/colors"
-import LoadingComponent from "../../components/LoadingComponent"
+import { TextEntry } from "./TextEntry"
+import { LoadingIcon } from "../../components"
+
 
 interface DiscussionComment {
   id: string,
@@ -61,88 +63,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
     authenticationStore: {
       authToken
     }
-  } = useStores();
-
-  const TextEntry = ({ onCancel, onSubmit }) => {
-    const [visible, setVisible] = useState(false);
-    const [text, setText] = useState('');
-
-    const handleSubmit = () => {
-      const commentData = {
-        comment: {
-          parent_id: null,
-          thread_id: thread_id,
-          raw_body: text,
-        }
-      };
-
-      const success = api.post(`/api/discussion/v1/comments`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`
-        },
-        validateStatus: function (status: number) {
-          return status < 500;
-        },
-        body: JSON.stringify(commentData)
-      }
-      ).then(response => {
-          console.log(response.data);
-          setText(response.data)
-          return response.data.success ? response.data.success : false;
-      })
-      .catch((e) => {
-        console.log('Sumbit Error:');
-        console.log(e.toJSON());
-        setText('');
-        return false;
-      })
-
-      return success
-    }
-
-    const postNewComment = async (data) => {
-    }
-
-    const handleCancel = () => {
-      setText('');
-      setVisible(false);
-    }
-
-    const handleNewResponseButtonPress = () => {
-      setVisible(!visible);
-    };
-
-    return (
-      <View>
-          {visible ?
-          <View style={styles.textBoxContainer}>
-            <TextInput
-              style={styles.textBox}
-              value={text}
-              onChangeText={setText}
-              multiline={true}
-              numberOfLines={4}
-            />
-            <TouchableOpacity style={styles.buttonContainer} onPress={handleSubmit}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}>Submit</Text>
-              </View>
-            <Text style={{color:'red'}} onPress={handleCancel}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-          :
-          <TouchableOpacity style={styles.buttonContainer} onPress={handleNewResponseButtonPress}>
-            <View style={styles.button}>
-                <Text style={styles.buttonText}>Add a response</Text>
-            </View>
-          </TouchableOpacity>
-          }
-      </View>
-    );
-    };    //TextEntry
+  } = useStores();  
 
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -254,7 +175,7 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
         <StatusBar translucent={true} backgroundColor="transparent" />
         <SafeAreaView style={styles.container}>
           <PrettyHeader title={thread_title} theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress}/>
-          <LoadingComponent isLoading={isLoading}>
+          <LoadingIcon isLoading={isLoading}>
             <View style={styles.screenBody}>
               <View style={{height: 'auto'}}>
                 <ScrollView fadingEdgeLength={100}>
@@ -288,25 +209,24 @@ export const DiscussionThreadScreen: FC<DiscussionThreadScreenProps> = observer(
                             <Text style={styles.commentDateText}>{item.date}</Text>
                         </View>
                     </View>
-                    <View style={styles.commentBody}>
+                    <View style={styles.commentBody}
                       <RenderHtml contentWidth={width} source={{html: item.full_body}} tagsStyles={tagsStyles}/>
                     </View>
                   </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.list}
-                ListFooterComponent = {TextEntry}
+                ListFooterComponent = {<TextEntry thread_id={thread_id} fetchComments={fetchComments}/>}
               />
             </View>
-          </LoadingComponent>
+          </LoadingIcon>
         </SafeAreaView>
-        </ImageBackground>
+      </ImageBackground>
     </View>
   );
 });
 
 const backgroundImage = require('../../../assets/images/futuristic-background.png');
 const iconPlaceholder = require('../../../assets/icons/pfp-placeholder.png');
-
 
 const styles = StyleSheet.create({
   blackBackground: {

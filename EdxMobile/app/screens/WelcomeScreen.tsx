@@ -8,7 +8,7 @@ import { colors, typography } from "../theme";
 import { Card } from "react-native-elements";
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import { api } from '../services/api';
-import LoadingComponent from "../components/LoadingComponent";
+import { LoadingIcon } from "../components/LoadingIcon";
 import { PrettyHeader } from "../components/PrettyHeader";
 
 const hardcodedCourses = [
@@ -134,9 +134,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         setUserUsername(user.username || "");
         setUserLanguage(user?.language_proficiencies?.length > 0 ? user.language_proficiencies[0].code : "");
         setUserEducation(user?.level_of_education || "");
-      } else {
-        console.log("No User data, bad user")
-        logout()
       }
     }).catch((e) => {
       console.log('Profile Load Error:');
@@ -145,20 +142,18 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   }
 
   useEffect(() => {
-    setIsLoading(true);
-    Promise.all([fetchUserInfo(), requestCourses()])
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
-      });
-
-    // setTimeout(() => {
-    //   fetchUserInfo();
-    //   requestCourses();
-    // }, 100);
+    if (isAuthenticated) {
+      setIsLoading(true);
+      
+      Promise.all([fetchUserInfo(), requestCourses()])
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setIsLoading(false);
+        });
+    }
   }, []);
 
   return (
@@ -168,7 +163,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
           <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
           <SafeAreaView style={styles.container}>
             <PrettyHeader title="My Courses" theme="black" hasBackButton={false} onRightPress={handleProfilePress}  />
-            <LoadingComponent isLoading={isLoading}>
+            <LoadingIcon isLoading={isLoading}>
               <View style={$bottomContainer}>
                 <ScrollView>
                   {
@@ -179,7 +174,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
                           <Text style={{ fontFamily: typography.primary.bold, fontSize: 15, color: colors.text, lineHeight: 18}}>{c.name}</Text>
                           <Text style={{ fontSize: 12, color: colors.textDim, lineHeight: 18 }}>{c.org} - {c.number}</Text>
                         </View>
-                       
                         <View style={{ flex: 1, alignItems: "flex-end", justifyContent: "flex-end" }}>
                           <Button
                             tx="enrollmentScreen.viewCourseButtonText"
@@ -194,7 +188,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
                   }
                 </ScrollView>
               </View>
-            </LoadingComponent>
+            </LoadingIcon>
           </SafeAreaView>
         </View>
       </ImageBackground>
