@@ -1,13 +1,13 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
-import { Platform, StatusBar, SafeAreaView, ImageBackground, StyleSheet, View, Button } from "react-native"
+import { Platform, StatusBar, SafeAreaView, ImageBackground, StyleSheet, View } from "react-native"
 import { Text } from "../components"
-import { AppStackScreenProps, goBack } from "../navigators"
+import { AppStackScreenProps } from "../navigators"
 import { useStores } from "../models"
 import { colors } from "../theme"
 import { PrettyHeader } from "../components/PrettyHeader"
 import { api } from "../services/api"
-import LoadingComponent from "../components/LoadingComponent"
+import { LoadingIcon } from "../components/LoadingIcon"
 
 const backgroundImage = require("../../assets/images/futuristic_library_technology.png")
 
@@ -56,13 +56,12 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
         setIsLoading(false);
       }
     })
-      .catch((e) => {
+    .catch((e) => {
         console.log('Error In Course Progress Load:');
         const error = Object.assign(e);
         console.log(error)
         setIsLoading(false);
-      }
-      );
+    });
   }
 
 
@@ -76,7 +75,7 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
       <ImageBackground source={backgroundImage} resizeMode="stretch" imageStyle={{ height: '70%' }} style={styles.backgroundImage}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-          <LoadingComponent isLoading={isLoading}>
+          <LoadingIcon isLoading={isLoading}>
             <PrettyHeader title="Course Progress" theme="black" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
             <View style={styles.screenBody}>
               <View style={styles.completionCard}>
@@ -101,7 +100,7 @@ export const ProgressScreen: FC<ProgressScreenProps> = observer(function Progres
                 <Text style={[styles.description, styles.gradeBottomText]}>A weighted grade of <Text weight="bold" style={[styles.description, styles.gradeBottomText]}>{passingPercent}%</Text> is required to pass in this course</Text>
               </View>
             </View>
-          </LoadingComponent>
+          </LoadingIcon>
         </SafeAreaView>
       </ImageBackground>
     </View>

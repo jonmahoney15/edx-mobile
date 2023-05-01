@@ -8,7 +8,7 @@ import { colors } from "../theme";
 import { Card } from "react-native-elements";
 import { FontAwesome, Feather } from '@expo/vector-icons';
 import { api } from '../services/api';
-import LoadingComponent from "../components/LoadingComponent";
+import { LoadingIcon } from "../components/LoadingIcon";
 
 const hardcodedCourses = [
   {
@@ -133,9 +133,6 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
         setUserUsername(user.username || "");
         setUserLanguage(user?.language_proficiences?.length > 0 ? user.language_proficiences[0] : "");
         setUserEducation(user?.level_of_education || "");
-      } else {
-        console.log("No User data, bad user")
-        logout()
       }
     }).catch((e) => {
       console.log('Profile Load Error:');
@@ -144,20 +141,18 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
   }
 
   useEffect(() => {
-    setIsLoading(true);
-    Promise.all([fetchUserInfo(), requestCourses()])
-      .then(() => {
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
-      });
-
-    // setTimeout(() => {
-    //   fetchUserInfo();
-    //   requestCourses();
-    // }, 100);
+    if (isAuthenticated) {
+      setIsLoading(true);
+      
+      Promise.all([fetchUserInfo(), requestCourses()])
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setIsLoading(false);
+        });
+    }
   }, []);
 
   return (
@@ -172,7 +167,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
               </View>
               <Feather name="user" size={25} color="#fff" onPress={() => handleProfilePress()} />
             </View>
-            <LoadingComponent isLoading={isLoading}>
+            <LoadingIcon isLoading={isLoading}>
               <View style={$bottomContainer}>
                 <ScrollView>
                   {
@@ -183,7 +178,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
                           <View>
                             <Text style={{ fontSize: 16, color: "white" }}>{c.name}</Text>
                           </View>
-                          <TouchableOpacity onPress={() => console.log("add navigation to something?")}>
+                          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
                             <FontAwesome name="gear" color='#fff' size={24} />
                           </TouchableOpacity>
                         </View>
@@ -202,7 +197,7 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
                   }
                 </ScrollView>
               </View>
-            </LoadingComponent>
+            </LoadingIcon>
           </SafeAreaView>
         </View>
       </ImageBackground>

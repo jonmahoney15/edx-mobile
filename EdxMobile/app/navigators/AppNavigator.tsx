@@ -18,11 +18,11 @@ import {
   SignUpScreen,
   ProgressScreen,
   DatesScreen,
-  DiscussionThreadScreen
+  DiscussionThreadScreen,
+  CreateDiscussionScreen
 } from "../screens"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { TabNavigator } from "./TabNavigator"
-import { CreateDiscussionScreen } from '../screens/Discussion/CreateDiscussionScreen';
 
 type CourseDetailScreenParams = {
   id: string
@@ -46,6 +46,7 @@ type DatesScreenParams = {
 type DiscussionScreenParams = {
   id: string
 }
+
 type DiscussionThreadScreenParams = {
   id: string
   thread_id: string
@@ -57,6 +58,11 @@ type DiscussionThreadScreenParams = {
   thread_icon: string
 }
 
+type CreateDiscussionScreenParams = {
+  id: string,
+  update: () => {}
+}
+
 export type AppStackParamList = {
   Welcome: undefined
   Login: undefined
@@ -65,7 +71,7 @@ export type AppStackParamList = {
   Module: ModuleScreenParams
   Discussion: DiscussionScreenParams
   DiscussionThread: DiscussionThreadScreenParams
-  CreateDiscussion: undefined
+  CreateDiscussion: CreateDiscussionScreenParams
   SignUp: undefined
   Dates: DatesScreenParams
   Progress: ProgressScreenParams

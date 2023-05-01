@@ -7,7 +7,7 @@ import { FontAwesome, AntDesign, EvilIcons } from '@expo/vector-icons'
 import { colors } from "../../theme"
 import { useStores } from "../../models"
 import { api } from "../../services/api"
-import LoadingComponent from "../../components/LoadingComponent"
+import { LoadingIcon } from "../../components/LoadingIcon"
 
 interface DiscussionPost {
   id: string,
@@ -137,6 +137,13 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
    
   };
 
+  const handleCreateDiscussionPress = () => {
+    navigation.navigate('CreateDiscussion', {
+      id: id,
+      update: fetchDiscussions
+    })
+  }
+
   const handleProfilePress = () => {
     navigation.navigate('Profile');
   };
@@ -176,7 +183,9 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
       });
     return profilePicture;
   }
+
   const fetchDiscussions = async () => {
+    setIsLoading(true)
     await api.get(`/api/discussion/v1/threads/?course_id=${encodeURIComponent(id)}`,
       {
         headers: {
@@ -239,8 +248,8 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
       }
       );
   }
+
   useEffect(() => {
-    setIsLoading(true);
     fetchDiscussions();
   }, [])
 
@@ -249,13 +258,13 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
       <View style={styles.translucentOverlay}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-          <LoadingComponent isLoading={isLoading}>
+          <LoadingIcon isLoading={isLoading}>
             <PrettyHeader title="Discussions" theme="grey" onLeftPress={() => navigation.goBack()} onRightPress={handleProfilePress} />
             <View style={styles.screenBody}>
               <FlatList
                 style={styles.list}
                 directionalLockEnabled={true}
-                data={discussions}    //dummy course id
+                data={discussions} 
                 //keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
@@ -286,8 +295,8 @@ export const DiscussionScreen: FC<DiscussionScreenProps> = observer(function Dis
                 )}
               />
             </View>
-          </LoadingComponent>
-          <TouchableOpacity style={styles.plusButtonContainer} onPress={() =>navigation.navigate('CreateDiscussion')}>
+          </LoadingIcon>
+          <TouchableOpacity style={styles.plusButtonContainer} onPress={() => handleCreateDiscussionPress()}>
             <View style={styles.plusButton}>
               <FontAwesome name="plus" color='#000' size={20}/>
             </View>
