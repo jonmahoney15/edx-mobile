@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ImageBackground, StatusBar, SafeAreaView, Platform, ViewStyle } from 'react-native';
 import React, { FC, useEffect, useState } from "react";
 import { AppStackScreenProps } from "../navigators"
 import { observer } from "mobx-react-lite"
@@ -8,7 +8,12 @@ import { Animated } from 'react-native';
 import { api } from '../services/api'
 import { useStores } from "../models"
 import { normalizeOutlineBlocks } from '../utils/formatData';
+import { colors } from '../theme/colors';
+import { Button } from '../components/Button';
+import { spacing, typography } from '../theme';
+import { LinearGradient } from 'expo-linear-gradient';
 import { LoadingIcon } from '../components/LoadingIcon';
+
 
 const hardCodedCourse =
   [
@@ -163,81 +168,102 @@ export const CourseDetailScreen: FC<CourseDetailScreenProps> = observer(function
   };
 
   return (
-    <ImageBackground source={backgroundImage} style={styles.container}>
-      <View style={{ marginTop: 50 }}>
-        <PrettyHeader
-          title={title}
-          theme='black'
-          onLeftPress={navigation.goBack}
-          onRightPress={handleProfilePress}
-        />
-      </View>
-      <LoadingIcon isLoading={isLoading}>
-        <View style={styles.beginContainer}>
-          <Text style={styles.beginCourse}>Begin Your course today</Text>
-          <TouchableOpacity onPress={() => handleModulePress(course[0])}>
-            <View style={styles.startContainer}>
-              <Text style={styles.viewCourse}>Start Course</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={{ flex: 2 }}>
-          <View style={styles.textContainer}>
-            <FlatList
-              data={course}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[styles.moduleContainer, { flexDirection: 'column' }]}
-                  onPress={() => handleModulePress(item)}
-                >
-                  <View style={styles.component1}>
-                    <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
-                      <MaterialCommunityIcons name={checkedModules.includes(item.id) ? "check-circle" : "circle"} size={20} color="#000" />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>{item.display_name}</Text>
-                    <TouchableOpacity onPress={() => toggleSubmoduleList(item.id)}>
-                      <MaterialCommunityIcons name="plus" size={22} color="#000" />
-                    </TouchableOpacity>
-                  </View>
-                  {expandedModules.includes(item.id) && (
-                    <Animated.View style={[styles.submoduleListContainer, {
-                      overflow: 'hidden',
-                    }]}>
-                      <FlatList
-                        data={item.submodules}
-                        keyExtractor={(submodule) => submodule.id}
-                        renderItem={({ item: submodule }) => (
-                          <TouchableOpacity
-                            style={styles.submoduleContainer}
-                            onPress={() => handleSubModulePress(submodule)}
-                          >
-                            <View style={styles.component2}>
-                              <TouchableOpacity onPress={() => toggleSubModuleChecked(submodule.id)}>
-                                <MaterialCommunityIcons name={checkedSubModules.includes(submodule.id) ? "check-circle" : "circle"} size={20} color="#fff" />
+
+    <View style={styles.blackBackground}>
+      <ImageBackground source={backgroundImage} resizeMode="stretch" imageStyle={{ height: '70%' }} style={styles.backgroundImage}>
+        <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content"/>
+        <SafeAreaView style={styles.container}>
+          <PrettyHeader title={title} theme='black' onLeftPress={navigation.goBack} onRightPress={handleProfilePress}/>
+           <LoadingIcon isLoading={isLoading}>
+            <View style={styles.screenBody}>
+              <View style={styles.beginCard}>
+                <Text style={styles.beginCourse}>Begin Your course Today</Text>
+                <Button
+                  text="Start Course"
+                  style={styles.startButton}
+                  textStyle={styles.startButtonText}
+                  preset="secondOrangeButton"
+                  onPress={() => handleModulePress(course[0])}
+                />
+              </View>
+              <View style={{ flex: 2, width: '100%', marginTop: 12 }}>
+                <FlatList
+                  data={course}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={[styles.moduleContainer, { flexDirection: 'column' }]}
+                      onPress={() => handleModulePress(item)}
+                    >
+                      <View style={styles.component1}>
+                        <TouchableOpacity onPress={() => toggleModuleChecked(item.id)}>
+                          <MaterialCommunityIcons name={checkedModules.includes(item.id) ? "check-circle" : "circle"} size={18} color="#000" />
+                        </TouchableOpacity>
+                        <Text numberOfLines={1} style={styles.title}>{item.display_name}</Text>
+                        <TouchableOpacity onPress={() => toggleSubmoduleList(item.id)}>
+                          <MaterialCommunityIcons name="plus" size={22} color="#000" />
+                        </TouchableOpacity>
+                      </View>
+                      {expandedModules.includes(item.id) && (
+                        <Animated.View style={{overflow: 'hidden', flex: 1, alignItems: 'flex-start'}}>
+                          <FlatList
+                            style={styles.subModuleList}
+                            data={item.submodules}
+                            keyExtractor={(submodule) => submodule.id}
+                            renderItem={({ item: submodule }) => (
+                              <TouchableOpacity
+                                style={styles.submoduleContainer}
+                                onPress={() => handleSubModulePress(submodule)}
+                              >
+                                <View style={styles.component2}>
+                                  <TouchableOpacity onPress={() => toggleSubModuleChecked(submodule.id)}>
+                                    <MaterialCommunityIcons name={checkedSubModules.includes(submodule.id) ? "check-circle" : "circle"} size={16} color="#fff" />
+                                  </TouchableOpacity>
+                                  <Text numberOfLines={1} style={styles.submoduleTitle}>{submodule.title}</Text>
+                                </View>
                               </TouchableOpacity>
-                              <Text style={styles.submoduleTitle}>{submodule.title}</Text>
-                            </View>
-                          </TouchableOpacity>
-                        )}
-                      />
-                    </Animated.View>
+                            )}
+                          />
+                        </Animated.View>
+                      )}
+                    </TouchableOpacity>
                   )}
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        </View >
-      </LoadingIcon>
-    </ImageBackground>
+                />
+              </View>
+            </View >
+         </LoadingIcon>
+        </SafeAreaView>
+      </ImageBackground>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
+  blackBackground: {
+    flex: 1,
+    backgroundColor: colors.black,
+  },
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  container: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  screenBody: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 70,
+    paddingTop: 160,
+
+  },
   component1: {
     width: '100%',
     height: 40,
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(133, 213, 190, 0.71)',
@@ -245,12 +271,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   component2: {
-    // width: '100%',
-    // display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    // borderRadius: 24,
-    // paddingHorizontal: 20,
+  },
+  startButton: {
+    marginTop: 12,
+    height: 35,
+    width: 180
+  },
+  startButtonText: {
+    fontSize: 15,
   },
   title: {
     flex: 1,
@@ -258,75 +288,55 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 15,
     color: '#000000',
-    marginLeft: 15
-  },
-  container: {
-    display: 'flex',
-    flex: 1,
-    backgroundColor: '#000',
-    resizeMode: 'cover',
-  },
-  textContainer: {
-    flex: 1,
-    padding: 8,
+    marginLeft: 15,
+    fontFamily: typography.primary.medium
   },
   moduleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 16,
-    paddingRight: 16,
-    paddingBottom: 5,
-    borderRadius: 8,
+    width: '100%',
+    paddingBottom: 6,
   },
-  beginContainer: {
-    margin: 50,
-    width: "75%",
-    height: "10%",
-    backgroundColor: '#282424',
+  beginCard: {
     borderRadius: 24,
+    backgroundColor: colors.translucentBackground,
     alignItems: 'center',
-    justifyContent: 'center'
+    borderWidth: 0,
+    padding: 24,
+    width: '100%',
+    marginBottom: 12,
   },
   beginCourse: {
     fontStyle: 'normal',
     fontWeight: '500',
     fontSize: 15,
     lineHeight: 20,
-    color: '#FFFFFF',
-  },
-  startContainer: {
-    backgroundColor: '#FFB267',
-    borderRadius: 100,
-    width: 150,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 10
+    color: colors.text,
   },
   viewCourse: {
     fontStyle: 'normal',
     fontSize: 15,
     textAlign: 'center',
   },
-  submoduleListContainer: {
-    paddingVertical: 5,
-    backgroundColor: '#393535',
-    borderRadius: 24,
-    overflow: 'hidden',
-    marginLeft: 40,
+  subModuleList: {
+    width: '90%',
+    flex: 1,
+    alignItems: 'flex-start'
   },
   submoduleContainer: {
     padding: 8,
-    paddingRight: 12,
-    paddingLeft: 12,
-    borderBottomWidth: 0.5,
-    width: 280,
+    backgroundColor: colors.solidBackground,
+    borderRadius: 24,
+    marginTop: 4,
+    marginLeft: 16,
+    width: 300,
   },
   submoduleTitle: {
-    marginLeft: 10,
     fontSize: 15,
-    color: '#FFFFFF'
+    paddingHorizontal: spacing.medium,
+    color: colors.text,
+    fontFamily: typography.primary.normal
   }
 });
 

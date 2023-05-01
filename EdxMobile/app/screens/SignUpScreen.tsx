@@ -79,54 +79,60 @@ export const SignUpScreen: FC<SignUpScreenProps> = observer(function SignUpScree
 
     return (
         <View style={$contentandbackgroundImage}> 
-            <View style={$contentContainer}>
-                <Text testID="login-heading" tx="signUpScreen.signUpScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
-                <Image
-                    source={require('../../assets/images/app-icon-all.png')}
-                    style={$openEdxLogoImage}
-                />
-                <TextField
-                    value={email}
-                    onChangeText={setEmail}
-                    containerStyle={$textField}
-                    labelTx={"signUpScreen.emailFieldLabel"}
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect={false}
-                    keyboardType="email-address"
-                />
-                <TextField
-                    value={username}
-                    labelTx="signUpScreen.usernameFieldLabel"
-                    onChangeText={setUsername}
-                    containerStyle={$textField}
-                    autoCapitalize="none"
-                />
-                <TextField
-                    value={name}
-                    labelTx="signUpScreen.nameFieldLabel"
-                    onChangeText={setName}
-                    containerStyle={$textField}
-                />
-                <TextField
-                    value={password}
-                    onChangeText={setPassword}
-                    containerStyle={$textField}
-                    labelTx="signUpScreen.passwordFieldLabel"
-                    autoCapitalize="none"
-                    autoComplete="password"
-                    autoCorrect={false}
-                    secureTextEntry={isPasswordHidden}
-                    RightAccessory={PasswordRightAccessory}
-                />
-                <Button
-                    tx="signUpScreen.signUp"
-                    style={!fieldValidation() ? $disableButton : $tapButton}
-                    preset="reversed"
-                    onPress={handleSignUpPress}
-                    disabled={!fieldValidation()}
-                />
-            </View>
+            <ImageBackground 
+                source={require('../../assets/images/loginPageImage.png')} 
+                style={$backgroundImage}
+                resizeMode="cover"
+            >
+                <View style={$contentContainer}>
+                    <Text testID="login-heading" tx="signUpScreen.signUpScreenTitle" preset="heading" style={$loginScreenTitleStyle} />
+                    <Image
+                        source={require('../../assets/images/app-icon-all.png')}
+                        style={$openEdxLogoImage}
+                    />
+                    <TextField
+                        value={email}
+                        onChangeText={setEmail}
+                        containerStyle={$textField}
+                        labelTx={"signUpScreen.emailFieldLabel"}
+                        autoCapitalize="none"
+                        autoComplete="email"
+                        autoCorrect={false}
+                        keyboardType="email-address"
+                    />
+                    <TextField
+                        value={username}
+                        labelTx="signUpScreen.usernameFieldLabel"
+                        onChangeText={setUsername}
+                        containerStyle={$textField}
+                        autoCapitalize="none"
+                    />
+                    <TextField
+                        value={name}
+                        labelTx="signUpScreen.nameFieldLabel"
+                        onChangeText={setName}
+                        containerStyle={$textField}
+                    />
+                    <TextField
+                        value={password}
+                        onChangeText={setPassword}
+                        containerStyle={$textField}
+                        labelTx="signUpScreen.passwordFieldLabel"
+                        autoCapitalize="none"
+                        autoComplete="password"
+                        autoCorrect={false}
+                        secureTextEntry={isPasswordHidden}
+                        RightAccessory={PasswordRightAccessory}
+                    />
+                    <Button
+                        tx="signUpScreen.signUp"
+                        style={!fieldValidation() ? $disableButton : $tapButton}
+                        preset="reversed"
+                        onPress={handleSignUpPress}
+                        disabled={!fieldValidation()}
+                    />
+                </View>
+            </ImageBackground>     
         </View>
     );
 });
@@ -153,12 +159,13 @@ const $backgroundImage: ViewStyle = {
 const $contentContainer: ViewStyle = {
     flex: 1,
     justifyContent: 'center',
-    padding: 50
+    padding: 50,
+    backgroundColor: colors.translucentOverlay
 };
 
 const $loginScreenTitleStyle: TextStyle = {
     marginTop: spacing.extraLarge,
-    marginBottom: spacing.small,
+    marginBottom: 0,
     color: "white", // add this line to set the text color of the heading to white
     textAlign: 'center',
     fontSize: 34, // set the font size to 28

@@ -126,18 +126,18 @@ export function Button(props: ButtonProps) {
 }
 
 const $baseViewStyle: ViewStyle = {
-  borderRadius: 50,
+  borderRadius: 100,
   justifyContent: "center",
   alignItems: "center",
   flexDirection: "row",
-  paddingVertical: spacing.small,
-  paddingHorizontal: spacing.small,
+  paddingVertical: spacing.extraSmall,
+  paddingHorizontal: spacing.large,
   overflow: "hidden",
 }
 
 const $baseTextStyle: TextStyle = {
-  fontSize: 20,
-  lineHeight: 30,
+  fontSize: 16,
+  lineHeight: 20,
   fontFamily: typography.primary.medium,
   textAlign: "center",
   flexShrink: 1,

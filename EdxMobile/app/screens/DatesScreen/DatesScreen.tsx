@@ -113,8 +113,8 @@ export const DatesScreen: FC<DatesScreenProps> = observer(function DatesScreen(
       <View style={styles.blackBackground}>
         <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
         <SafeAreaView style={styles.container}>
-          <LoadingIcon isLoading={isLoading}>
-            <PrettyHeader title="Course Dates" theme="grey" onLeftPress={navigation.goBack} onRightPress={handleProfilePress} />
+          <PrettyHeader title="Course Dates" theme="grey" onLeftPress={navigation.goBack} onRightPress={handleProfilePress} />
+           <LoadingIcon isLoading={isLoading}>
             <View style={styles.screenBody}>
               <Timeline
                 data={courseDates}

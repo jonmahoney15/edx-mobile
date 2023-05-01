@@ -7,22 +7,24 @@ import { colors, typography } from "../theme"
 export interface PrettyHeaderProps {
   title: string
   theme: 'grey' | 'black'
-  onLeftPress: ()=>void
-  onRightPress: ()=>void
+  hasBackButton?: boolean
+  hasProfileButton?: boolean
+  onLeftPress?: ()=>void
+  onRightPress?: ()=>void
 }
 
-export const PrettyHeader = (props: PrettyHeaderProps) => {
+export const PrettyHeader = ({title, theme, hasBackButton = true, hasProfileButton = true, onLeftPress=function(){}, onRightPress=function(){}}: PrettyHeaderProps) => {
   return (
-    <View style={props.theme == 'grey' ? styles.greyHeader : styles.blackHeader}>
-      <FontAwesome name="angle-left" color='#fff' size={30} onPress={props.onLeftPress}/>
+    <View style={theme == 'grey' ? styles.greyHeader : styles.blackHeader}>
+      {hasBackButton === false ?  <FontAwesome name="angle-left" color='transparent' size={30}/> : <FontAwesome name="angle-left" color='#fff' size={30} onPress={onLeftPress}/>}
       <View style={styles.titleArea}>
-        <Text numberOfLines={1} style={styles.title}>{props.title}</Text>
-        </View>
-      <Feather name="user" color='#fff' size={24} onPress={props.onRightPress}/>
+        <Text numberOfLines={1} style={styles.title}>{title}</Text>
+      </View>
+      {hasProfileButton === false ?  <Feather name="user" color='transparent' size={24}/> : <Feather name="user" color='#fff' size={24} onPress={onRightPress}/>}
     </View>
   )
 }
- 
+
 const styles = StyleSheet.create({
   greyHeader: {
     display: 'flex',
@@ -55,6 +57,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
+    fontFamily: typography.primary.normal,
     fontWeight: 'normal',
     color: 'white',
     textAlignVertical: 'center',

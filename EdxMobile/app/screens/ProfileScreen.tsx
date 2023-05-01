@@ -1,12 +1,14 @@
 import { observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { Image, ImageBackground, View, StyleSheet, Button } from "react-native"
-import { Text } from "../components"
+import { Image, ImageBackground, View, StyleSheet, StatusBar, SafeAreaView, Platform } from "react-native"
+import { Button, Text } from "../components"
 import { AppStackScreenProps } from "../navigators"
 import { Header} from "react-native-elements" 
 import { useStores } from "../models"
 import { FontAwesome } from '@expo/vector-icons';
 import { formatDate } from "../utils/formatDate"
+import { PrettyHeader } from "../components/PrettyHeader"
+import { colors } from "../theme/colors"
 
 const backgroundImage = require('../../assets/images/futuristic-background.png');
 
@@ -20,48 +22,45 @@ export const ProfileScreen: FC<ProfileScreenProps> = observer(function ProfileSc
     authenticationStore: { logout },
     userStore: { username, language, country, name, level_of_education, profile_image, email, date_joined }
   } = useStores();
-  return (
-    <View style={styles.container}>
-        <Header
-            placement="left"
-            leftComponent={
-                <FontAwesome name="arrow-left" color='#fff' size={24} onPress={() => navigation.goBack()}/>
-            }
-            containerStyle={{ 
-                backgroundColor: 'black',
-                justifyContent: 'space-around',
-            }}
-        />
-        <ImageBackground source={backgroundImage} style={styles.background}>
-            <View style={styles.backgroundTransparency}>
-                <View style={styles.box}>
-                  <Image source={{ uri: profile_image }}  style={styles.avatar}/>
-                  <Text style={styles.userId}>{username}</Text>
-                  <Text style={styles.memberSince}>Member since {formatDate(date_joined)}</Text>
-                  <View style={styles.separator}/>
-                  <Text style={styles.rowTextKey}>Full Name</Text>
-                  <Text style={styles.rowTextValue}>{name}</Text>
-                  <Text style={styles.rowTextKey}>Email</Text>
-                  <Text style={styles.rowTextValue}>{email}</Text>
-                  <Text style={styles.rowTextKey}>Location</Text>
-                  <Text style={styles.rowTextValue}>{country}</Text>
-                  <Text style={styles.rowTextKey}>Education</Text>
-                  <Text style={styles.rowTextValue}>{level_of_education}</Text>
-                  <Text style={styles.rowTextKey}>Primary Language Spoken</Text>
-                  <Text style={styles.rowTextValue}>{language}</Text>
-                  <Button title="Logout" color="red" onPress={logout} />
-                </View>
-            </View>
+  return (      
+        <ImageBackground source={backgroundImage} resizeMode="cover" style={styles.backgroundImage}>
+             <View style={styles.translucentOverlay}>
+                <StatusBar translucent={true} backgroundColor="transparent" barStyle="light-content" />
+                <SafeAreaView style={styles.container}>
+                    <PrettyHeader title="Profile" theme='grey' hasProfileButton={false} onLeftPress={() => navigation.goBack()}/>
+                    <View style={styles.box}>
+                        <Image source={{ uri: profile_image }}  style={styles.avatar}/>
+                        <Text style={styles.userId}>{username}</Text>
+                        <Text style={styles.memberSince}>Member since {formatDate(date_joined)}</Text>
+                        <View style={styles.separator}/>
+                        <Text style={styles.rowTextKey}>Full Name</Text>
+                        <Text style={styles.rowTextValue}>{name}</Text>
+                        <Text style={styles.rowTextKey}>Email</Text>
+                        <Text style={styles.rowTextValue}>{email}</Text>
+                        <Text style={styles.rowTextKey}>Location</Text>
+                        <Text style={styles.rowTextValue}>{country}</Text>
+                        <Text style={styles.rowTextKey}>Education</Text>
+                        <Text style={styles.rowTextValue}>{level_of_education}</Text>
+                        <Text style={styles.rowTextKey}>Primary Language Spoken</Text>
+                        <Text style={styles.rowTextValue}>{language}</Text>
+                        <Button text="Logout" onPress={logout} preset="orangeButton" />
+                    </View>
+                </SafeAreaView>   
+             </View>
         </ImageBackground>
-    </View>
+    
   )
 });
 
-
 const styles = StyleSheet.create({
-    backgroundTransparency: {
+    backgroundImage: {
         flex: 1,
-        backgroundColor: '#000c',
+        justifyContent: 'flex-start',
+        height: '100%',
+    },
+    translucentOverlay: {
+        flex: 1,
+        backgroundColor: colors.translucentBackground,
     },
     background: {
         flex: 1,
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#000',
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     avatar:{
         width: 50,
