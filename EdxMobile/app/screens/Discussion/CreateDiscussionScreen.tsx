@@ -89,7 +89,7 @@ const {
             <TextInput
               style={[styles.input, styles.postTitleInputBox]}
               placeholder="Enter post title"
-              placeholderTextColor="#C4C4C4"
+              placeholderTextColor={colors.textDim}
               value={postTitle}
               onChangeText={(text)=>setPostTitle(text)}
               editable={!isLoading}
@@ -98,6 +98,7 @@ const {
             <TextInput
               style={[styles.input, styles.postContentInputBox]}
               placeholder="Enter post content"
+              placeholderTextColor={colors.textDim}
               value={postContent}
               onChangeText={(text) => setPostContent(text)}
               multiline={true}
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
+    color: colors.text
   },
   postTitleInputBox: {
     textAlignVertical: 'top', 
